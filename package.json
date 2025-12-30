@@ -1,0 +1,12 @@
+{
+  "name": "ee-blog-website",
+  "version": "1.0.0",
+  "description": "Electrical Engineering Blog Website",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}

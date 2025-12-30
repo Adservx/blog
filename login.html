@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | Voltage & Current</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Tailwind & DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+
+    <nav class="p-8">
+        <a href="index.html" class="flex items-center gap-2 justify-center sm:justify-start">
+            <span class="text-2xl">⚡</span>
+            <span class="font-serif text-lg font-black tracking-tight text-slate-900 uppercase">Voltage & Current</span>
+        </a>
+    </nav>
+
+    <main class="flex-1 flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+                <div class="p-8 sm:p-12">
+                    <div class="text-center mb-10">
+                        <h1 class="font-serif text-3xl font-black text-slate-900 mb-3">Welcome Back</h1>
+                        <p class="text-slate-500 text-sm font-medium">Enter your credentials to access the library</p>
+                    </div>
+
+                    <form id="login-form" class="space-y-6">
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text text-[10px] font-black uppercase tracking-widest text-slate-400">Registry Email</span>
+                            </label>
+                            <input type="email" id="email" placeholder="engineer@institution.edu" class="input input-bordered w-full bg-slate-50 border-slate-200 focus:bg-white transition-all font-medium" required />
+                        </div>
+
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text text-[10px] font-black uppercase tracking-widest text-slate-400">Access Key</span>
+                                <a href="#" class="label-text-alt text-blue-600 font-bold">Lost Key?</a>
+                            </label>
+                            <input type="password" id="password" placeholder="••••••••" class="input input-bordered w-full bg-slate-50 border-slate-200 focus:bg-white transition-all font-medium" required />
+                        </div>
+
+                        <button type="submit" id="submit-btn" class="btn btn-primary w-full h-14 rounded-xl font-bold uppercase tracking-widest text-xs">
+                            Authenticate
+                        </button>
+                    </form>
+
+                    <div class="divider my-10 text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">New Personnel?</div>
+
+                    <a href="signup.html" class="btn btn-outline w-full h-14 rounded-xl border-slate-200 font-bold uppercase tracking-widest text-xs hover:bg-slate-50 hover:text-slate-900">
+                        Request Access
+                    </a>
+                </div>
+            </div>
+            
+            <p class="text-center mt-8 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                Protected by End-to-End Encryption
+            </p>
+        </div>
+    </main>
+
+    <script type="module">
+        import { signIn } from './js/auth.js';
+
+        const form = document.getElementById('login-form');
+        const submitBtn = document.getElementById('submit-btn');
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading loading-spinner"></span> VERIFYING...';
+
+            const { data, error } = await signIn(email, password);
+
+            if (error) {
+                alert('AUTHENTICATION_FAILED: ' + error.message);
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'AUTHENTICATE';
+            } else {
+                window.location.href = 'index.html';
+            }
+        };
+    </script>
+</body>
+</html>
