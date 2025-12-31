@@ -8,7 +8,7 @@ async function getPaginatedPosts(page = 1, pageSize = 5, options = {}) {
         .from('posts')
         .select(`
             *,
-            profiles!user_id (name, full_name, avatar_url),
+            profiles!user_id (name, full_name, avatar_url, bio, expertise),
             categories (id, name, slug)
         `, { count: 'exact' });
 
@@ -84,5 +84,22 @@ async function createPost(postData) {
     return { data, error };
 }
 
-window.blogPosts = { getPaginatedPosts, getCategories, getPostBySlug, incrementViewCount, createPost, getUserPosts };
-export { getPaginatedPosts, getCategories, getPostBySlug, incrementViewCount, createPost, getUserPosts };
+async function updatePost(postId, postData) {
+    const { data, error } = await supabase
+        .from('posts')
+        .update(postData)
+        .eq('id', postId)
+        .select();
+    return { data, error };
+}
+
+async function deletePost(postId) {
+    const { error } = await supabase
+        .from('posts')
+        .delete()
+        .eq('id', postId);
+    return { error };
+}
+
+window.blogPosts = { getPaginatedPosts, getCategories, getPostBySlug, incrementViewCount, createPost, getUserPosts, updatePost, deletePost };
+export { getPaginatedPosts, getCategories, getPostBySlug, incrementViewCount, createPost, getUserPosts, updatePost, deletePost };

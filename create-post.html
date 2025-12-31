@@ -16,6 +16,7 @@
     <!-- EasyMDE for Rich Text -->
     <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
     <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+    <script src="https://unpkg.com/turndown/dist/turndown.js"></script>
 
     <script>
         tailwind.config = {
@@ -28,122 +29,279 @@
 
     <style>
         .EasyMDEContainer .CodeMirror {
-            border-radius: 1rem;
-            border: 1px solid #e2e8f0;
+            border-radius: 0;
+            border: none;
             padding: 1rem;
             font-size: 1rem;
             min-height: 400px;
+            font-family: 'JetBrains Mono', monospace;
         }
         .editor-toolbar {
             border: none;
+            border-bottom: 2px solid #0f172a;
             background: #f8fafc;
-            border-radius: 1rem 1rem 0 0;
+            border-radius: 0;
             padding: 0.75rem;
         }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-white text-slate-900 font-sans min-h-screen">
 
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-[1400px] mx-auto px-4 sm:px-10">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-8">
-                    <a href="index.html" class="flex items-center gap-2">
-                        <span class="text-2xl">⚡</span>
-                        <span class="font-serif text-lg font-black tracking-tight text-slate-900 uppercase">Voltage & Current</span>
+    <nav class="border-b border-slate-200 sticky top-0 z-50 bg-white/90 backdrop-blur-md">
+        <div class="max-w-[1400px] mx-auto px-6 sm:px-10">
+            <div class="grid grid-cols-3 h-20 items-center">
+                <div class="flex justify-start items-center gap-8">
+                    <a href="index.html" class="flex items-center gap-3">
+                        <span class="bg-slate-900 text-white w-10 h-10 flex items-center justify-center font-black text-xl">V</span>
+                        <div class="flex flex-col">
+                            <span class="font-black text-2xl tracking-tighter leading-none uppercase">Voltage & Current</span>
+                            <span class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase">Technical Publication Registry</span>
+                        </div>
                     </a>
-                    <span class="h-6 w-px bg-slate-200 hidden sm:block"></span>
-                    <h2 class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 hidden sm:block">Report Drafting Module</h2>
                 </div>
 
-                <div class="flex items-center gap-3">
-                    <a href="index.html" class="btn btn-ghost btn-sm font-bold uppercase tracking-widest text-[10px]">Cancel</a>
-                    <button id="publish-btn" class="btn btn-primary btn-sm px-6 font-bold uppercase tracking-widest text-[10px]">Publish Report</button>
+                <div class="hidden lg:flex items-center justify-center gap-8" id="nav-links">
+                    <a href="index.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Archive</a>
+                    <a href="resources.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Resources</a>
+                    <a href="about.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">About</a>
+                </div>
+
+                <div class="flex items-center justify-end gap-3" id="auth-nav">
+                    <div class="loading loading-spinner loading-xs text-slate-300"></div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-[1400px] mx-auto px-4 sm:px-10 py-12">
-        <div class="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
-            <div class="p-8 sm:p-16">
-                
-                <div class="space-y-10">
-                    <!-- Title Input -->
-                    <div class="space-y-4">
-                        <label class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Publication Title</label>
-                        <input type="text" id="post-title" placeholder="e.g. Advancements in Solid-State Transformer Design" 
-                            class="w-full text-3xl md:text-5xl font-serif font-black text-slate-900 border-none focus:ring-0 placeholder:text-slate-200 p-0" />
-                    </div>
+    <header class="bg-grid-subtle border-b-2 border-slate-900 py-12 relative overflow-hidden">
+        <div class="max-w-[1400px] mx-auto px-6 sm:px-10 relative">
+            <div class="inline-flex items-center gap-3 border-l-4 border-blue-600 pl-4 mb-4">
+                <span class="text-[10px] font-mono font-black tracking-[0.4em] text-slate-500 uppercase">Module: Report_Drafting_Unit_V2.0</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter uppercase">Submit Technical <span class="text-blue-600">Research</span></h1>
+        </div>
+    </header>
 
-                    <!-- Meta Inputs -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 py-8 border-y border-slate-50">
-                        <div class="form-control w-full">
-                            <label class="label">
-                                <span class="label-text text-[10px] font-black uppercase tracking-widest text-slate-400">Technical Category</span>
-                            </label>
-                            <select id="post-category" class="select select-bordered w-full bg-slate-50 border-slate-200 font-bold uppercase tracking-wider text-xs">
-                                <option value="1">Power Systems</option>
-                                <option value="2">Electronics</option>
-                                <option value="3">Control Systems</option>
-                                <option value="4">Renewable Energy</option>
-                            </select>
+    <main class="max-w-[1400px] mx-auto px-6 sm:px-10 py-16">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+            
+            <!-- Main Drafting Area -->
+            <div class="lg:col-span-8">
+                <div class="border-2 border-slate-900 p-8 md:p-12 bg-white shadow-[12px_12px_0px_0px_rgba(15,23,42,1)] relative">
+                    <!-- Technical Decorative Elements -->
+                    <div class="absolute top-4 left-4 w-10 h-10 border-t border-l border-slate-200"></div>
+                    
+                    <div class="space-y-10">
+                        <!-- Title Input -->
+                        <div class="space-y-4">
+                            <label class="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-slate-400">Publication_Title</label>
+                            <input type="text" id="post-title" placeholder="e.g. Advancements in Solid-State Transformer Design" 
+                                class="w-full text-3xl md:text-4xl font-black text-slate-900 border-none focus:ring-0 placeholder:text-slate-100 p-0" />
                         </div>
-                        <div class="form-control w-full">
-                            <label class="label">
-                                <span class="label-text text-[10px] font-black uppercase tracking-widest text-slate-400">Header Image URL</span>
-                            </label>
-                            <input type="text" id="post-image" placeholder="https://unsplash.com/..." class="input input-bordered w-full bg-slate-50 border-slate-200 text-sm font-medium" />
-                        </div>
-                    </div>
 
-                    <!-- Content Editor -->
-                    <div class="space-y-4">
-                        <label class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Technical Content</label>
-                        <textarea id="post-editor"></textarea>
+                        <!-- Meta Inputs -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 py-8 border-y-2 border-dashed border-slate-100">
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Technical_Category</span>
+                                </label>
+                                <select id="post-category" class="select select-bordered w-full bg-slate-50 border-2 border-slate-900 rounded-none font-bold uppercase tracking-wider text-xs">
+                                    <option value="1">Power Systems</option>
+                                    <option value="2">Electronics</option>
+                                    <option value="3">Control Systems</option>
+                                    <option value="4">Renewable Energy</option>
+                                </select>
+                            </div>
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Header_Image_Upload</span>
+                                </label>
+                                <div class="flex flex-col gap-4">
+                                    <div class="flex items-center gap-4">
+                                        <label class="btn btn-neutral rounded-none border-2 border-slate-900 bg-white text-slate-900 hover:bg-slate-50 font-black uppercase tracking-widest text-[10px] h-12 flex-1">
+                                            Select_Local_File
+                                            <input type="file" id="post-image-file" accept="image/*" class="hidden" />
+                                        </label>
+                                        <div id="file-name-display" class="text-[9px] font-mono text-slate-400 uppercase truncate max-w-[150px]">NO_FILE_SELECTED</div>
+                                    </div>
+                                    <div id="image-preview-container" class="hidden border-2 border-slate-900 aspect-[21/9] overflow-hidden relative">
+                                        <img id="image-preview" src="" class="w-full h-full object-cover" />
+                                        <button id="remove-image" class="absolute top-2 right-2 bg-slate-900 text-white p-1 hover:bg-red-600">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l18 18" /></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Content Editor -->
+                        <div class="space-y-4">
+                            <label class="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-slate-400">Technical_Content_Markdown</label>
+                            <div class="border-2 border-slate-900">
+                                <textarea id="post-editor"></textarea>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
             </div>
-        </div>
 
-        <p class="mt-8 text-center text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-            Content will be peer-reviewed by the EE community upon publication.
-        </p>
+            <!-- Technical Sidebar -->
+            <aside class="lg:col-span-4 space-y-8">
+                <div class="border-2 border-slate-900 p-8 bg-slate-50 shadow-[8px_8px_0px_0px_rgba(37,99,235,1)] relative">
+                    <h3 class="text-[10px] font-mono font-black tracking-[0.3em] text-slate-400 uppercase mb-6">Drafting Requirements</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <input type="checkbox" checked class="checkbox checkbox-xs rounded-none mt-1" />
+                            <span class="text-[11px] font-bold uppercase tracking-tight leading-relaxed">Ensure all mathematical equations use LaTeX formatting.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <input type="checkbox" checked class="checkbox checkbox-xs rounded-none mt-1" />
+                            <span class="text-[11px] font-bold uppercase tracking-tight leading-relaxed">Provide high-resolution technical diagrams (min. 1200px).</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <input type="checkbox" checked class="checkbox checkbox-xs rounded-none mt-1" />
+                            <span class="text-[11px] font-bold uppercase tracking-tight leading-relaxed">Cite all IEEE or IEC standards where applicable.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-900 p-8 text-white">
+                    <h3 class="text-xl font-bold mb-4 uppercase">Submission Notice</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed uppercase mb-6">
+                        Upon publication, your report will enter the peer-review queue. Senior staff will validate technical findings within 48 standard operating hours.
+                    </p>
+                    <div class="h-1 w-full bg-blue-600"></div>
+                </div>
+            </aside>
+        </div>
     </main>
 
     <script type="module">
-        import { requireAuth } from './js/auth.js';
-        import { createPost } from './js/posts.js';
-        import { slugify } from './js/utils.js';
+                import { requireAuth, signOut } from './js/auth.js';
+                import { createPost, getPostBySlug, updatePost } from './js/posts.js';
+                import { getProfile } from './js/profiles.js';
+                import { slugify } from './js/utils.js';
+                import { supabase } from './js/supabase-client.js';
+        
+                let user = null;
+                let easyMDE = null;
+                let selectedFile = null;
+                let editingPostId = null;
+        
+                const urlParams = new URLSearchParams(window.location.search);
+                editingPostId = urlParams.get('edit');
+        
+                async function init() {
+                    user = await requireAuth();
+                    if (!user) return;
 
-        let user = null;
-        let easyMDE = null;
+                    // Initialize Nav
+                    const authNav = document.getElementById('auth-nav');
+                    const { data: navProfile } = await getProfile(user.id);
+                    const navAvatar = navProfile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
+                    
+                    authNav.innerHTML = `
+                        <div class="dropdown dropdown-end">
+                            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100 hover:border-blue-600">
+                                <div class="w-10 h-10 rounded-full overflow-hidden">
+                                    <img src="${navAvatar}" class="w-full h-full object-cover" />
+                                </div>
+                            </div>
+                            <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
+                                <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Operator Session</li>
+                                <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Profile</a></li>
+                                <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Draft Report</a></li>
+                                <div class="divider my-2"></div>
+                                <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50">Terminate Session</button></li>
+                            </ul>
+                        </div>
+                    `;
+                    document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
+        
+                    // Initialize Turndown
+                    const turndownService = new TurndownService({ headingStyle: 'atx', codeBlockStyle: 'fenced' });
+        
+                    // Initialize Editor
+                    easyMDE = new EasyMDE({
+                        element: document.getElementById('post-editor'),
+                        placeholder: "Begin documenting your technical findings...",
+                        spellChecker: false,
+                        status: false,
+                        autosave: { enabled: !editingPostId, uniqueId: "ee-blog-draft", delay: 1000 },
+                        toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "table", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
+                    });
+        
+                    // If editing, fetch data
+                    if (editingPostId) {
+                        const { data: post, error } = await supabase.from('posts').select('*').eq('id', editingPostId).single();
+                        if (post) {
+                            document.getElementById('post-title').value = post.title;
+                            document.getElementById('post-category').value = post.category_id;
+                            easyMDE.value(turndownService.turndown(post.content));
+                            if (post.featured_image) {
+                                const previewContainer = document.getElementById('image-preview-container');
+                                const previewImage = document.getElementById('image-preview');
+                                previewImage.src = post.featured_image;
+                                previewContainer.classList.remove('hidden');
+                                document.getElementById('file-name-display').innerText = 'CURRENT_REGISTRY_IMAGE';
+                            }
+                            document.getElementById('publish-btn').innerText = 'Update_Report';
+                        }
+                    }
+        
+                    // File Upload Preview
+                    const fileInput = document.getElementById('post-image-file');
+            const fileNameDisplay = document.getElementById('file-name-display');
+            const previewContainer = document.getElementById('image-preview-container');
+            const previewImage = document.getElementById('image-preview');
+            const removeBtn = document.getElementById('remove-image');
 
-        async function init() {
-            user = await requireAuth();
-            if (!user) return;
+            fileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    selectedFile = file;
+                    fileNameDisplay.innerText = file.name.toUpperCase();
+                    
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        previewImage.src = e.target.result;
+                        previewContainer.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
 
-            // Initialize Editor
-            easyMDE = new EasyMDE({
-                element: document.getElementById('post-editor'),
-                placeholder: "Begin documenting your technical findings...",
-                spellChecker: false,
-                status: false,
-                autosave: {
-                    enabled: true,
-                    uniqueId: "ee-blog-draft",
-                    delay: 1000,
-                },
-                toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "table", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
-            });
+            removeBtn.onclick = () => {
+                selectedFile = null;
+                fileInput.value = '';
+                fileNameDisplay.innerText = 'NO_FILE_SELECTED';
+                previewContainer.classList.add('hidden');
+                previewImage.src = '';
+            };
+        }
+
+        async function uploadImage(file) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+            const filePath = `${user.id}/${fileName}`;
+
+            const { data, error } = await supabase.storage
+                .from('blog-assets')
+                .upload(filePath, file);
+
+            if (error) throw error;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('blog-assets')
+                .getPublicUrl(filePath);
+
+            return publicUrl;
         }
 
         document.getElementById('publish-btn').onclick = async () => {
             const title = document.getElementById('post-title').value;
             const categoryId = document.getElementById('post-category').value;
-            const imageUrl = document.getElementById('post-image').value;
-            const content = easyMDE.options.previewRender(easyMDE.value()); // Convert MD to HTML for display
+            const content = easyMDE.options.previewRender(easyMDE.value());
 
             if (!title || !easyMDE.value()) {
                 alert('CRITICAL_ERROR: Title and Content are mandatory for publication.');
@@ -152,28 +310,208 @@
 
             const publishBtn = document.getElementById('publish-btn');
             publishBtn.disabled = true;
-            publishBtn.innerHTML = '<span class="loading loading-spinner"></span> PUBLISHING...';
+            publishBtn.innerHTML = `<span class="loading loading-spinner"></span> ${editingPostId ? 'UPDATING' : 'PUBLISHING'}...`;
 
-            const slug = slugify(title) + '-' + Math.random().toString(36).substring(7);
+            try {
+                let imageUrl = null;
+                // If we are editing and haven't selected a new file, keep the old image
+                if (editingPostId && !selectedFile) {
+                    const imgPreview = document.getElementById('image-preview');
+                    if (imgPreview.src && !imgPreview.src.includes('blob:')) {
+                        imageUrl = imgPreview.src;
+                    }
+                }
 
-            const postData = {
-                title,
-                content,
-                user_id: user.id,
-                category_id: parseInt(categoryId),
-                slug,
-                featured_image: imageUrl,
-                excerpt: easyMDE.value().substring(0, 200).replace(/[#*`]/g, '') + '...'
-            };
+                if (selectedFile) {
+                    imageUrl = await uploadImage(selectedFile);
+                }
 
-            const { data, error } = await createPost(postData);
+                const slug = slugify(title) + '-' + Math.random().toString(36).substring(7);
 
-            if (error) {
-                alert('PUBLICATION_FAILED: ' + error.message);
+                const postData = {
+                    title,
+                    content,
+                    user_id: user.id,
+                    category_id: parseInt(categoryId),
+                    featured_image: imageUrl,
+                    excerpt: easyMDE.value().substring(0, 200).replace(/[#*`]/g, '') + '...'
+                };
+
+                if (!editingPostId) {
+                    postData.slug = slug;
+                }
+
+                const { data, error } = editingPostId 
+                    ? await updatePost(editingPostId, postData)
+                    : await createPost(postData);
+
+                if (error) throw error;
+                
+                const finalSlug = editingPostId ? (data[0].slug) : slug;
+                window.location.href = `post.html?slug=${finalSlug}`;
+            } catch (err) {
+                alert('REGISTRY_ERROR: ' + err.message);
                 publishBtn.disabled = false;
-                publishBtn.innerText = 'Publish Report';
-            } else {
-                window.location.href = `post.html?slug=${slug}`;
+                publishBtn.innerText = editingPostId ? 'Update_Report' : 'Publish_Report';
+            }
+        };
+
+        init();
+    </script>
+</body>
+</html>
+        async function uploadImage(file) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+            const filePath = `${user.id}/${fileName}`;
+
+            const { data, error } = await supabase.storage
+                .from('blog-assets')
+                .upload(filePath, file);
+
+            if (error) throw error;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('blog-assets')
+                .getPublicUrl(filePath);
+
+            return publicUrl;
+        }
+
+        document.getElementById('publish-btn').onclick = async () => {
+            const title = document.getElementById('post-title').value;
+            const categoryId = document.getElementById('post-category').value;
+            const content = easyMDE.options.previewRender(easyMDE.value());
+
+            if (!title || !easyMDE.value()) {
+                alert('Please enter a title and some content.');
+                return;
+            }
+
+            const publishBtn = document.getElementById('publish-btn');
+            publishBtn.disabled = true;
+            publishBtn.innerHTML = `<span class="loading loading-spinner loading-xs mr-2"></span> Saving...`;
+
+            try {
+                let imageUrl = null;
+                if (editingPostId && !selectedFile) {
+                    const imgPreview = document.getElementById('image-preview');
+                    if (imgPreview.src && !imgPreview.src.includes('blob:')) {
+                        imageUrl = imgPreview.src;
+                    }
+                }
+
+                if (selectedFile) {
+                    imageUrl = await uploadImage(selectedFile);
+                }
+
+                const slug = slugify(title) + '-' + Math.random().toString(36).substring(7);
+
+                const postData = {
+                    title,
+                    content,
+                    user_id: user.id,
+                    category_id: parseInt(categoryId),
+                    featured_image: imageUrl,
+                    excerpt: easyMDE.value().substring(0, 160).replace(/[#*`]/g, '') + '...'
+                };
+
+                if (!editingPostId) {
+                    postData.slug = slug;
+                }
+
+                const { data, error } = editingPostId 
+                    ? await updatePost(editingPostId, postData)
+                    : await createPost(postData);
+
+                if (error) throw error;
+                
+                const finalSlug = editingPostId ? (data[0].slug) : slug;
+                window.location.href = `post.html?slug=${finalSlug}`;
+            } catch (err) {
+                alert('Error: ' + err.message);
+                publishBtn.disabled = false;
+                publishBtn.innerText = editingPostId ? 'Update' : 'Publish';
+            }
+        };
+
+        init();
+    </script>
+</body>
+</html>
+        async function uploadImage(file) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+            const filePath = `${user.id}/${fileName}`;
+
+            const { data, error } = await supabase.storage
+                .from('blog-assets')
+                .upload(filePath, file);
+
+            if (error) throw error;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('blog-assets')
+                .getPublicUrl(filePath);
+
+            return publicUrl;
+        }
+
+        document.getElementById('publish-btn').onclick = async () => {
+            const title = document.getElementById('post-title').value;
+            const categoryId = document.getElementById('post-category').value;
+            const content = easyMDE.options.previewRender(easyMDE.value());
+
+            if (!title || !easyMDE.value()) {
+                alert('CRITICAL_ERROR: Title and Content are mandatory for publication.');
+                return;
+            }
+
+            const publishBtn = document.getElementById('publish-btn');
+            publishBtn.disabled = true;
+            publishBtn.innerHTML = `<span class="loading loading-spinner"></span> ${editingPostId ? 'UPDATING' : 'PUBLISHING'}...`;
+
+            try {
+                let imageUrl = null;
+                // If we are editing and haven't selected a new file, keep the old image
+                if (editingPostId && !selectedFile) {
+                    const imgPreview = document.getElementById('image-preview');
+                    if (imgPreview.src && !imgPreview.src.includes('blob:')) {
+                        imageUrl = imgPreview.src;
+                    }
+                }
+
+                if (selectedFile) {
+                    imageUrl = await uploadImage(selectedFile);
+                }
+
+                const slug = slugify(title) + '-' + Math.random().toString(36).substring(7);
+
+                const postData = {
+                    title,
+                    content,
+                    user_id: user.id,
+                    category_id: parseInt(categoryId),
+                    featured_image: imageUrl,
+                    excerpt: easyMDE.value().substring(0, 200).replace(/[#*`]/g, '') + '...'
+                };
+
+                if (!editingPostId) {
+                    postData.slug = slug;
+                }
+
+                const { data, error } = editingPostId 
+                    ? await updatePost(editingPostId, postData)
+                    : await createPost(postData);
+
+                if (error) throw error;
+                
+                const finalSlug = editingPostId ? (data[0].slug) : slug;
+                window.location.href = `post.html?slug=${finalSlug}`;
+            } catch (err) {
+                alert('REGISTRY_ERROR: ' + err.message);
+                publishBtn.disabled = false;
+                publishBtn.innerText = editingPostId ? 'Update_Report' : 'Publish_Report';
             }
         };
 

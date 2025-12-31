@@ -27,14 +27,22 @@
 
     <!-- Navigation -->
     <nav class="border-b border-slate-200 sticky top-0 z-50 bg-white/95 backdrop-blur-md">
-        <div class="max-w-[1400px] mx-auto px-6 h-20 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-3">
-                <span class="bg-slate-900 text-white w-8 h-8 flex items-center justify-center font-black text-lg">V</span>
-                <span class="text-xl font-black uppercase tracking-tight">Voltage & Current</span>
-            </a>
-            <div class="flex items-center gap-8">
-                <a href="index.html" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Archive</a>
-                <div id="auth-nav"></div>
+        <div class="max-w-[1400px] mx-auto px-6 sm:px-10">
+            <div class="grid grid-cols-3 h-20 items-center">
+                <div class="flex justify-start">
+                    <a href="index.html" class="flex items-center gap-3">
+                        <span class="bg-slate-900 text-white w-8 h-8 flex items-center justify-center font-black text-lg">V</span>
+                        <span class="text-xl font-black uppercase tracking-tight">Voltage & Current</span>
+                    </a>
+                </div>
+
+                <div class="hidden lg:flex items-center justify-center gap-8" id="nav-links">
+                    <a href="index.html" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-blue-600 transition-colors">Archive</a>
+                    <a href="resources.html" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-blue-600 transition-colors">Resources</a>
+                    <a href="about.html" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-blue-600 transition-colors">About</a>
+                </div>
+
+                <div class="flex items-center justify-end gap-8" id="auth-nav"></div>
             </div>
         </div>
     </nav>
@@ -58,6 +66,7 @@
         import { checkSession, signOut } from './js/auth.js';
         import { getPostBySlug, incrementViewCount } from './js/posts.js';
         import { getComments, addComment } from './js/comments.js';
+        import { getProfile } from './js/profiles.js';
         import { formatDate, getPostImageId } from './js/utils.js';
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -69,11 +78,13 @@
             let user = null;
             if (session) {
                 user = session.user;
-                const avatar = user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
+                const { data: profile } = await getProfile(user.id);
+                const avatar = profile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
+                
                 authNav.innerHTML = `
                     <div class="dropdown dropdown-end">
                         <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100">
-                            <div class="w-10 rounded-none"><img src="${avatar}" /></div>
+                            <div class="w-10 h-10 rounded-full overflow-hidden"><img src="${avatar}" class="w-full h-full object-cover" /></div>
                         </div>
                         <ul tabindex="0" class="mt-4 z-[100] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-52">
                             <li><a href="profile.html" class="rounded-none font-bold uppercase text-[10px] tracking-widest">Profile</a></li>
@@ -105,10 +116,41 @@
                             <span class="bg-blue-600 text-white px-3 py-1 font-mono text-[9px] font-black uppercase tracking-[0.2em]">${post.categories?.name || 'General'}</span>
                         </div>
                         <h1 class="text-5xl font-black uppercase mb-12 leading-[1.1]">${post.title}</h1>
+                        
+                        <div class="flex items-center gap-6 mb-16 py-8 border-y-2 border-slate-900">
+                            <div class="w-16 h-16 border-2 border-slate-900 p-1">
+                                <img src="${post.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.profiles?.id}`}" class="w-full h-full object-cover" />
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-mono font-black text-slate-400 uppercase tracking-widest block mb-1">Lead Researcher</span>
+                                <h4 class="text-xl font-black uppercase">${authorName}</h4>
+                                <span class="text-[10px] font-mono font-bold text-blue-600 uppercase tracking-widest">${post.profiles?.expertise || 'Field Engineer'}</span>
+                            </div>
+                            <div class="ml-auto text-right hidden sm:block">
+                                <span class="text-[10px] font-mono font-black text-slate-300 uppercase tracking-widest block mb-1">Publication_Date</span>
+                                <span class="text-sm font-bold uppercase">${formatDate(post.created_at)}</span>
+                            </div>
+                        </div>
+
                         <img src="${headerImage}" 
                              onerror="this.src='https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=2000'"
                              class="w-full aspect-[21/9] object-cover mb-16 border border-slate-100">
                         <div class="prose-normal">${post.content}</div>
+
+                        <!-- Technical Bio Section -->
+                        <section class="mt-24 p-10 border-2 border-slate-900 bg-slate-50 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-slate-100 -mr-16 -mt-16 rotate-45"></div>
+                            <h3 class="text-[10px] font-mono font-black tracking-[0.3em] text-slate-400 uppercase mb-6">Author_Technical_Background</h3>
+                            <div class="flex flex-col md:flex-row gap-10 items-start">
+                                <div class="space-y-4 flex-1">
+                                    <p class="text-lg font-medium text-slate-700 leading-relaxed italic">"${post.profiles?.bio || 'Technical background documentation pending for this researcher.'}"</p>
+                                    <div class="flex gap-4">
+                                        <a href="profile.html?id=${post.profiles?.id}" class="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:underline">View_Full_Registry_File</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
                         <section class="mt-24 border-t-4 border-slate-900 pt-16">
                             <h3 class="text-3xl font-black uppercase mb-12">Discussion</h3>
                             <div id="comments-list" class="space-y-12"></div>
@@ -119,6 +161,23 @@
             }
         }
 
+        async function renderComments(postId) {
+            const list = document.getElementById('comments-list');
+            const { data: comments } = await getComments(postId);
+            if (comments) {
+                list.innerHTML = comments.map(c => `
+                    <div class="border-b border-slate-100 pb-8">
+                        <span class="text-[11px] font-black uppercase tracking-widest mb-2 block">${c.profiles?.full_name || 'Anonymous'}</span>
+                        <p class="text-lg font-medium">${c.content}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        initAuth().then(user => renderPost(user));
+    </script>
+</body>
+</html>
         async function renderComments(postId) {
             const list = document.getElementById('comments-list');
             const { data: comments } = await getComments(postId);

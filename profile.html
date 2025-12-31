@@ -22,73 +22,107 @@
         }
     </script>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-white text-slate-900 font-sans min-h-screen">
 
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-[1400px] mx-auto px-4 sm:px-10">
-            <div class="flex justify-between h-16 items-center">
-                <a href="index.html" class="flex items-center gap-2">
-                    <span class="text-2xl">⚡</span>
-                    <span class="font-serif text-lg font-black tracking-tight text-slate-900 uppercase">Voltage & Current</span>
-                </a>
-                <div class="flex gap-4">
-                    <a href="create-post.html" class="btn btn-primary btn-sm px-6 font-bold uppercase tracking-widest text-[10px]">New Report</a>
-                    <button id="sign-out-btn" class="btn btn-ghost btn-sm font-bold uppercase tracking-widest text-[10px] text-red-500">Sign Out</button>
+    <nav class="border-b border-slate-200 sticky top-0 z-50 bg-white/90 backdrop-blur-md">
+        <div class="max-w-[1400px] mx-auto px-6 sm:px-10">
+            <div class="grid grid-cols-3 h-20 items-center">
+                <div class="flex justify-start">
+                    <a href="index.html" class="flex items-center gap-3">
+                        <span class="bg-slate-900 text-white w-10 h-10 flex items-center justify-center font-black text-xl">V</span>
+                        <div class="flex flex-col">
+                            <span class="font-black text-2xl tracking-tighter leading-none uppercase">Voltage & Current</span>
+                            <span class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase">Technical Publication Registry</span>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="hidden lg:flex items-center justify-center gap-8" id="nav-links">
+                    <a href="index.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Archive</a>
+                    <a href="resources.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Resources</a>
+                    <a href="about.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">About</a>
+                </div>
+
+                <div class="flex items-center justify-end gap-6" id="auth-nav">
+                    <div class="loading loading-spinner loading-xs text-slate-300"></div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-[1400px] mx-auto px-4 sm:px-10 py-12">
-        
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+    <header class="bg-grid-subtle border-b-2 border-slate-900 py-12 relative overflow-hidden">
+        <div class="max-w-[1400px] mx-auto px-6 sm:px-10 relative">
+            <div class="inline-flex items-center gap-3 border-l-4 border-blue-600 pl-4 mb-4">
+                <span class="text-[10px] font-mono font-black tracking-[0.4em] text-slate-500 uppercase">File: Personnel_Registry_Entry</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter uppercase">Operator <span class="text-blue-600">Profile</span></h1>
+        </div>
+    </header>
+
+    <main class="max-w-[1400px] mx-auto px-6 sm:px-10 py-16">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
             
             <!-- Sidebar: User Info -->
-            <div class="lg:col-span-1 space-y-8">
-                <div class="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 p-10 text-center">
-                    <div class="avatar mb-6">
-                        <div class="w-32 h-32 rounded-full ring-8 ring-slate-50" id="user-avatar-container">
-                            <div class="skeleton w-full h-full rounded-full"></div>
+            <div class="lg:col-span-4 space-y-8">
+                <div class="bg-white border-2 border-slate-900 p-10 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] relative overflow-hidden">
+                    <div class="absolute -top-4 -right-4 w-12 h-12 border-b-2 border-l-2 border-slate-100"></div>
+                    
+                    <div class="avatar mb-8 flex justify-center">
+                        <div class="w-32 h-32 rounded-none border-2 border-slate-900 p-1 bg-white" id="user-avatar-container">
+                            <div class="skeleton w-full h-full rounded-none"></div>
                         </div>
                     </div>
-                    <h1 class="font-serif text-2xl font-black text-slate-900 mb-2" id="user-name">Loading...</h1>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6" id="user-expertise">Field Engineer</p>
                     
-                    <div class="divider"></div>
+                    <div class="text-center space-y-2">
+                        <h1 class="text-3xl font-black text-slate-900 uppercase tracking-tighter" id="user-name">Loading...</h1>
+                        <p class="text-[10px] font-mono font-black text-blue-600 uppercase tracking-[0.3em]" id="user-expertise">Field Engineer</p>
+                    </div>
                     
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-4 mt-10 py-6 border-y-2 border-dashed border-slate-100">
                         <div class="text-center">
-                            <span class="block text-2xl font-black text-slate-900" id="post-count">0</span>
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Reports</span>
+                            <span class="block text-3xl font-black text-slate-900" id="post-count">0</span>
+                            <span class="text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest">Reports</span>
                         </div>
                         <div class="text-center">
-                            <span class="block text-2xl font-black text-slate-900">0</span>
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Citations</span>
+                            <span class="block text-3xl font-black text-slate-900">0</span>
+                            <span class="text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest">Citations</span>
                         </div>
                     </div>
+
+                    <div class="mt-8">
+                        <h3 class="text-[10px] font-mono font-black tracking-[0.3em] text-slate-400 uppercase mb-4">Technical_Bio</h3>
+                        <p class="text-sm font-medium text-slate-500 leading-relaxed border-l-2 border-slate-100 pl-4" id="user-bio">
+                            "Initial personnel profile created. Awaiting expertise documentation."
+                        </p>
+                    </div>
+
+                    <button onclick="edit_profile_modal.showModal()" class="btn btn-neutral btn-block btn-sm mt-10 rounded-none font-black uppercase tracking-widest text-[10px] h-12">Update_Registry_File</button>
                 </div>
 
-                <div class="bg-slate-900 rounded-[2rem] p-8 text-white">
-                    <h3 class="font-serif text-lg font-bold mb-4">Technical Bio</h3>
-                    <p class="text-sm text-slate-400 leading-relaxed italic" id="user-bio">
-                        "Initial personnel profile created. Awaiting expertise documentation and technical background information."
+                <div class="bg-slate-900 p-8 text-white">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        <span class="text-[9px] font-mono font-black uppercase tracking-[0.2em]">System_Authorized</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 leading-relaxed uppercase">
+                        All technical contributions are logged and timestamped within the central engineering registry.
                     </p>
-                    <button onclick="edit_profile_modal.showModal()" class="btn btn-primary btn-block btn-sm mt-8 font-bold uppercase tracking-widest text-[10px]">Update Registry</button>
                 </div>
             </div>
 
             <!-- Main: User's Posts -->
-            <div class="lg:col-span-2 space-y-8">
-                <div class="flex items-center justify-between">
-                    <h2 class="font-serif text-2xl font-bold text-slate-900">Publication History</h2>
+            <div class="lg:col-span-8 space-y-12">
+                <div class="flex items-center justify-between border-b-4 border-slate-900 pb-6">
+                    <h2 class="text-3xl font-black text-slate-900 uppercase">Publication History</h2>
+                    <span class="bg-slate-900 text-white text-[10px] font-mono font-bold px-3 py-1">REG_HIST_01</span>
                 </div>
 
-                <div id="user-posts-container" class="space-y-6">
+                <div id="user-posts-container" class="space-y-8">
                     <!-- Loading skeleton -->
-                    <div class="bg-white p-6 rounded-2xl border border-slate-100 animate-pulse">
-                        <div class="h-4 w-1/4 bg-slate-50 rounded mb-4"></div>
-                        <div class="h-6 w-3/4 bg-slate-50 rounded mb-2"></div>
-                        <div class="h-4 w-full bg-slate-50 rounded"></div>
+                    <div class="border-2 border-slate-100 p-8 animate-pulse">
+                        <div class="h-4 w-1/4 bg-slate-50 mb-6"></div>
+                        <div class="h-8 w-3/4 bg-slate-50 mb-4"></div>
+                        <div class="h-4 w-full bg-slate-50"></div>
                     </div>
                 </div>
             </div>
@@ -98,36 +132,45 @@
 
     <!-- Edit Profile Modal -->
     <dialog id="edit_profile_modal" class="modal">
-        <div class="modal-box bg-white rounded-[2rem] p-10 max-w-lg">
-            <h3 class="font-serif text-2xl font-black text-slate-900 mb-8">Update Registry File</h3>
+        <div class="modal-box bg-white rounded-none border-4 border-slate-900 p-10 max-w-lg shadow-[16px_16px_0px_0px_rgba(15,23,42,1)]">
+            <div class="flex items-center gap-3 mb-8 border-l-4 border-blue-600 pl-4">
+                <h3 class="text-2xl font-black text-slate-900 uppercase tracking-tighter">Update Registry File</h3>
+            </div>
             <form id="edit-profile-form" class="space-y-6">
                 <div class="form-control w-full">
                     <label class="label">
-                        <span class="label-text text-[10px] font-black uppercase tracking-widest text-slate-400">Full Name</span>
+                        <span class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Full_Name</span>
                     </label>
-                    <input type="text" id="edit-name" class="input input-bordered w-full bg-slate-50 border-slate-200" required />
+                    <input type="text" id="edit-name" class="input input-bordered w-full bg-slate-50 border-2 border-slate-900 rounded-none font-bold" required />
                 </div>
                 <div class="form-control w-full">
                     <label class="label">
-                        <span class="label-text text-[10px] font-black uppercase tracking-widest text-slate-400">Expertise / Role</span>
+                        <span class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Expertise_Role</span>
                     </label>
-                    <input type="text" id="edit-expertise" placeholder="e.g. Senior Power Systems Engineer" class="input input-bordered w-full bg-slate-50 border-slate-200" />
+                    <input type="text" id="edit-expertise" placeholder="e.g. Senior Power Systems Engineer" class="input input-bordered w-full bg-slate-50 border-2 border-slate-900 rounded-none font-bold" />
                 </div>
                 <div class="form-control w-full">
                     <label class="label">
-                        <span class="label-text text-[10px] font-black uppercase tracking-widest text-slate-400">Avatar URL</span>
+                        <span class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Avatar_Registry_Upload</span>
                     </label>
-                    <input type="text" id="edit-avatar" class="input input-bordered w-full bg-slate-50 border-slate-200" />
+                    <div class="flex items-center gap-4">
+                        <label class="btn btn-neutral btn-sm rounded-none border-2 border-slate-900 bg-white text-slate-900 hover:bg-slate-50 font-black uppercase tracking-widest text-[9px] h-10 px-4">
+                            Select_Local_File
+                            <input type="file" id="edit-avatar-file" accept="image/*" class="hidden" />
+                        </label>
+                        <div id="avatar-file-name" class="text-[9px] font-mono text-slate-400 uppercase truncate">NO_FILE_SELECTED</div>
+                    </div>
+                    <input type="hidden" id="edit-avatar" />
                 </div>
                 <div class="form-control w-full">
                     <label class="label">
-                        <span class="label-text text-[10px] font-black uppercase tracking-widest text-slate-400">Technical Bio</span>
+                        <span class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Technical_Bio_Summary</span>
                     </label>
-                    <textarea id="edit-bio" class="textarea textarea-bordered h-32 bg-slate-50 border-slate-200" placeholder="Briefly describe your technical background..."></textarea>
+                    <textarea id="edit-bio" class="textarea textarea-bordered h-32 bg-slate-50 border-2 border-slate-900 rounded-none font-medium" placeholder="Briefly describe your technical background..."></textarea>
                 </div>
-                <div class="modal-action flex gap-3">
-                    <button type="button" onclick="edit_profile_modal.close()" class="btn btn-ghost font-bold uppercase tracking-widest text-[10px]">Cancel</button>
-                    <button type="submit" id="save-profile-btn" class="btn btn-primary px-8 font-bold uppercase tracking-widest text-[10px]">Update Profile</button>
+                <div class="modal-action flex gap-4 pt-4">
+                    <button type="button" onclick="edit_profile_modal.close()" class="btn btn-ghost font-black uppercase tracking-widest text-[10px]">Cancel_Update</button>
+                    <button type="submit" id="save-profile-btn" class="btn btn-primary px-8 font-black uppercase tracking-widest text-[10px] rounded-none border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">Commit_Changes</button>
                 </div>
             </form>
         </div>
@@ -138,13 +181,63 @@
 
     <script type="module">
         import { requireAuth, signOut } from './js/auth.js';
-        import { getUserPosts } from './js/posts.js';
+        import { getUserPosts, deletePost } from './js/posts.js';
         import { getProfile, updateProfile } from './js/profiles.js';
         import { formatDate, getPostImageId } from './js/utils.js';
+        import { supabase } from './js/supabase-client.js';
+
+        let user = null;
+        let selectedAvatarFile = null;
+
+        window.handleDeletePost = async (postId) => {
+            if (confirm('CRITICAL_ACTION: Are you sure you want to PERMANENTLY delete this report from the registry?')) {
+                const { error } = await deletePost(postId);
+                if (error) {
+                    alert('DELETE_FAILED: ' + error.message);
+                } else {
+                    location.reload();
+                }
+            }
+        };
 
         async function init() {
-            const user = await requireAuth();
+            user = await requireAuth();
             if (!user) return;
+
+            // Initialize Nav
+            const authNav = document.getElementById('auth-nav');
+            const { data: navProfile } = await getProfile(user.id);
+            const navAvatar = navProfile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
+            
+            authNav.innerHTML = `
+                <div class="dropdown dropdown-end">
+                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100 hover:border-blue-600">
+                        <div class="w-10 h-10 rounded-full overflow-hidden">
+                            <img src="${navAvatar}" class="w-full h-full object-cover" />
+                        </div>
+                    </div>
+                    <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
+                        <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Operator Session</li>
+                        <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Profile</a></li>
+                        <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Draft Report</a></li>
+                        <div class="divider my-2"></div>
+                        <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50">Terminate Session</button></li>
+                    </ul>
+                </div>
+            `;
+            document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
+
+            // Handle Avatar File Selection
+            const avatarInput = document.getElementById('edit-avatar-file');
+            const avatarNameDisplay = document.getElementById('avatar-file-name');
+            
+            avatarInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    selectedAvatarFile = file;
+                    avatarNameDisplay.innerText = file.name.toUpperCase();
+                }
+            };
 
             // Fetch Profile Data
             const { data: profile, error: profileError } = await getProfile(user.id);
@@ -158,12 +251,12 @@
                 document.getElementById('user-name').innerText = name;
                 document.getElementById('user-expertise').innerText = expertise;
                 document.getElementById('user-bio').innerText = bio;
-                document.getElementById('user-avatar-container').innerHTML = `<img src="${avatar}" />`;
+                document.getElementById('user-avatar-container').innerHTML = `<img src="${avatar}" class="w-full h-full object-cover" />`;
 
                 // Fill modal
                 document.getElementById('edit-name').value = name;
                 document.getElementById('edit-expertise').value = expertise === 'Field Engineer' ? '' : expertise;
-                document.getElementById('edit-avatar').value = avatar.includes('dicebear') ? '' : avatar;
+                document.getElementById('edit-avatar').value = avatar; 
                 document.getElementById('edit-bio').value = profile.bio || '';
             }
 
@@ -181,9 +274,9 @@
 
             if (!posts || posts.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-20 bg-white rounded-[2rem] border border-slate-100 border-dashed">
-                        <p class="text-slate-400 font-serif italic text-lg mb-6">No technical reports published yet.</p>
-                        <a href="create-post.html" class="btn btn-outline btn-sm font-bold uppercase tracking-widest text-[10px]">Submit First Report</a>
+                    <div class="text-center py-20 bg-white border-2 border-slate-200 border-dashed">
+                        <p class="text-slate-400 font-mono italic text-sm mb-6">No technical reports published yet.</p>
+                        <a href="create-post.html" class="btn btn-neutral rounded-none btn-sm font-black uppercase tracking-widest text-[10px] h-10 px-8">Submit First Report</a>
                     </div>
                 `;
             } else {
@@ -193,8 +286,8 @@
                     const thumbnail = post.featured_image || (imgMatch ? imgMatch[1] : (mdMatch ? mdMatch[1] : `https://images.unsplash.com/photo-${getPostImageId(post.category_id)}?auto=format&fit=crop&q=80&w=400`));
                     
                     return `
-                    <div class="bg-white p-6 rounded-[2rem] border border-black shadow-sm hover:shadow-md transition-all group flex gap-6">
-                        <div class="w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden border border-slate-50">
+                    <div class="bg-white p-6 border-2 border-slate-900 shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] group flex gap-6">
+                        <div class="w-24 h-24 flex-shrink-0 border border-slate-100 overflow-hidden">
                             <img src="${thumbnail}" 
                                  onerror="this.src='https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=400'"
                                  class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500">
@@ -203,7 +296,7 @@
                             <div class="flex justify-between items-start mb-2">
                                 <span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest">${formatDate(post.created_at)}</span>
                             </div>
-                            <h3 class="text-lg font-serif font-black text-slate-900 mb-2 group-hover:text-blue-600 transition-colors truncate">
+                            <h3 class="text-lg font-black text-slate-900 mb-2 group-hover:text-blue-600 transition-colors truncate uppercase">
                                 <a href="post.html?slug=${post.slug}">${post.title}</a>
                             </h3>
                             <p class="text-slate-500 text-xs line-clamp-1 mb-4">${post.excerpt || 'No description available.'}</p>
@@ -214,10 +307,11 @@
                                         ${post.view_count || 0} Views
                                     </span>
                                 </div>
-                                <a href="post.html?slug=${post.slug}" class="text-[9px] font-black uppercase tracking-widest text-blue-600 flex items-center gap-1">
-                                    View
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                                </a>
+                                <div class="flex gap-4">
+                                    <a href="post.html?slug=${post.slug}" class="text-[9px] font-black uppercase tracking-widest text-blue-600 hover:underline">View</a>
+                                    <a href="create-post.html?edit=${post.id}" class="text-[9px] font-black uppercase tracking-widest text-slate-900 hover:underline">Edit</a>
+                                    <button onclick="handleDeletePost('${post.id}')" class="text-[9px] font-black uppercase tracking-widest text-red-500 hover:underline">Delete</button>
+                                </div>
                             </div>
                         </div>
                     </div>`;
@@ -236,21 +330,237 @@
                 saveBtn.disabled = true;
                 saveBtn.innerHTML = '<span class="loading loading-spinner"></span> UPDATING...';
 
-                const updatedData = {
-                    full_name: document.getElementById('edit-name').value,
-                    expertise: document.getElementById('edit-expertise').value,
-                    avatar_url: document.getElementById('edit-avatar').value || null,
-                    bio: document.getElementById('edit-bio').value
-                };
+                try {
+                    let avatarUrl = document.getElementById('edit-avatar').value;
 
-                const { error: updateError } = await updateProfile(updatedData);
+                    if (selectedAvatarFile) {
+                        const fileExt = selectedAvatarFile.name.split('.').pop();
+                        const fileName = `avatar_${user.id}_${Date.now()}.${fileExt}`;
+                        const filePath = `avatars/${fileName}`;
 
-                if (updateError) {
-                    alert('REGISTRY_UPDATE_FAILED: ' + updateError.message);
+                        const { error: uploadError } = await supabase.storage
+                            .from('blog-assets')
+                            .upload(filePath, selectedAvatarFile);
+
+                        if (uploadError) throw uploadError;
+
+                        const { data: { publicUrl } } = supabase.storage
+                            .from('blog-assets')
+                            .getPublicUrl(filePath);
+                        
+                        avatarUrl = publicUrl;
+                    }
+
+                    const updatedData = {
+                        full_name: document.getElementById('edit-name').value,
+                        expertise: document.getElementById('edit-expertise').value,
+                        avatar_url: avatarUrl,
+                        bio: document.getElementById('edit-bio').value
+                    };
+
+                    const { error: updateError } = await updateProfile(updatedData);
+                    if (updateError) throw updateError;
+
+                    location.reload();
+                } catch (err) {
+                    alert('REGISTRY_UPDATE_FAILED: ' + err.message);
                     saveBtn.disabled = false;
-                    saveBtn.innerText = 'Update Profile';
+                    saveBtn.innerText = 'Commit_Changes';
+                }
+            };
+        }
+
+        init();
+    </script>
+</body>
+</html>
+    <script type="module">
+        import { requireAuth, signOut } from './js/auth.js';
+        import { getUserPosts, deletePost } from './js/posts.js';
+        import { getProfile, updateProfile } from './js/profiles.js';
+        import { formatDate, getPostImageId } from './js/utils.js';
+        import { supabase } from './js/supabase-client.js';
+
+        let user = null;
+        let selectedAvatarFile = null;
+
+        window.handleDeletePost = async (postId) => {
+            if (confirm('CRITICAL_ACTION: Are you sure you want to PERMANENTLY delete this report from the registry?')) {
+                const { error } = await deletePost(postId);
+                if (error) {
+                    alert('DELETE_FAILED: ' + error.message);
                 } else {
                     location.reload();
+                }
+            }
+        };
+
+        async function init() {
+            user = await requireAuth();
+            if (!user) return;
+
+            // Initialize Nav
+            const authNav = document.getElementById('auth-nav');
+            const { data: navProfile } = await getProfile(user.id);
+            const navAvatar = navProfile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
+            
+            authNav.innerHTML = `
+                <div class="dropdown dropdown-end">
+                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100 hover:border-blue-600">
+                        <div class="w-10 h-10 rounded-full overflow-hidden">
+                            <img src="${navAvatar}" class="w-full h-full object-cover" />
+                        </div>
+                    </div>
+                    <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
+                        <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Operator Session</li>
+                        <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Profile</a></li>
+                        <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Draft Report</a></li>
+                        <div class="divider my-2"></div>
+                        <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50">Terminate Session</button></li>
+                    </ul>
+                </div>
+            `;
+            document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
+
+            // Handle Avatar File Selection
+            const avatarInput = document.getElementById('edit-avatar-file');
+            const avatarNameDisplay = document.getElementById('avatar-file-name');
+            
+            avatarInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    selectedAvatarFile = file;
+                    avatarNameDisplay.innerText = file.name.toUpperCase();
+                }
+            };
+
+            // Fetch Profile Data
+            const { data: profile, error: profileError } = await getProfile(user.id);
+            
+            if (profile) {
+                const name = profile.full_name || profile.name || user.user_metadata?.full_name || user.email.split('@')[0];
+                const avatar = profile.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
+                const expertise = profile.expertise || 'Field Engineer';
+                const bio = profile.bio || '"Initial personnel profile created. Awaiting expertise documentation and technical background information."';
+
+                document.getElementById('user-name').innerText = name;
+                document.getElementById('user-expertise').innerText = expertise;
+                document.getElementById('user-bio').innerText = bio;
+                document.getElementById('user-avatar-container').innerHTML = `<img src="${avatar}" class="w-full h-full object-cover" />`;
+
+                // Fill modal
+                document.getElementById('edit-name').value = name;
+                document.getElementById('edit-expertise').value = expertise === 'Field Engineer' ? '' : expertise;
+                document.getElementById('edit-avatar').value = avatar; 
+                document.getElementById('edit-bio').value = profile.bio || '';
+            }
+
+            // Fetch user posts
+            const { data: posts, error } = await getUserPosts(user.id);
+            const container = document.getElementById('user-posts-container');
+            const postCount = document.getElementById('post-count');
+
+            if (error) {
+                container.innerHTML = `<div class="alert alert-error">FAILED_TO_LOAD_REGISTRY: ${error.message}</div>`;
+                return;
+            }
+
+            postCount.innerText = posts ? posts.length : 0;
+
+            if (!posts || posts.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-20 bg-white border-2 border-slate-200 border-dashed">
+                        <p class="text-slate-400 font-mono italic text-sm mb-6">No technical reports published yet.</p>
+                        <a href="create-post.html" class="btn btn-neutral rounded-none btn-sm font-black uppercase tracking-widest text-[10px] h-10 px-8">Submit First Report</a>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = posts.map(post => {
+                    const imgMatch = post.content ? post.content.match(/<img[^>]+src="([^">]+)"/) : null;
+                    const mdMatch = post.content ? post.content.match(/!\[.*?\]\((.*?)\)/) : null;
+                    const thumbnail = post.featured_image || (imgMatch ? imgMatch[1] : (mdMatch ? mdMatch[1] : `https://images.unsplash.com/photo-${getPostImageId(post.category_id)}?auto=format&fit=crop&q=80&w=400`));
+                    
+                    return `
+                    <div class="bg-white p-6 border-2 border-slate-900 shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] group flex gap-6">
+                        <div class="w-24 h-24 flex-shrink-0 border border-slate-100 overflow-hidden">
+                            <img src="${thumbnail}" 
+                                 onerror="this.src='https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=400'"
+                                 class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest">${formatDate(post.created_at)}</span>
+                            </div>
+                            <h3 class="text-lg font-black text-slate-900 mb-2 group-hover:text-blue-600 transition-colors truncate uppercase">
+                                <a href="post.html?slug=${post.slug}">${post.title}</a>
+                            </h3>
+                            <p class="text-slate-500 text-xs line-clamp-1 mb-4">${post.excerpt || 'No description available.'}</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex gap-4">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                        ${post.view_count || 0} Views
+                                    </span>
+                                </div>
+                                <div class="flex gap-4">
+                                    <a href="post.html?slug=${post.slug}" class="text-[9px] font-black uppercase tracking-widest text-blue-600 hover:underline">View</a>
+                                    <a href="create-post.html?edit=${post.id}" class="text-[9px] font-black uppercase tracking-widest text-slate-900 hover:underline">Edit</a>
+                                    <button onclick="handleDeletePost('${post.id}')" class="text-[9px] font-black uppercase tracking-widest text-red-500 hover:underline">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            document.getElementById('sign-out-btn').onclick = async () => {
+                await signOut();
+            };
+
+            // Handle Profile Update
+            const editForm = document.getElementById('edit-profile-form');
+            editForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const saveBtn = document.getElementById('save-profile-btn');
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<span class="loading loading-spinner"></span> UPDATING...';
+
+                try {
+                    let avatarUrl = document.getElementById('edit-avatar').value;
+
+                    if (selectedAvatarFile) {
+                        const fileExt = selectedAvatarFile.name.split('.').pop();
+                        const fileName = `avatar_${user.id}_${Date.now()}.${fileExt}`;
+                        const filePath = `avatars/${fileName}`;
+
+                        const { error: uploadError } = await supabase.storage
+                            .from('blog-assets')
+                            .upload(filePath, selectedAvatarFile);
+
+                        if (uploadError) throw uploadError;
+
+                        const { data: { publicUrl } } = supabase.storage
+                            .from('blog-assets')
+                            .getPublicUrl(filePath);
+                        
+                        avatarUrl = publicUrl;
+                    }
+
+                    const updatedData = {
+                        full_name: document.getElementById('edit-name').value,
+                        expertise: document.getElementById('edit-expertise').value,
+                        avatar_url: avatarUrl,
+                        bio: document.getElementById('edit-bio').value
+                    };
+
+                    const { error: updateError } = await updateProfile(updatedData);
+                    if (updateError) throw updateError;
+
+                    location.reload();
+                } catch (err) {
+                    alert('REGISTRY_UPDATE_FAILED: ' + err.message);
+                    saveBtn.disabled = false;
+                    saveBtn.innerText = 'Commit_Changes';
                 }
             };
         }
