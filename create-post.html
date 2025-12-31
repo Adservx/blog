@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Report | Voltage & Current</title>
     
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    <!-- Tailwind & DaisyUI -->
+    <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -22,6 +18,9 @@
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
                 }
             }
         }
@@ -66,7 +65,7 @@
                     <a href="about.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">About</a>
                 </div>
 
-                <div class="flex items-center justify-end gap-3" id="auth-nav">
+                <div class="flex items-center justify-end gap-6" id="auth-nav">
                     <div class="loading loading-spinner loading-xs text-slate-300"></div>
                 </div>
             </div>
@@ -88,28 +87,22 @@
             <!-- Main Drafting Area -->
             <div class="lg:col-span-8">
                 <div class="border-2 border-slate-900 p-8 md:p-12 bg-white shadow-[12px_12px_0px_0px_rgba(15,23,42,1)] relative">
-                    <!-- Technical Decorative Elements -->
                     <div class="absolute top-4 left-4 w-10 h-10 border-t border-l border-slate-200"></div>
                     
                     <div class="space-y-10">
-                        <!-- Title Input -->
                         <div class="space-y-4">
                             <label class="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-slate-400">Publication_Title</label>
                             <input type="text" id="post-title" placeholder="e.g. Advancements in Solid-State Transformer Design" 
                                 class="w-full text-3xl md:text-4xl font-black text-slate-900 border-none focus:ring-0 placeholder:text-slate-100 p-0" />
                         </div>
 
-                        <!-- Meta Inputs -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 py-8 border-y-2 border-dashed border-slate-100">
                             <div class="form-control w-full">
                                 <label class="label">
                                     <span class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Technical_Category</span>
                                 </label>
                                 <select id="post-category" class="select select-bordered w-full bg-slate-50 border-2 border-slate-900 rounded-none font-bold uppercase tracking-wider text-xs">
-                                    <option value="1">Power Systems</option>
-                                    <option value="2">Electronics</option>
-                                    <option value="3">Control Systems</option>
-                                    <option value="4">Renewable Energy</option>
+                                    <!-- Populated dynamically -->
                                 </select>
                             </div>
                             <div class="form-control w-full">
@@ -134,7 +127,6 @@
                             </div>
                         </div>
 
-                        <!-- Content Editor -->
                         <div class="space-y-4">
                             <label class="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-slate-400">Technical_Content_Markdown</label>
                             <div class="border-2 border-slate-900">
@@ -145,7 +137,6 @@
                 </div>
             </div>
 
-            <!-- Technical Sidebar -->
             <aside class="lg:col-span-4 space-y-8">
                 <div class="border-2 border-slate-900 p-8 bg-slate-50 shadow-[8px_8px_0px_0px_rgba(37,99,235,1)] relative">
                     <h3 class="text-[10px] font-mono font-black tracking-[0.3em] text-slate-400 uppercase mb-6">Drafting Requirements</h3>
@@ -176,81 +167,102 @@
         </div>
     </main>
 
-    <script type="module">
-                import { requireAuth, signOut } from './js/auth.js';
-                import { createPost, getPostBySlug, updatePost } from './js/posts.js';
-                import { getProfile } from './js/profiles.js';
-                import { slugify } from './js/utils.js';
-                import { supabase } from './js/supabase-client.js';
-        
-                let user = null;
-                let easyMDE = null;
-                let selectedFile = null;
-                let editingPostId = null;
-        
-                const urlParams = new URLSearchParams(window.location.search);
-                editingPostId = urlParams.get('edit');
-        
-                async function init() {
-                    user = await requireAuth();
-                    if (!user) return;
+    <footer class="bg-slate-950 text-white py-24 mt-20 border-t-8 border-blue-600">
+        <div class="max-w-[1400px] mx-auto px-6 sm:px-10 text-center">
+            <div class="flex items-center gap-3 mb-8 justify-center">
+                <span class="bg-white text-slate-950 w-8 h-8 flex items-center justify-center font-black text-lg">V</span>
+                <span class="text-2xl font-black uppercase tracking-tighter">Voltage & Current</span>
+            </div>
+            <p class="text-slate-400 max-w-2xl mx-auto text-sm leading-relaxed mb-10 uppercase">
+                The definitive technical repository for electrical engineering research.
+            </p>
+            <p class="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.2em]">© 2025 VOLTAGE_CURRENT_TECHNICAL_REGISTRY.</p>
+        </div>
+    </footer>
 
-                    // Initialize Nav
-                    const authNav = document.getElementById('auth-nav');
-                    const { data: navProfile } = await getProfile(user.id);
-                    const navAvatar = navProfile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
-                    
-                    authNav.innerHTML = `
-                        <div class="dropdown dropdown-end">
-                            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100 hover:border-blue-600">
-                                <div class="w-10 h-10 rounded-full overflow-hidden">
-                                    <img src="${navAvatar}" class="w-full h-full object-cover" />
-                                </div>
-                            </div>
-                            <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
-                                <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Operator Session</li>
-                                <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Profile</a></li>
-                                <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Draft Report</a></li>
-                                <div class="divider my-2"></div>
-                                <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50">Terminate Session</button></li>
-                            </ul>
+    <div class="fixed bottom-10 right-10 z-[100]">
+        <button id="publish-btn" class="btn btn-primary px-12 h-16 rounded-none border-4 border-slate-900 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] font-black uppercase tracking-[0.2em] text-sm">Publish_Report</button>
+    </div>
+
+    <script type="module">
+        import { requireAuth, signOut } from './js/auth.js';
+        import { createPost, getCategories, updatePost } from './js/posts.js';
+        import { getProfile } from './js/profiles.js';
+        import { slugify } from './js/utils.js';
+        import { supabase } from './js/supabase-client.js';
+
+        let user = null;
+        let easyMDE = null;
+        let selectedFile = null;
+        let editingPostId = null;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        editingPostId = urlParams.get('edit');
+
+        async function init() {
+            user = await requireAuth();
+            if (!user) return;
+
+            // Nav Auth
+            const authNav = document.getElementById('auth-nav');
+            const { data: profile } = await getProfile(user.id);
+            const avatar = profile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
+            
+            authNav.innerHTML = `
+                <div class="dropdown dropdown-end">
+                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100 hover:border-blue-600">
+                        <div class="w-10 h-10 rounded-full overflow-hidden">
+                            <img src="${avatar}" class="w-full h-full object-cover" />
                         </div>
-                    `;
-                    document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
-        
-                    // Initialize Turndown
-                    const turndownService = new TurndownService({ headingStyle: 'atx', codeBlockStyle: 'fenced' });
-        
-                    // Initialize Editor
-                    easyMDE = new EasyMDE({
-                        element: document.getElementById('post-editor'),
-                        placeholder: "Begin documenting your technical findings...",
-                        spellChecker: false,
-                        status: false,
-                        autosave: { enabled: !editingPostId, uniqueId: "ee-blog-draft", delay: 1000 },
-                        toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "table", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
-                    });
-        
-                    // If editing, fetch data
-                    if (editingPostId) {
-                        const { data: post, error } = await supabase.from('posts').select('*').eq('id', editingPostId).single();
-                        if (post) {
-                            document.getElementById('post-title').value = post.title;
-                            document.getElementById('post-category').value = post.category_id;
-                            easyMDE.value(turndownService.turndown(post.content));
-                            if (post.featured_image) {
-                                const previewContainer = document.getElementById('image-preview-container');
-                                const previewImage = document.getElementById('image-preview');
-                                previewImage.src = post.featured_image;
-                                previewContainer.classList.remove('hidden');
-                                document.getElementById('file-name-display').innerText = 'CURRENT_REGISTRY_IMAGE';
-                            }
-                            document.getElementById('publish-btn').innerText = 'Update_Report';
-                        }
+                    </div>
+                    <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
+                        <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Operator Session</li>
+                        <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Profile</a></li>
+                        <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Draft Report</a></li>
+                        <div class="divider my-2"></div>
+                        <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50">Terminate Session</button></li>
+                    </ul>
+                </div>
+            `;
+            document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
+
+            // Load Categories
+            const { data: categories } = await getCategories();
+            const catSelect = document.getElementById('post-category');
+            if (categories) {
+                catSelect.innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            }
+
+            // Initialize Editor
+            const turndownService = new TurndownService({ headingStyle: 'atx', codeBlockStyle: 'fenced' });
+            easyMDE = new EasyMDE({
+                element: document.getElementById('post-editor'),
+                placeholder: "Begin documenting your technical findings...",
+                spellChecker: false,
+                status: false,
+                autosave: { enabled: !editingPostId, uniqueId: "ee-blog-draft", delay: 1000 },
+                toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "table", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
+            });
+
+            if (editingPostId) {
+                const { data: post } = await supabase.from('posts').select('*').eq('id', editingPostId).single();
+                if (post) {
+                    document.getElementById('post-title').value = post.title;
+                    catSelect.value = post.category_id;
+                    easyMDE.value(turndownService.turndown(post.content));
+                    if (post.featured_image) {
+                        const previewContainer = document.getElementById('image-preview-container');
+                        const previewImage = document.getElementById('image-preview');
+                        previewImage.src = post.featured_image;
+                        previewContainer.classList.remove('hidden');
+                        document.getElementById('file-name-display').innerText = 'CURRENT_REGISTRY_IMAGE';
                     }
-        
-                    // File Upload Preview
-                    const fileInput = document.getElementById('post-image-file');
+                    document.getElementById('publish-btn').innerText = 'Update_Report';
+                }
+            }
+
+            // File Handling
+            const fileInput = document.getElementById('post-image-file');
             const fileNameDisplay = document.getElementById('file-name-display');
             const previewContainer = document.getElementById('image-preview-container');
             const previewImage = document.getElementById('image-preview');
@@ -261,7 +273,6 @@
                 if (file) {
                     selectedFile = file;
                     fileNameDisplay.innerText = file.name.toUpperCase();
-                    
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         previewImage.src = e.target.result;
@@ -284,17 +295,9 @@
             const fileExt = file.name.split('.').pop();
             const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
             const filePath = `${user.id}/${fileName}`;
-
-            const { data, error } = await supabase.storage
-                .from('blog-assets')
-                .upload(filePath, file);
-
+            const { error } = await supabase.storage.from('blog-assets').upload(filePath, file);
             if (error) throw error;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('blog-assets')
-                .getPublicUrl(filePath);
-
+            const { data: { publicUrl } } = supabase.storage.from('blog-assets').getPublicUrl(filePath);
             return publicUrl;
         }
 
@@ -304,29 +307,21 @@
             const content = easyMDE.options.previewRender(easyMDE.value());
 
             if (!title || !easyMDE.value()) {
-                alert('CRITICAL_ERROR: Title and Content are mandatory for publication.');
+                alert('CRITICAL_ERROR: Title and Content are mandatory.');
                 return;
             }
 
-            const publishBtn = document.getElementById('publish-btn');
-            publishBtn.disabled = true;
-            publishBtn.innerHTML = `<span class="loading loading-spinner"></span> ${editingPostId ? 'UPDATING' : 'PUBLISHING'}...`;
+            const btn = document.getElementById('publish-btn');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="loading loading-spinner"></span> PROCESSING...`;
 
             try {
                 let imageUrl = null;
-                // If we are editing and haven't selected a new file, keep the old image
                 if (editingPostId && !selectedFile) {
                     const imgPreview = document.getElementById('image-preview');
-                    if (imgPreview.src && !imgPreview.src.includes('blob:')) {
-                        imageUrl = imgPreview.src;
-                    }
+                    if (imgPreview.src && !imgPreview.src.includes('blob:')) imageUrl = imgPreview.src;
                 }
-
-                if (selectedFile) {
-                    imageUrl = await uploadImage(selectedFile);
-                }
-
-                const slug = slugify(title) + '-' + Math.random().toString(36).substring(7);
+                if (selectedFile) imageUrl = await uploadImage(selectedFile);
 
                 const postData = {
                     title,
@@ -337,181 +332,18 @@
                     excerpt: easyMDE.value().substring(0, 200).replace(/[#*`]/g, '') + '...'
                 };
 
-                if (!editingPostId) {
-                    postData.slug = slug;
-                }
+                if (!editingPostId) postData.slug = slugify(title) + '-' + Math.random().toString(36).substring(7);
 
                 const { data, error } = editingPostId 
                     ? await updatePost(editingPostId, postData)
                     : await createPost(postData);
 
                 if (error) throw error;
-                
-                const finalSlug = editingPostId ? (data[0].slug) : slug;
-                window.location.href = `post.html?slug=${finalSlug}`;
+                window.location.href = `post.html?slug=${editingPostId ? data[0].slug : postData.slug}`;
             } catch (err) {
                 alert('REGISTRY_ERROR: ' + err.message);
-                publishBtn.disabled = false;
-                publishBtn.innerText = editingPostId ? 'Update_Report' : 'Publish_Report';
-            }
-        };
-
-        init();
-    </script>
-</body>
-</html>
-        async function uploadImage(file) {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
-            const filePath = `${user.id}/${fileName}`;
-
-            const { data, error } = await supabase.storage
-                .from('blog-assets')
-                .upload(filePath, file);
-
-            if (error) throw error;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('blog-assets')
-                .getPublicUrl(filePath);
-
-            return publicUrl;
-        }
-
-        document.getElementById('publish-btn').onclick = async () => {
-            const title = document.getElementById('post-title').value;
-            const categoryId = document.getElementById('post-category').value;
-            const content = easyMDE.options.previewRender(easyMDE.value());
-
-            if (!title || !easyMDE.value()) {
-                alert('Please enter a title and some content.');
-                return;
-            }
-
-            const publishBtn = document.getElementById('publish-btn');
-            publishBtn.disabled = true;
-            publishBtn.innerHTML = `<span class="loading loading-spinner loading-xs mr-2"></span> Saving...`;
-
-            try {
-                let imageUrl = null;
-                if (editingPostId && !selectedFile) {
-                    const imgPreview = document.getElementById('image-preview');
-                    if (imgPreview.src && !imgPreview.src.includes('blob:')) {
-                        imageUrl = imgPreview.src;
-                    }
-                }
-
-                if (selectedFile) {
-                    imageUrl = await uploadImage(selectedFile);
-                }
-
-                const slug = slugify(title) + '-' + Math.random().toString(36).substring(7);
-
-                const postData = {
-                    title,
-                    content,
-                    user_id: user.id,
-                    category_id: parseInt(categoryId),
-                    featured_image: imageUrl,
-                    excerpt: easyMDE.value().substring(0, 160).replace(/[#*`]/g, '') + '...'
-                };
-
-                if (!editingPostId) {
-                    postData.slug = slug;
-                }
-
-                const { data, error } = editingPostId 
-                    ? await updatePost(editingPostId, postData)
-                    : await createPost(postData);
-
-                if (error) throw error;
-                
-                const finalSlug = editingPostId ? (data[0].slug) : slug;
-                window.location.href = `post.html?slug=${finalSlug}`;
-            } catch (err) {
-                alert('Error: ' + err.message);
-                publishBtn.disabled = false;
-                publishBtn.innerText = editingPostId ? 'Update' : 'Publish';
-            }
-        };
-
-        init();
-    </script>
-</body>
-</html>
-        async function uploadImage(file) {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
-            const filePath = `${user.id}/${fileName}`;
-
-            const { data, error } = await supabase.storage
-                .from('blog-assets')
-                .upload(filePath, file);
-
-            if (error) throw error;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('blog-assets')
-                .getPublicUrl(filePath);
-
-            return publicUrl;
-        }
-
-        document.getElementById('publish-btn').onclick = async () => {
-            const title = document.getElementById('post-title').value;
-            const categoryId = document.getElementById('post-category').value;
-            const content = easyMDE.options.previewRender(easyMDE.value());
-
-            if (!title || !easyMDE.value()) {
-                alert('CRITICAL_ERROR: Title and Content are mandatory for publication.');
-                return;
-            }
-
-            const publishBtn = document.getElementById('publish-btn');
-            publishBtn.disabled = true;
-            publishBtn.innerHTML = `<span class="loading loading-spinner"></span> ${editingPostId ? 'UPDATING' : 'PUBLISHING'}...`;
-
-            try {
-                let imageUrl = null;
-                // If we are editing and haven't selected a new file, keep the old image
-                if (editingPostId && !selectedFile) {
-                    const imgPreview = document.getElementById('image-preview');
-                    if (imgPreview.src && !imgPreview.src.includes('blob:')) {
-                        imageUrl = imgPreview.src;
-                    }
-                }
-
-                if (selectedFile) {
-                    imageUrl = await uploadImage(selectedFile);
-                }
-
-                const slug = slugify(title) + '-' + Math.random().toString(36).substring(7);
-
-                const postData = {
-                    title,
-                    content,
-                    user_id: user.id,
-                    category_id: parseInt(categoryId),
-                    featured_image: imageUrl,
-                    excerpt: easyMDE.value().substring(0, 200).replace(/[#*`]/g, '') + '...'
-                };
-
-                if (!editingPostId) {
-                    postData.slug = slug;
-                }
-
-                const { data, error } = editingPostId 
-                    ? await updatePost(editingPostId, postData)
-                    : await createPost(postData);
-
-                if (error) throw error;
-                
-                const finalSlug = editingPostId ? (data[0].slug) : slug;
-                window.location.href = `post.html?slug=${finalSlug}`;
-            } catch (err) {
-                alert('REGISTRY_ERROR: ' + err.message);
-                publishBtn.disabled = false;
-                publishBtn.innerText = editingPostId ? 'Update_Report' : 'Publish_Report';
+                btn.disabled = false;
+                btn.innerText = editingPostId ? 'Update_Report' : 'Publish_Report';
             }
         };
 

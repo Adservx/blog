@@ -15,8 +15,11 @@ async function updateProfile(profileData) {
 
     const { data, error } = await supabase
         .from('profiles')
-        .update(profileData)
-        .eq('id', user.id)
+        .upsert({
+            id: user.id,
+            ...profileData,
+            updated_at: new Date().toISOString(),
+        })
         .select();
     
     return { data, error };

@@ -90,36 +90,44 @@
                     <div class="flex flex-col sm:flex-row gap-6 items-start">
                         <div class="join border-2 border-slate-900 p-1 bg-white shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] rounded-none">
                             <input class="input input-ghost join-item w-full sm:w-80 focus:outline-none font-bold text-sm" placeholder="Search registry by keywords..." id="search-input" />
-                            <button class="btn btn-neutral join-item rounded-none px-8 uppercase tracking-widest text-[10px] font-black h-12">Search_DB</button>
+                            <button class="btn btn-neutral join-item rounded-none px-8 uppercase tracking-widest text-[10px] font-black h-12" id="search-btn">Search_DB</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="lg:w-1/3 hidden lg:block">
-                    <div class="border-2 border-slate-900 p-6 bg-white shadow-[6px_6px_0px_0px_rgba(37,99,235,1)] relative">
-                        <div class="absolute -top-3 -right-3 bg-blue-600 text-white px-2 py-1 text-[8px] font-mono font-black">SYS_STATS_V1.0</div>
-                        <h3 class="text-[9px] font-mono font-black tracking-[0.3em] text-slate-400 uppercase mb-4">Real-time Metrics</h3>
-                        
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-end border-b border-slate-100 pb-1">
-                                <span class="text-[9px] font-bold text-slate-500 uppercase">Active_Nodes</span>
-                                <span class="text-lg font-black text-slate-900">1,204</span>
+                    <div class="border-4 border-slate-900 bg-slate-950 shadow-[8px_8px_0px_0px_rgba(37,99,235,1)] relative overflow-hidden h-[300px] flex flex-col group">
+                        <!-- Scope Header -->
+                        <div class="bg-slate-900 px-4 py-2 border-b-2 border-slate-800 flex justify-between items-center z-20">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                                <span class="text-[9px] font-mono font-black text-slate-300 uppercase tracking-widest">CH_A: AC_COUPLED</span>
                             </div>
-                            <div class="flex justify-between items-end border-b border-slate-100 pb-1">
-                                <span class="text-[9px] font-bold text-slate-500 uppercase">Registry_Volume</span>
-                                <span class="text-lg font-black text-slate-900">84.2 GB</span>
+                            <span class="text-[9px] font-mono font-black text-slate-500 uppercase tracking-widest text-right">CRT_DISPLAY_V2</span>
+                        </div>
+
+                        <!-- Technical Overlays -->
+                        <div class="absolute top-14 left-4 z-10 pointer-events-none">
+                            <p class="text-[8px] font-mono text-blue-400/60 leading-tight">SIGNAL: LIVE_NODE_FEED<br>SCALE: 50V/DIV<br>TIME: 10ms/DIV</p>
+                        </div>
+
+                        <!-- Live Metrics -->
+                        <div class="absolute bottom-4 right-4 z-10 flex gap-6 pointer-events-none text-right">
+                            <div>
+                                <p class="text-[7px] font-mono text-slate-500 uppercase">Frequency</p>
+                                <p class="text-xs font-mono font-black text-blue-400" id="scope-freq">50.02 Hz</p>
                             </div>
-                            <div class="flex justify-between items-end border-b border-slate-100 pb-1">
-                                <span class="text-[9px] font-bold text-slate-500 uppercase">Uptime_Ratio</span>
-                                <span class="text-lg font-black text-blue-600">99.98%</span>
+                            <div>
+                                <p class="text-[7px] font-mono text-slate-500 uppercase">RMS_Voltage</p>
+                                <p class="text-xs font-mono font-black text-blue-400" id="scope-vpeak">230.4 V</p>
                             </div>
                         </div>
+
+                        <!-- Canvas -->
+                        <canvas id="oscilloscope" class="flex-1 w-full opacity-90 group-hover:opacity-100 transition-opacity"></canvas>
                         
-                        <div class="mt-6 pt-4 border-t-2 border-dashed border-slate-100">
-                            <p class="text-[8px] font-mono text-slate-400 leading-relaxed uppercase">
-                                STATUS: All systems operational. Registry synchronization complete.
-                            </p>
-                        </div>
+                        <!-- CRT Scanline Effect -->
+                        <div class="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-30" style="background-size: 100% 4px, 3px 100%;"></div>
                     </div>
                 </div>
             </div>
@@ -136,9 +144,9 @@
                         <h2 class="text-3xl font-black text-slate-900 uppercase">Recent Publications</h2>
                         <span class="bg-blue-600 text-white text-[10px] font-mono font-bold px-2 py-1" id="total-count-badge">VOL. 01</span>
                     </div>
-                    <select class="select select-ghost select-sm font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                        <option>Newest First</option>
-                        <option>Oldest First</option>
+                    <select class="select select-ghost select-sm font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500" id="sort-select">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
                     </select>
                 </div>
 
@@ -352,259 +360,125 @@
             if (document.getElementById('next-page')) document.getElementById('next-page').onclick = () => { currentPage++; renderPosts(currentPage); window.scrollTo({ top: 600, behavior: 'smooth' }); };
         }
 
-        document.getElementById('search-input').onkeyup = (e) => { if (e.key === 'Enter') { currentSearch = e.target.value; renderPosts(1); } };
+        function initOscilloscope() {
+            const canvas = document.getElementById('oscilloscope');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const freqEl = document.getElementById('scope-freq');
+            const vpeakEl = document.getElementById('scope-vpeak');
 
-        initAuth();
-        renderCategories();
-        renderPosts(currentPage);
-    </script>
+            function resize() {
+                canvas.width = canvas.clientWidth * window.devicePixelRatio;
+                canvas.height = canvas.clientHeight * window.devicePixelRatio;
+            }
+            window.addEventListener('resize', resize);
+            resize();
 
-    <style>
-        @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-    </style>
-</body>
-</html>
-
-    <main class="max-w-[1400px] mx-auto px-6 sm:px-10 py-20">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
-            
-            <!-- Left: Feed -->
-            <div class="lg:col-span-8">
-                <div class="flex items-center justify-between mb-12 border-b-4 border-slate-900 pb-6">
-                    <div class="flex items-center gap-4">
-                        <h2 class="text-3xl font-black text-slate-900 uppercase">Recent Publications</h2>
-                        <span class="bg-blue-600 text-white text-[10px] font-mono font-bold px-2 py-1" id="total-count-badge">VOL. 01</span>
-                    </div>
-                    <select class="select select-ghost select-sm font-mono text-[10px] font-bold uppercase tracking-widest text-slate-500">
-                        <option>Newest First</option>
-                        <option>Oldest First</option>
-                    </select>
-                </div>
-
-                <div id="posts-container" class="space-y-8">
-                    <div class="flex flex-col items-center py-20 text-slate-300">
-                        <span class="loading loading-bars loading-lg mb-6"></span>
-                        <p class="font-mono text-xs tracking-[0.4em] uppercase">ACCESSING_CENTRAL_REGISTRY...</p>
-                    </div>
-                </div>
-
-                <div class="mt-20 border-t border-slate-200 pt-10 flex justify-center" id="pagination-controls"></div>
-            </div>
-
-            <!-- Right: Professional Sidebar -->
-            <aside class="lg:col-span-4 space-y-12">
-                <div class="border-l-4 border-blue-600 pl-8 py-2">
-                    <h3 class="text-[10px] font-mono font-black tracking-[0.3em] text-slate-400 uppercase mb-4">Editorial Note</h3>
-                    <p class="text-lg font-bold text-slate-800 leading-relaxed uppercase">
-                        "Engineering is not just about calculations; it's about the sustainable evolution of our civilization's energy architecture."
-                    </p>
-                </div>
-
-                <div class="bg-slate-50 p-8 border border-slate-100">
-                    <h3 class="text-[10px] font-mono font-black tracking-[0.3em] text-slate-900 uppercase mb-8 border-b border-slate-200 pb-4">Technical Categories</h3>
-                    <div class="space-y-2" id="categories-list"></div>
-                </div>
-
-                <div class="bg-slate-900 p-8 text-white relative overflow-hidden">
-                    <div class="absolute -right-6 -bottom-6 opacity-10">
-                        <span class="text-9xl font-black">⚡</span>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4 uppercase">Technical Digest</h3>
-                    <p class="text-slate-400 text-sm mb-8 leading-relaxed">Join 25k+ engineers receiving peer-reviewed summaries weekly.</p>
-                    <div class="space-y-4">
-                        <input type="email" placeholder="professional@institution.edu" class="input input-bordered w-full bg-slate-800 border-slate-700 text-sm h-12 rounded-none" />
-                        <button class="btn btn-primary w-full h-12 rounded-none uppercase tracking-widest text-[10px] font-bold">Subscribe</button>
-                    </div>
-                </div>
-            </aside>
-        </div>
-    </main>
-
-    <footer class="bg-slate-950 text-white py-24 mt-20 border-t-8 border-blue-600">
-        <div class="max-w-[1400px] mx-auto px-6 sm:px-10 text-center">
-            <div class="flex items-center gap-3 mb-8 justify-center">
-                <span class="bg-white text-slate-950 w-8 h-8 flex items-center justify-center font-black text-lg">V</span>
-                <span class="text-2xl font-black uppercase tracking-tighter">Voltage & Current</span>
-            </div>
-            <p class="text-slate-400 max-w-2xl mx-auto text-sm leading-relaxed mb-10 uppercase">
-                The definitive technical repository for electrical engineering research.
-            </p>
-            <p class="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.2em]">© 2025 VOLTAGE_CURRENT_TECHNICAL_REGISTRY.</p>
-        </div>
-    </footer>
-
-    <script type="module">
-        import { checkSession, signOut } from './js/auth.js';
-        import { getPaginatedPosts, getCategories } from './js/posts.js';
-        import { getProfile } from './js/profiles.js';
-        import { formatDate, getPostImageId } from './js/utils.js';
-
-        let currentPage = 1;
-        const pageSize = 4;
-        let currentSearch = '';
-        let currentCategory = null;
-        let currentSort = 'newest';
-
-        async function initAuth() {
-            const authNav = document.getElementById('auth-nav');
-            const navLinks = document.getElementById('nav-links');
-            const session = await checkSession();
-            
-            if (session) {
-                const user = session.user;
-                const { data: profile } = await getProfile(user.id);
-                const avatar = profile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
+            let offset = 0;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                authNav.innerHTML = `
-                    <div class="dropdown dropdown-end">
-                        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100 hover:border-blue-600">
-                            <div class="w-10 h-10 rounded-full overflow-hidden">
-                                <img src="${avatar}" class="w-full h-full object-cover" />
-                            </div>
-                        </div>
-                        <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
-                            <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Operator Session</li>
-                            <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Profile</a></li>
-                            <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Draft Report</a></li>
-                            <div class="divider my-2"></div>
-                            <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50">Terminate Session</button></li>
-                        </ul>
-                    </div>
-                `;
-
-                if (!navLinks.innerHTML.includes('create-post.html')) {
-                    navLinks.innerHTML += `<a href="create-post.html" class="text-[11px] font-bold text-blue-600 hover:text-blue-700 tracking-widest uppercase transition-colors border-b-2 border-blue-600 pb-1">Submit Research</a>`;
+                // Draw Grid
+                ctx.strokeStyle = 'rgba(30, 41, 59, 0.4)';
+                ctx.lineWidth = 1;
+                const gridSize = 40 * window.devicePixelRatio;
+                
+                for (let x = 0; x < canvas.width; x += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+                for (let y = 0; y < canvas.height; y += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
                 }
 
-                document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
-            } else {
-                authNav.innerHTML = `
-                    <div class="flex gap-4">
-                        <a href="login.html" class="text-[11px] font-bold text-slate-900 uppercase tracking-widest hover:text-blue-600 transition-colors">Sign In</a>
-                        <a href="signup.html" class="btn btn-neutral btn-sm rounded-none px-6 text-[11px] font-bold uppercase tracking-widest">Join Registry</a>
-                    </div>
-                `;
+                // Draw Center Axes
+                ctx.strokeStyle = 'rgba(71, 85, 105, 0.6)';
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(0, canvas.height/2);
+                ctx.lineTo(canvas.width, canvas.height/2);
+                ctx.stroke();
+                ctx.moveTo(canvas.width/2, 0);
+                ctx.lineTo(canvas.width/2, canvas.height);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Draw Wave (Phosphor Effect)
+                const time = Date.now() * 0.005;
+                
+                // Outer Glow
+                ctx.strokeStyle = 'rgba(37, 99, 235, 0.2)';
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                drawSine(offset, 0.02, canvas.height * 0.3);
+                ctx.stroke();
+
+                // Core Beam
+                ctx.strokeStyle = '#60a5fa';
+                ctx.lineWidth = 2;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#2563eb';
+                ctx.beginPath();
+                drawSine(offset, 0.02, canvas.height * 0.3);
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+
+                function drawSine(off, freq, amp) {
+                    for (let x = 0; x < canvas.width; x++) {
+                        const jitter = (Math.random() - 0.5) * 1.5;
+                        const y = canvas.height / 2 + Math.sin(x * freq + off) * amp + jitter;
+                        if (x === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                }
+
+                offset += 0.12;
+                
+                // Randomly jitter metrics for realism
+                if (Math.random() > 0.98) {
+                    freqEl.innerText = (50.00 + (Math.random() - 0.5) * 0.05).toFixed(2) + " Hz";
+                    vpeakEl.innerText = (230.4 + (Math.random() - 0.5) * 0.8).toFixed(1) + " V";
+                }
+
+                requestAnimationFrame(draw);
             }
-        }
-
-        async function renderCategories() {
-            const list = document.getElementById('categories-list');
-            const { data: categories } = await getCategories();
-            
-            if (categories) {
-                list.innerHTML = categories.map(cat => `
-                    <a href="#" class="category-filter flex items-center justify-between py-3 border-b border-slate-100 hover:border-blue-200 transition-all group ${currentCategory === cat.id ? 'border-blue-600 border-b-2' : ''}" data-id="${cat.id}">
-                        <span class="text-[11px] font-bold ${currentCategory === cat.id ? 'text-blue-600' : 'text-slate-600'} group-hover:text-blue-600 uppercase tracking-widest transition-colors">${cat.name}</span>
-                        <span class="font-mono text-[9px] font-black ${currentCategory === cat.id ? 'text-blue-400' : 'text-slate-300'} uppercase">CNT_${cat.posts[0].count.toString().padStart(2, '0')}</span>
-                    </a>
-                `).join('');
-
-                document.querySelectorAll('.category-filter').forEach(el => {
-                    el.onclick = (e) => {
-                        e.preventDefault();
-                        const id = parseInt(el.dataset.id);
-                        currentCategory = currentCategory === id ? null : id;
-                        renderPosts(1);
-                        renderCategories();
-                    };
-                });
-            }
-        }
-
-        async function renderPosts(page) {
-            const container = document.getElementById('posts-container');
-            const controls = document.getElementById('pagination-controls');
-            
-            container.innerHTML = `<div class="flex flex-col items-center py-20 text-slate-300"><span class="loading loading-bars loading-lg mb-6"></span><p class="font-mono text-xs tracking-[0.4em] uppercase">ACCESSING_CENTRAL_REGISTRY...</p></div>`;
-            
-            const { data: posts, error, count } = await getPaginatedPosts(page, pageSize, {
-                search: currentSearch,
-                categoryId: currentCategory,
-                sort: currentSort
-            });
-            
-            if (error) {
-                container.innerHTML = `<div class="alert alert-error rounded-none border-2 border-red-500 bg-red-50 text-red-700 font-mono text-xs uppercase tracking-widest p-8">CRITICAL_SYSTEM_ERROR: ${error.message}</div>`;
-                return;
-            }
-
-            if (!posts || posts.length === 0) {
-                container.innerHTML = `<div class="text-center py-20 border-2 border-dashed border-slate-200"><p class="text-slate-400 text-2xl font-bold uppercase mb-6">No publications match the requested parameters.</p><button id="clear-filters" class="btn btn-neutral btn-outline rounded-none px-10 font-bold uppercase text-[10px] tracking-[0.2em]">Reset Registry Filter</button></div>`;
-                document.getElementById('clear-filters').onclick = () => { currentSearch = ''; currentCategory = null; document.getElementById('search-input').value = ''; renderPosts(1); renderCategories(); };
-                return;
-            }
-
-            container.innerHTML = posts.map(post => {
-                const imgMatch = post.content ? post.content.match(/<img[^>]+src="([^">]+)"/) : null;
-                const mdMatch = post.content ? post.content.match(/!\[.*?\]\((.*?)\)/) : null;
-                const thumbnail = post.featured_image || (imgMatch ? imgMatch[1] : (mdMatch ? mdMatch[1] : `https://images.unsplash.com/photo-${getPostImageId(post.category_id || post.categories?.id)}?auto=format&fit=crop&q=80&w=1200`));
-                const excerpt = post.excerpt || (post.content ? post.content.replace(/<[^>]*>/g, '').replace(/!\[.*?\]\(.*?\)/g, '').substring(0, 220) + '...' : 'TECHNICAL_METADATA_UNAVAILABLE');
-                const authorName = post.profiles?.full_name || post.profiles?.name || 'SENIOR_STAFF';
-                const catName = post.categories?.name || 'General Engineering';
-
-                return `
-                <article class="grid grid-cols-1 md:grid-cols-12 gap-10 group border border-black p-8">
-                    <div class="md:col-span-4 aspect-[4/3] overflow-hidden relative border border-slate-100">
-                        <img src="${thumbnail}" 
-                             onerror="this.src='https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=1200'"
-                             class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-110">
-                        <div class="absolute top-4 left-4">
-                            <span class="bg-slate-950/80 backdrop-blur-md text-white px-3 py-1 font-mono text-[9px] font-black uppercase tracking-[0.2em] border border-slate-800">${catName}</span>
-                        </div>
-                    </div>
-                    <div class="md:col-span-8 flex flex-col justify-center">
-                        <div class="flex items-center gap-4 mb-6">
-                            <span class="text-[10px] font-mono font-black text-slate-300 uppercase tracking-[0.3em]">${formatDate(post.created_at)}</span>
-                            <div class="h-px w-8 bg-slate-200"></div>
-                            <span class="text-[10px] font-mono font-black text-blue-400 uppercase tracking-[0.3em]">${post.view_count || 0} CITATIONS</span>
-                        </div>
-                        <h3 class="text-3xl md:text-4xl font-black text-slate-900 leading-[1.1] mb-6 group-hover:text-blue-600 transition-colors uppercase">
-                            <a href="post.html?slug=${post.slug}">${post.title}</a>
-                        </h3>
-                        <p class="text-slate-500 font-medium leading-relaxed mb-8 line-clamp-3">${excerpt}</p>
-                        <div class="flex items-center justify-between mt-auto pt-6 border-t border-slate-50">
-                            <div class="flex items-center gap-3">
-                                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Reported_By:</span>
-                                <div class="w-8 h-8 border-2 border-slate-900 p-0.5">
-                                    <img src="${post.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.profiles?.name}`}" class="w-full h-full object-cover" />
-                                </div>
-                                <span class="text-[10px] font-bold text-slate-900 uppercase tracking-widest">${authorName}</span>
-                            </div>
-                            <a href="post.html?slug=${post.slug}" class="text-[10px] font-black uppercase tracking-[0.4em] text-blue-600 flex items-center gap-3 group/link hover:gap-6 transition-all">
-                                Access Report
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                            </a>
-                        </div>
-                    </div>
-                </article>`;
-            }).join('');
-
-            const totalPages = Math.ceil(count / pageSize);
-            controls.innerHTML = totalPages > 1 ? `
-                <div class="join border border-slate-200 p-1 bg-white">
-                    <button class="join-item btn btn-ghost btn-sm rounded-none text-[10px] font-black ${page === 1 ? 'btn-disabled' : ''}" id="prev-page">PREVIOUS_SET</button>
-                    <span class="join-item flex items-center px-6 font-mono text-[10px] font-black border-x border-slate-100 text-slate-400 uppercase tracking-widest">Page_${page.toString().padStart(2, '0')}/${totalPages.toString().padStart(2, '0')}</span>
-                    <button class="join-item btn btn-ghost btn-sm rounded-none text-[10px] font-black ${page === totalPages ? 'btn-disabled' : ''}" id="next-page">NEXT_SET</button>
-                </div>` : '';
-
-            if (document.getElementById('prev-page')) document.getElementById('prev-page').onclick = () => { currentPage--; renderPosts(currentPage); window.scrollTo({ top: 600, behavior: 'smooth' }); };
-            if (document.getElementById('next-page')) document.getElementById('next-page').onclick = () => { currentPage++; renderPosts(currentPage); window.scrollTo({ top: 600, behavior: 'smooth' }); };
+            draw();
         }
 
         document.getElementById('search-input').onkeyup = (e) => { if (e.key === 'Enter') { currentSearch = e.target.value; renderPosts(1); } };
+        
+        const searchBtn = document.getElementById('search-btn');
+        if (searchBtn) {
+            searchBtn.onclick = () => {
+                currentSearch = document.getElementById('search-input').value;
+                renderPosts(1);
+            };
+        }
+        
+        document.getElementById('sort-select').onchange = (e) => {
+            currentSort = e.target.value;
+            renderPosts(1);
+        };
 
         initAuth();
         renderCategories();
         renderPosts(currentPage);
+        initOscilloscope();
     </script>
 
     <style>
         @keyframes scroll {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
+        }
+        .bg-grid-subtle {
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 40px 40px;
         }
     </style>
 </body>

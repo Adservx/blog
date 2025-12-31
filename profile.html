@@ -17,6 +17,9 @@
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
                 }
             }
         }
@@ -240,37 +243,40 @@
             };
 
             // Fetch Profile Data
-            const { data: profile, error: profileError } = await getProfile(user.id);
+            const { data: profile } = await getProfile(user.id);
             
-            if (profile) {
-                const name = profile.full_name || profile.name || user.user_metadata?.full_name || user.email.split('@')[0];
-                const avatar = profile.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
-                const expertise = profile.expertise || 'Field Engineer';
-                const bio = profile.bio || '"Initial personnel profile created. Awaiting expertise documentation and technical background information."';
+            const name = profile?.full_name || profile?.name || user.user_metadata?.full_name || user.email.split('@')[0];
+            const avatar = profile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
+            const expertise = profile?.expertise || 'Field Engineer';
+            const bio = profile?.bio || '"Initial personnel profile created. Awaiting expertise documentation and technical background information."';
 
-                document.getElementById('user-name').innerText = name;
-                document.getElementById('user-expertise').innerText = expertise;
-                document.getElementById('user-bio').innerText = bio;
-                document.getElementById('user-avatar-container').innerHTML = `<img src="${avatar}" class="w-full h-full object-cover" />`;
+            document.getElementById('user-name').innerText = name;
+            document.getElementById('user-expertise').innerText = expertise;
+            document.getElementById('user-bio').innerText = bio;
+            document.getElementById('user-avatar-container').innerHTML = `<img src="${avatar}" class="w-full h-full object-cover" />`;
 
-                // Fill modal
-                document.getElementById('edit-name').value = name;
-                document.getElementById('edit-expertise').value = expertise === 'Field Engineer' ? '' : expertise;
-                document.getElementById('edit-avatar').value = avatar; 
-                document.getElementById('edit-bio').value = profile.bio || '';
-            }
+            // Fill modal
+            document.getElementById('edit-name').value = name;
+            document.getElementById('edit-expertise').value = expertise === 'Field Engineer' ? '' : expertise;
+            document.getElementById('edit-avatar').value = avatar; 
+            document.getElementById('edit-bio').value = profile?.bio || '';
 
             // Fetch user posts
             const { data: posts, error } = await getUserPosts(user.id);
             const container = document.getElementById('user-posts-container');
             const postCount = document.getElementById('post-count');
+            const citationCount = document.querySelector('.grid-cols-2 .text-center:last-child span');
 
             if (error) {
                 container.innerHTML = `<div class="alert alert-error">FAILED_TO_LOAD_REGISTRY: ${error.message}</div>`;
                 return;
             }
 
-            postCount.innerText = posts ? posts.length : 0;
+            const totalPosts = posts ? posts.length : 0;
+            const totalCitations = posts ? posts.reduce((acc, post) => acc + (post.view_count || 0), 0) : 0;
+
+            postCount.innerText = totalPosts;
+            if (citationCount) citationCount.innerText = totalCitations;
 
             if (!posts || posts.length === 0) {
                 container.innerHTML = `
@@ -317,205 +323,6 @@
                     </div>`;
                 }).join('');
             }
-
-            document.getElementById('sign-out-btn').onclick = async () => {
-                await signOut();
-            };
-
-            // Handle Profile Update
-            const editForm = document.getElementById('edit-profile-form');
-            editForm.onsubmit = async (e) => {
-                e.preventDefault();
-                const saveBtn = document.getElementById('save-profile-btn');
-                saveBtn.disabled = true;
-                saveBtn.innerHTML = '<span class="loading loading-spinner"></span> UPDATING...';
-
-                try {
-                    let avatarUrl = document.getElementById('edit-avatar').value;
-
-                    if (selectedAvatarFile) {
-                        const fileExt = selectedAvatarFile.name.split('.').pop();
-                        const fileName = `avatar_${user.id}_${Date.now()}.${fileExt}`;
-                        const filePath = `avatars/${fileName}`;
-
-                        const { error: uploadError } = await supabase.storage
-                            .from('blog-assets')
-                            .upload(filePath, selectedAvatarFile);
-
-                        if (uploadError) throw uploadError;
-
-                        const { data: { publicUrl } } = supabase.storage
-                            .from('blog-assets')
-                            .getPublicUrl(filePath);
-                        
-                        avatarUrl = publicUrl;
-                    }
-
-                    const updatedData = {
-                        full_name: document.getElementById('edit-name').value,
-                        expertise: document.getElementById('edit-expertise').value,
-                        avatar_url: avatarUrl,
-                        bio: document.getElementById('edit-bio').value
-                    };
-
-                    const { error: updateError } = await updateProfile(updatedData);
-                    if (updateError) throw updateError;
-
-                    location.reload();
-                } catch (err) {
-                    alert('REGISTRY_UPDATE_FAILED: ' + err.message);
-                    saveBtn.disabled = false;
-                    saveBtn.innerText = 'Commit_Changes';
-                }
-            };
-        }
-
-        init();
-    </script>
-</body>
-</html>
-    <script type="module">
-        import { requireAuth, signOut } from './js/auth.js';
-        import { getUserPosts, deletePost } from './js/posts.js';
-        import { getProfile, updateProfile } from './js/profiles.js';
-        import { formatDate, getPostImageId } from './js/utils.js';
-        import { supabase } from './js/supabase-client.js';
-
-        let user = null;
-        let selectedAvatarFile = null;
-
-        window.handleDeletePost = async (postId) => {
-            if (confirm('CRITICAL_ACTION: Are you sure you want to PERMANENTLY delete this report from the registry?')) {
-                const { error } = await deletePost(postId);
-                if (error) {
-                    alert('DELETE_FAILED: ' + error.message);
-                } else {
-                    location.reload();
-                }
-            }
-        };
-
-        async function init() {
-            user = await requireAuth();
-            if (!user) return;
-
-            // Initialize Nav
-            const authNav = document.getElementById('auth-nav');
-            const { data: navProfile } = await getProfile(user.id);
-            const navAvatar = navProfile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
-            
-            authNav.innerHTML = `
-                <div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100 hover:border-blue-600">
-                        <div class="w-10 h-10 rounded-full overflow-hidden">
-                            <img src="${navAvatar}" class="w-full h-full object-cover" />
-                        </div>
-                    </div>
-                    <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
-                        <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Operator Session</li>
-                        <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Profile</a></li>
-                        <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Draft Report</a></li>
-                        <div class="divider my-2"></div>
-                        <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50">Terminate Session</button></li>
-                    </ul>
-                </div>
-            `;
-            document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
-
-            // Handle Avatar File Selection
-            const avatarInput = document.getElementById('edit-avatar-file');
-            const avatarNameDisplay = document.getElementById('avatar-file-name');
-            
-            avatarInput.onchange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    selectedAvatarFile = file;
-                    avatarNameDisplay.innerText = file.name.toUpperCase();
-                }
-            };
-
-            // Fetch Profile Data
-            const { data: profile, error: profileError } = await getProfile(user.id);
-            
-            if (profile) {
-                const name = profile.full_name || profile.name || user.user_metadata?.full_name || user.email.split('@')[0];
-                const avatar = profile.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
-                const expertise = profile.expertise || 'Field Engineer';
-                const bio = profile.bio || '"Initial personnel profile created. Awaiting expertise documentation and technical background information."';
-
-                document.getElementById('user-name').innerText = name;
-                document.getElementById('user-expertise').innerText = expertise;
-                document.getElementById('user-bio').innerText = bio;
-                document.getElementById('user-avatar-container').innerHTML = `<img src="${avatar}" class="w-full h-full object-cover" />`;
-
-                // Fill modal
-                document.getElementById('edit-name').value = name;
-                document.getElementById('edit-expertise').value = expertise === 'Field Engineer' ? '' : expertise;
-                document.getElementById('edit-avatar').value = avatar; 
-                document.getElementById('edit-bio').value = profile.bio || '';
-            }
-
-            // Fetch user posts
-            const { data: posts, error } = await getUserPosts(user.id);
-            const container = document.getElementById('user-posts-container');
-            const postCount = document.getElementById('post-count');
-
-            if (error) {
-                container.innerHTML = `<div class="alert alert-error">FAILED_TO_LOAD_REGISTRY: ${error.message}</div>`;
-                return;
-            }
-
-            postCount.innerText = posts ? posts.length : 0;
-
-            if (!posts || posts.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-20 bg-white border-2 border-slate-200 border-dashed">
-                        <p class="text-slate-400 font-mono italic text-sm mb-6">No technical reports published yet.</p>
-                        <a href="create-post.html" class="btn btn-neutral rounded-none btn-sm font-black uppercase tracking-widest text-[10px] h-10 px-8">Submit First Report</a>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = posts.map(post => {
-                    const imgMatch = post.content ? post.content.match(/<img[^>]+src="([^">]+)"/) : null;
-                    const mdMatch = post.content ? post.content.match(/!\[.*?\]\((.*?)\)/) : null;
-                    const thumbnail = post.featured_image || (imgMatch ? imgMatch[1] : (mdMatch ? mdMatch[1] : `https://images.unsplash.com/photo-${getPostImageId(post.category_id)}?auto=format&fit=crop&q=80&w=400`));
-                    
-                    return `
-                    <div class="bg-white p-6 border-2 border-slate-900 shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] group flex gap-6">
-                        <div class="w-24 h-24 flex-shrink-0 border border-slate-100 overflow-hidden">
-                            <img src="${thumbnail}" 
-                                 onerror="this.src='https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=400'"
-                                 class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500">
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest">${formatDate(post.created_at)}</span>
-                            </div>
-                            <h3 class="text-lg font-black text-slate-900 mb-2 group-hover:text-blue-600 transition-colors truncate uppercase">
-                                <a href="post.html?slug=${post.slug}">${post.title}</a>
-                            </h3>
-                            <p class="text-slate-500 text-xs line-clamp-1 mb-4">${post.excerpt || 'No description available.'}</p>
-                            <div class="flex items-center justify-between">
-                                <div class="flex gap-4">
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                        ${post.view_count || 0} Views
-                                    </span>
-                                </div>
-                                <div class="flex gap-4">
-                                    <a href="post.html?slug=${post.slug}" class="text-[9px] font-black uppercase tracking-widest text-blue-600 hover:underline">View</a>
-                                    <a href="create-post.html?edit=${post.id}" class="text-[9px] font-black uppercase tracking-widest text-slate-900 hover:underline">Edit</a>
-                                    <button onclick="handleDeletePost('${post.id}')" class="text-[9px] font-black uppercase tracking-widest text-red-500 hover:underline">Delete</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>`;
-                }).join('');
-            }
-
-            document.getElementById('sign-out-btn').onclick = async () => {
-                await signOut();
-            };
 
             // Handle Profile Update
             const editForm = document.getElementById('edit-profile-form');

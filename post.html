@@ -154,9 +154,45 @@
                         <section class="mt-24 border-t-4 border-slate-900 pt-16">
                             <h3 class="text-3xl font-black uppercase mb-12">Discussion</h3>
                             <div id="comments-list" class="space-y-12"></div>
+                            
+                            ${user ? `
+                            <div class="mt-16 border-2 border-slate-900 p-8">
+                                <h4 class="text-[10px] font-mono font-black text-slate-400 uppercase tracking-widest mb-6">Add_Technical_Comment</h4>
+                                <form id="comment-form" class="space-y-6">
+                                    <textarea id="comment-content" class="textarea textarea-bordered w-full h-32 rounded-none border-2 border-slate-900 font-bold" placeholder="Enter your technical feedback..." required></textarea>
+                                    <button type="submit" class="btn btn-neutral rounded-none font-black uppercase tracking-widest text-[10px]">Publish_Comment</button>
+                                </form>
+                            </div>
+                            ` : `
+                            <div class="mt-16 p-8 border-2 border-dashed border-slate-200 text-center">
+                                <p class="text-slate-400 font-bold uppercase text-sm mb-4">Authentication required to participate in discussion.</p>
+                                <a href="login.html" class="btn btn-neutral btn-sm rounded-none px-8 font-black text-[10px] uppercase">Sign_In</a>
+                            </div>
+                            `}
                         </section>
                     </article>
                 `;
+                
+                if (user) {
+                    const commentForm = document.getElementById('comment-form');
+                    commentForm.onsubmit = async (e) => {
+                        e.preventDefault();
+                        const content = document.getElementById('comment-content').value;
+                        const submitBtn = commentForm.querySelector('button');
+                        submitBtn.disabled = true;
+                        
+                        const { data, error } = await addComment(post.id, user.id, content);
+                        if (error) {
+                            alert('COMMENT_FAILED: ' + error.message);
+                            submitBtn.disabled = false;
+                        } else {
+                            document.getElementById('comment-content').value = '';
+                            renderComments(post.id);
+                            submitBtn.disabled = false;
+                        }
+                    };
+                }
+
                 renderComments(post.id);
             }
         }
@@ -165,29 +201,22 @@
             const list = document.getElementById('comments-list');
             const { data: comments } = await getComments(postId);
             if (comments) {
-                list.innerHTML = comments.map(c => `
-                    <div class="border-b border-slate-100 pb-8">
-                        <span class="text-[11px] font-black uppercase tracking-widest mb-2 block">${c.profiles?.full_name || 'Anonymous'}</span>
-                        <p class="text-lg font-medium">${c.content}</p>
-                    </div>
-                `).join('');
-            }
-        }
-
-        initAuth().then(user => renderPost(user));
-    </script>
-</body>
-</html>
-        async function renderComments(postId) {
-            const list = document.getElementById('comments-list');
-            const { data: comments } = await getComments(postId);
-            if (comments) {
-                list.innerHTML = comments.map(c => `
-                    <div class="border-b border-slate-100 pb-8">
-                        <span class="text-[11px] font-black uppercase tracking-widest mb-2 block">${c.profiles?.full_name || 'Anonymous'}</span>
-                        <p class="text-lg font-medium">${c.content}</p>
-                    </div>
-                `).join('');
+                if (comments.length === 0) {
+                    list.innerHTML = '<p class="text-slate-400 font-mono text-xs uppercase tracking-widest">No comments registered for this report.</p>';
+                } else {
+                    list.innerHTML = comments.map(c => `
+                        <div class="border-b border-slate-100 pb-8 last:border-0">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-8 h-8 rounded-full overflow-hidden border border-slate-200">
+                                    <img src="${c.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.user_id}`}" class="w-full h-full object-cover" />
+                                </div>
+                                <span class="text-[11px] font-black uppercase tracking-widest">${c.profiles?.full_name || 'Anonymous'}</span>
+                                <span class="text-[9px] font-mono text-slate-300 ml-auto">${formatDate(c.created_at)}</span>
+                            </div>
+                            <p class="text-lg font-bold text-slate-700 leading-relaxed uppercase">${c.content}</p>
+                        </div>
+                    `).join('');
+                }
             }
         }
 

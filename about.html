@@ -71,7 +71,7 @@
                         <h3 class="text-xl font-black uppercase mb-4">Peer Review</h3>
                         <p class="text-sm font-medium">Every publication undergoes a rigorous validation process by our senior engineering board to ensure technical accuracy and implementation feasibility.</p>
                     </div>
-                    <div class="border-2 border-slate-900 p-8 bg-white shadow-[37,99,235,1)]">
+                    <div class="border-2 border-slate-900 p-8 bg-white shadow-[8px_8px_0px_0px_rgba(37,99,235,1)]">
                         <h3 class="text-xl font-black uppercase mb-4">Open Access</h3>
                         <p class="text-sm font-medium">We believe in the democratization of technical knowledge. Our registry is open to all qualified professionals and students globally.</p>
                     </div>
@@ -91,56 +91,9 @@
                 <span class="bg-white text-slate-950 w-8 h-8 flex items-center justify-center font-black text-lg">V</span>
                 <span class="text-2xl font-black uppercase tracking-tighter">Voltage & Current</span>
             </div>
-            <p class="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.2em]">© 2025 VOLTAGE_CURRENT_TECHNICAL_REGISTRY.</p>
-        </div>
-    </footer>
-
-    <script type="module">
-        import { checkSession, signOut } from './js/auth.js';
-        import { getProfile } from './js/profiles.js';
-        
-        async function initAuth() {
-            const authNav = document.getElementById('auth-nav');
-            const navLinks = document.getElementById('nav-links');
-            const session = await checkSession();
-            
-            if (session) {
-                const user = session.user;
-                const { data: profile } = await getProfile(user.id);
-                const avatar = profile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
-                
-                authNav.innerHTML = `
-                    <div class="dropdown dropdown-end">
-                        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100">
-                            <div class="w-10 h-10 rounded-full overflow-hidden"><img src="${avatar}" class="w-full h-full object-cover" /></div>
-                        </div>
-                        <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
-                            <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Profile</a></li>
-                            <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Draft Report</a></li>
-                            <div class="divider my-2"></div>
-                            <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500">Sign Out</button></li>
-                        </ul>
-                    </div>
-                `;
-                if (!navLinks.innerHTML.includes('create-post.html')) {
-                    navLinks.innerHTML += `<a href="create-post.html" class="text-[11px] font-bold text-blue-600 hover:text-blue-700 tracking-widest uppercase transition-colors">Submit Research</a>`;
-                }
-                document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
-            } else {
-                authNav.innerHTML = `<div class="flex gap-4"><a href="login.html" class="text-[11px] font-bold text-slate-900 uppercase tracking-widest">Sign In</a></div>`;
-            }
-        }
-        initAuth();
-    </script>
-</body>
-</html>
-
-    <footer class="bg-slate-950 text-white py-24 mt-20 border-t-8 border-blue-600">
-        <div class="max-w-[1400px] mx-auto px-6 sm:px-10 text-center">
-            <div class="flex items-center gap-3 mb-8 justify-center">
-                <span class="bg-white text-slate-950 w-8 h-8 flex items-center justify-center font-black text-lg">V</span>
-                <span class="text-2xl font-black uppercase tracking-tighter">Voltage & Current</span>
-            </div>
+            <p class="text-slate-400 max-w-2xl mx-auto text-sm leading-relaxed mb-10 uppercase">
+                The definitive technical repository for electrical engineering research.
+            </p>
             <p class="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.2em]">© 2025 VOLTAGE_CURRENT_TECHNICAL_REGISTRY.</p>
         </div>
     </footer>
