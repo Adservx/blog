@@ -138,6 +138,15 @@ function setupMobileNav() {
                 const burger = authClone.querySelector('#mobile-menu-btn');
                 if (burger) burger.remove();
                 
+                // Handle the wrapper div that hides buttons on mobile (Login/Signup wrapper)
+                const hiddenWrapper = authClone.querySelector('.hidden.lg\\:flex');
+                if (hiddenWrapper) {
+                    while (hiddenWrapper.firstChild) {
+                        authClone.insertBefore(hiddenWrapper.firstChild, hiddenWrapper);
+                    }
+                    hiddenWrapper.remove();
+                }
+                
                 // Process dropdowns for mobile (Profile dropdown)
                 const dropdowns = authClone.querySelectorAll('.dropdown');
                 dropdowns.forEach(dd => {

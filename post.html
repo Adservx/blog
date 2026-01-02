@@ -103,7 +103,12 @@
                 `;
                 document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
             } else {
-                authNav.innerHTML = `<a href="login.html" class="hidden lg:inline-flex btn btn-neutral btn-sm rounded-none px-6 text-[10px] font-bold uppercase tracking-widest">Sign In</a>`;
+                authNav.innerHTML = `
+                    <div class="hidden lg:flex items-center gap-4">
+                        <a href="login.html" class="inline-flex items-center text-[11px] font-bold text-slate-900 uppercase tracking-widest hover:text-blue-600 transition-colors h-8">Sign In</a>
+                        <a href="signup.html" class="btn btn-neutral btn-sm rounded-none px-6 text-[11px] font-bold uppercase tracking-widest">Join Registry</a>
+                    </div>
+                `;
             }
             setupMobileNav();
             return user;
