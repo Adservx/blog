@@ -41,25 +41,33 @@
             background: #f8fafc;
             border-radius: 0;
             padding: 0.75rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            position: relative;
         }
     </style>
 </head>
 <body class="bg-white text-slate-900 font-sans min-h-screen">
 
     <nav class="border-b border-slate-200 sticky top-0 z-50 bg-white/90 backdrop-blur-md">
-        <div class="max-w-[1400px] mx-auto px-6 sm:px-10">
-            <div class="grid grid-cols-3 h-20 items-center">
-                <div class="flex justify-start items-center gap-8">
-                    <a href="index.html" class="flex items-center gap-3">
-                        <span class="bg-slate-900 text-white w-10 h-10 flex items-center justify-center font-black text-xl">V</span>
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-10">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex justify-start items-center gap-2 sm:gap-8 shrink-0">
+                    <a href="index.html" class="flex items-center gap-2 sm:gap-3">
+                        <span class="bg-slate-900 text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-black text-lg sm:text-xl shrink-0">V</span>
                         <div class="flex flex-col">
-                            <span class="font-black text-2xl tracking-tighter leading-none uppercase">Voltage & Current</span>
-                            <span class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase">Technical Publication Registry</span>
+                            <span class="font-black text-base sm:text-2xl tracking-tighter leading-none uppercase truncate max-w-[150px] sm:max-w-none">Voltage & Current</span>
+                            <span class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase hidden sm:block">Technical Publication Registry</span>
                         </div>
                     </a>
                 </div>
 
-                <div class="hidden lg:flex items-center justify-center gap-8" id="nav-links">
+                <div class="hidden lg:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2" id="nav-links">
                     <a href="index.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Archive</a>
                     <a href="resources.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Resources</a>
                     <a href="about.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">About</a>
@@ -81,7 +89,7 @@
         </div>
     </header>
 
-    <main class="max-w-[1400px] mx-auto px-6 sm:px-10 py-16">
+    <main class="max-w-[1400px] mx-auto px-4 sm:px-10 py-16">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
             
             <!-- Main Drafting Area -->
@@ -93,7 +101,7 @@
                         <div class="space-y-4">
                             <label class="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-slate-400">Publication_Title</label>
                             <input type="text" id="post-title" placeholder="e.g. Advancements in Solid-State Transformer Design" 
-                                class="w-full text-3xl md:text-4xl font-black text-slate-900 border-none focus:ring-0 placeholder:text-slate-100 p-0" />
+                                class="w-full text-3xl md:text-4xl font-black text-slate-900 border-none focus:ring-0 placeholder:text-slate-100 p-0 break-words" />
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 py-8 border-y-2 border-dashed border-slate-100">
@@ -188,7 +196,7 @@
         import { requireAuth, signOut } from './js/auth.js';
         import { createPost, getCategories, updatePost } from './js/posts.js';
         import { getProfile } from './js/profiles.js';
-        import { slugify } from './js/utils.js';
+        import { slugify, setupMobileNav } from './js/utils.js';
         import { supabase } from './js/supabase-client.js';
 
         let user = null;
@@ -225,6 +233,8 @@
                 </div>
             `;
             document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
+            
+            setupMobileNav();
 
             // Load Categories
             const { data: categories } = await getCategories();

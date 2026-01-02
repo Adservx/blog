@@ -36,40 +36,40 @@
     <!-- Navigation -->
     <nav class="border-b border-slate-200 sticky top-0 z-50 bg-white/90 backdrop-blur-md">
         <div class="max-w-[1400px] mx-auto px-6 sm:px-10">
-            <div class="grid grid-cols-3 h-20 items-center">
+            <div class="flex justify-between h-20 items-center">
                 <!-- Left: Logo -->
-                <div class="flex justify-start">
+                <div class="flex justify-start shrink-0">
                     <a href="index.html" class="flex items-center gap-3">
                         <span class="bg-slate-900 text-white w-10 h-10 flex items-center justify-center font-black text-xl">V</span>
                         <div class="flex flex-col">
                             <span class="font-black text-2xl tracking-tighter leading-none uppercase">Voltage & Current</span>
-                            <span class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase">Technical Publication Registry</span>
+                            <span class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase hidden sm:block">Technical Publication Registry</span>
                         </div>
                     </a>
                 </div>
                 
                 <!-- Center: Main Nav -->
-                <div class="hidden lg:flex items-center justify-center gap-8">
+                <div class="hidden lg:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2" id="nav-links">
                     <a href="index.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Archive</a>
                     <a href="resources.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Resources</a>
                     <a href="about.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">About</a>
                 </div>
 
                 <!-- Right: Auth -->
-                <div class="flex items-center justify-end gap-6">
-                    <a href="signup.html" class="btn btn-neutral btn-sm rounded-none px-6 text-[11px] font-bold uppercase tracking-widest">Join Registry</a>
+                <div class="flex items-center justify-end gap-6" id="auth-nav">
+                    <a href="signup.html" class="hidden lg:inline-flex btn btn-neutral btn-sm rounded-none px-6 text-[11px] font-bold uppercase tracking-widest">Join Registry</a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <main class="flex-1 flex items-center justify-center p-6 bg-grid-subtle py-20">
+    <main class="flex-1 flex items-center justify-center p-4 sm:p-6 bg-grid-subtle py-12 sm:py-20">
         <div class="w-full max-w-md relative">
             <!-- Technical Decorative Elements -->
-            <div class="absolute -top-10 -left-10 w-20 h-20 border-t-2 border-l-2 border-slate-200"></div>
-            <div class="absolute -bottom-10 -right-10 w-20 h-20 border-b-2 border-r-2 border-slate-200"></div>
+            <div class="absolute -top-6 -left-6 w-12 h-12 border-t-2 border-l-2 border-slate-200 hidden sm:block"></div>
+            <div class="absolute -bottom-6 -right-6 w-12 h-12 border-b-2 border-r-2 border-slate-200 hidden sm:block"></div>
 
-            <div class="border-2 border-slate-900 bg-white shadow-[12px_12px_0px_0px_rgba(15,23,42,1)] relative overflow-hidden">
+            <div class="border-2 border-slate-900 bg-white shadow-none sm:shadow-[12px_12px_0px_0px_rgba(15,23,42,1)] relative overflow-hidden">
                 <div class="bg-slate-900 text-white px-6 py-2 flex justify-between items-center">
                     <span class="text-[9px] font-mono font-black tracking-[0.3em] uppercase">Auth_Module_V2.0</span>
                     <div class="flex gap-1">
@@ -78,12 +78,12 @@
                     </div>
                 </div>
 
-                <div class="p-8 sm:p-12">
-                    <div class="mb-10">
+                <div class="p-6 sm:p-12">
+                    <div class="mb-8 sm:mb-10">
                         <div class="inline-flex items-center gap-2 border-l-4 border-blue-600 pl-4 mb-4">
                             <span class="text-[10px] font-mono font-black tracking-[0.4em] text-slate-400 uppercase">Status: Awaiting_Credentials</span>
                         </div>
-                        <h1 class="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-2">Operator Login</h1>
+                        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-2">Operator Login</h1>
                         <p class="text-slate-500 text-sm font-medium">Synchronize with the central registry node.</p>
                     </div>
 
@@ -108,7 +108,7 @@
                         </button>
                     </form>
 
-                    <div class="mt-12 pt-8 border-t-2 border-dashed border-slate-100">
+                    <div class="mt-10 sm:mt-12 pt-8 border-t-2 border-dashed border-slate-100">
                         <p class="text-[10px] font-mono font-black text-slate-400 uppercase tracking-widest mb-4">New Personnel?</p>
                         <a href="signup.html" class="flex items-center justify-between group">
                             <span class="text-sm font-bold text-slate-900 uppercase tracking-tight group-hover:text-blue-600 transition-colors">Request Registry Access</span>
@@ -141,58 +141,9 @@
 
     <script type="module">
         import { signIn } from './js/auth.js';
+        import { setupMobileNav } from './js/utils.js';
 
-        const form = document.getElementById('login-form');
-        const submitBtn = document.getElementById('submit-btn');
-
-        form.onsubmit = async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="loading loading-spinner loading-xs mr-2"></span> SYNCING...';
-
-            const { data, error } = await signIn(email, password);
-
-            if (error) {
-                alert('AUTHENTICATION_FAILED: ' + error.message);
-                submitBtn.disabled = false;
-                submitBtn.innerText = 'AUTHENTICATE_SESSION';
-            } else {
-                window.location.href = 'index.html';
-            }
-        };
-    </script>
-
-    <style>
-        @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-        .bg-grid-subtle {
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
-    </style>
-</body>
-</html>
-
-    <footer class="bg-slate-950 text-white py-24 border-t-8 border-blue-600">
-        <div class="max-w-[1400px] mx-auto px-6 sm:px-10 text-center">
-            <div class="flex items-center gap-3 mb-8 justify-center">
-                <span class="bg-white text-slate-950 w-8 h-8 flex items-center justify-center font-black text-lg">V</span>
-                <span class="text-2xl font-black uppercase tracking-tighter">Voltage & Current</span>
-            </div>
-            <p class="text-slate-400 max-w-2xl mx-auto text-sm leading-relaxed mb-10 uppercase">
-                The definitive technical repository for electrical engineering research.
-            </p>
-            <p class="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.2em]">© 2025 VOLTAGE_CURRENT_TECHNICAL_REGISTRY.</p>
-        </div>
-    </footer>
-
-    <script type="module">
-        import { signIn } from './js/auth.js';
+        setupMobileNav();
 
         const form = document.getElementById('login-form');
         const submitBtn = document.getElementById('submit-btn');

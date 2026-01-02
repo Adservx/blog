@@ -24,23 +24,31 @@
             }
         }
     </script>
+
+    <style>
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            position: relative;
+        }
+    </style>
 </head>
 <body class="bg-white text-slate-900 font-sans min-h-screen">
 
     <nav class="border-b border-slate-200 sticky top-0 z-50 bg-white/90 backdrop-blur-md">
-        <div class="max-w-[1400px] mx-auto px-6 sm:px-10">
-            <div class="grid grid-cols-3 h-20 items-center">
-                <div class="flex justify-start">
-                    <a href="index.html" class="flex items-center gap-3">
-                        <span class="bg-slate-900 text-white w-10 h-10 flex items-center justify-center font-black text-xl">V</span>
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-10">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex justify-start shrink-0">
+                    <a href="index.html" class="flex items-center gap-2 sm:gap-3">
+                        <span class="bg-slate-900 text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-black text-lg sm:text-xl shrink-0">V</span>
                         <div class="flex flex-col">
-                            <span class="font-black text-2xl tracking-tighter leading-none uppercase">Voltage & Current</span>
-                            <span class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase">Technical Publication Registry</span>
+                            <span class="font-black text-base sm:text-2xl tracking-tighter leading-none uppercase truncate max-w-[150px] sm:max-w-none">Voltage & Current</span>
+                            <span class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase hidden sm:block">Technical Publication Registry</span>
                         </div>
                     </a>
                 </div>
 
-                <div class="hidden lg:flex items-center justify-center gap-8" id="nav-links">
+                <div class="hidden lg:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2" id="nav-links">
                     <a href="index.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Archive</a>
                     <a href="resources.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Resources</a>
                     <a href="about.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">About</a>
@@ -62,44 +70,44 @@
         </div>
     </header>
 
-    <main class="max-w-[1400px] mx-auto px-6 sm:px-10 py-16">
+    <main class="max-w-[1400px] mx-auto px-4 sm:px-10 py-16">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
             
             <!-- Sidebar: User Info -->
             <div class="lg:col-span-4 space-y-8">
-                <div class="bg-white border-2 border-slate-900 p-10 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] relative overflow-hidden">
+                <div class="bg-white border-2 border-slate-900 p-6 md:p-10 shadow-tech relative overflow-hidden">
                     <div class="absolute -top-4 -right-4 w-12 h-12 border-b-2 border-l-2 border-slate-100"></div>
                     
-                    <div class="avatar mb-8 flex justify-center">
-                        <div class="w-32 h-32 rounded-none border-2 border-slate-900 p-1 bg-white" id="user-avatar-container">
-                            <div class="skeleton w-full h-full rounded-none"></div>
+                    <div class="avatar mb-6 md:mb-8 flex justify-center">
+                        <div class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-slate-900 p-1 bg-white shadow-tech" id="user-avatar-container">
+                            <div class="skeleton w-full h-full rounded-full"></div>
                         </div>
                     </div>
                     
                     <div class="text-center space-y-2">
-                        <h1 class="text-3xl font-black text-slate-900 uppercase tracking-tighter" id="user-name">Loading...</h1>
-                        <p class="text-[10px] font-mono font-black text-blue-600 uppercase tracking-[0.3em]" id="user-expertise">Field Engineer</p>
+                        <h1 class="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter" id="user-name">Loading...</h1>
+                        <p class="text-[9px] md:text-[10px] font-mono font-black text-blue-600 uppercase tracking-[0.3em]" id="user-expertise">Field Engineer</p>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-4 mt-10 py-6 border-y-2 border-dashed border-slate-100">
+                    <div class="grid grid-cols-2 gap-4 mt-8 md:mt-10 py-6 border-y-2 border-dashed border-slate-100">
                         <div class="text-center">
-                            <span class="block text-3xl font-black text-slate-900" id="post-count">0</span>
-                            <span class="text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest">Reports</span>
+                            <span class="block text-2xl md:text-3xl font-black text-slate-900" id="post-count">0</span>
+                            <span class="text-[8px] md:text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest">Reports</span>
                         </div>
                         <div class="text-center">
-                            <span class="block text-3xl font-black text-slate-900">0</span>
-                            <span class="text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest">Citations</span>
+                            <span class="block text-2xl md:text-3xl font-black text-slate-900">0</span>
+                            <span class="text-[8px] md:text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest">Citations</span>
                         </div>
                     </div>
 
                     <div class="mt-8">
-                        <h3 class="text-[10px] font-mono font-black tracking-[0.3em] text-slate-400 uppercase mb-4">Technical_Bio</h3>
-                        <p class="text-sm font-medium text-slate-500 leading-relaxed border-l-2 border-slate-100 pl-4" id="user-bio">
+                        <h3 class="text-[9px] md:text-[10px] font-mono font-black tracking-[0.3em] text-slate-400 uppercase mb-4">Technical_Bio</h3>
+                        <p class="text-sm font-medium text-slate-500 leading-relaxed border-l-2 border-slate-100 pl-4 italic" id="user-bio">
                             "Initial personnel profile created. Awaiting expertise documentation."
                         </p>
                     </div>
 
-                    <button onclick="edit_profile_modal.showModal()" class="btn btn-neutral btn-block btn-sm mt-10 rounded-none font-black uppercase tracking-widest text-[10px] h-12">Update_Registry_File</button>
+                    <button onclick="edit_profile_modal.showModal()" class="btn btn-neutral btn-block btn-sm mt-8 rounded-none font-black uppercase tracking-widest text-[9px] h-12">Update_Registry_File</button>
                 </div>
 
                 <div class="bg-slate-900 p-8 text-white">
@@ -186,7 +194,7 @@
         import { requireAuth, signOut } from './js/auth.js';
         import { getUserPosts, deletePost } from './js/posts.js';
         import { getProfile, updateProfile } from './js/profiles.js';
-        import { formatDate, getPostImageId } from './js/utils.js';
+        import { formatDate, getPostImageId, setupMobileNav } from './js/utils.js';
         import { supabase } from './js/supabase-client.js';
 
         let user = null;
@@ -221,14 +229,16 @@
                     </div>
                     <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
                         <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Operator Session</li>
-                        <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Profile</a></li>
-                        <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Draft Report</a></li>
+                        <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest hover:text-blue-600 transition-colors">Profile</a></li>
+                        <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest hover:text-blue-600 transition-colors">Draft Report</a></li>
                         <div class="divider my-2"></div>
                         <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50">Terminate Session</button></li>
                     </ul>
                 </div>
             `;
             document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
+
+            setupMobileNav();
 
             // Handle Avatar File Selection
             const avatarInput = document.getElementById('edit-avatar-file');
