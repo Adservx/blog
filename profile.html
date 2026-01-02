@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personnel Profile | Voltage & Current</title>
-    
+    <title>User Profile | Voltage & Current</title>
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
+
     <!-- Tailwind & DaisyUI -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <script>
         tailwind.config = {
             theme: {
@@ -26,13 +27,15 @@
     </script>
 
     <style>
-        html, body {
+        html,
+        body {
             overflow-x: hidden;
             width: 100%;
             position: relative;
         }
     </style>
 </head>
+
 <body class="bg-white text-slate-900 font-sans min-h-screen">
 
     <nav class="border-b border-slate-200 sticky top-0 z-50 bg-white/90 backdrop-blur-md">
@@ -40,18 +43,27 @@
             <div class="flex justify-between h-20 items-center">
                 <div class="flex justify-start shrink-0">
                     <a href="index.html" class="flex items-center gap-2 sm:gap-3">
-                        <span class="bg-slate-900 text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-black text-lg sm:text-xl shrink-0">V</span>
+                        <span
+                            class="bg-slate-900 text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-black text-lg sm:text-xl shrink-0">V</span>
                         <div class="flex flex-col">
-                            <span class="font-black text-base sm:text-2xl tracking-tighter leading-none uppercase truncate max-w-[150px] sm:max-w-none">Voltage & Current</span>
-                            <span class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase hidden sm:block">Technical Publication Registry</span>
+                            <span
+                                class="font-black text-base sm:text-2xl tracking-tighter leading-none uppercase truncate max-w-[150px] sm:max-w-none">Voltage
+                                & Current</span>
+                            <span
+                                class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase hidden sm:block">Engineering
+                                Blog</span>
                         </div>
                     </a>
                 </div>
 
-                <div class="hidden lg:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2" id="nav-links">
-                    <a href="index.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Archive</a>
-                    <a href="resources.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Resources</a>
-                    <a href="about.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">About</a>
+                <div class="hidden lg:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2"
+                    id="nav-links">
+                    <a href="index.html"
+                        class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Home</a>
+                    <a href="resources.html"
+                        class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Resources</a>
+                    <a href="about.html"
+                        class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">About</a>
                 </div>
 
                 <div class="flex items-center justify-end gap-6" id="auth-nav">
@@ -64,59 +76,71 @@
     <header class="bg-grid-subtle border-b-2 border-slate-900 py-12 relative overflow-hidden">
         <div class="max-w-[1400px] mx-auto px-6 sm:px-10 relative">
             <div class="inline-flex items-center gap-3 border-l-4 border-blue-600 pl-4 mb-4">
-                <span class="text-[10px] font-mono font-black tracking-[0.4em] text-slate-500 uppercase">File: Personnel_Registry_Entry</span>
+                <span class="text-[10px] font-mono font-black tracking-[0.4em] text-slate-500 uppercase">Staff
+                    Profile</span>
             </div>
-            <h1 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter uppercase">Operator <span class="text-blue-600">Profile</span></h1>
+            <h1 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter uppercase">Your <span
+                    class="text-blue-600">Profile</span></h1>
         </div>
     </header>
 
     <main class="max-w-[1400px] mx-auto px-4 sm:px-10 py-16">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
-            
+
             <!-- Sidebar: User Info -->
             <div class="lg:col-span-4 space-y-8">
                 <div class="bg-white border-2 border-slate-900 p-6 md:p-10 shadow-tech relative overflow-hidden">
                     <div class="absolute -top-4 -right-4 w-12 h-12 border-b-2 border-l-2 border-slate-100"></div>
-                    
+
                     <div class="avatar mb-6 md:mb-8 flex justify-center">
-                        <div class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-slate-900 p-1 bg-white shadow-tech" id="user-avatar-container">
+                        <div class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-slate-900 p-1 bg-white shadow-tech"
+                            id="user-avatar-container">
                             <div class="skeleton w-full h-full rounded-full"></div>
                         </div>
                     </div>
-                    
+
                     <div class="text-center space-y-2">
-                        <h1 class="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter" id="user-name">Loading...</h1>
-                        <p class="text-[9px] md:text-[10px] font-mono font-black text-blue-600 uppercase tracking-[0.3em]" id="user-expertise">Field Engineer</p>
+                        <h1 class="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tighter"
+                            id="user-name">Loading...</h1>
+                        <p class="text-[9px] md:text-[10px] font-mono font-black text-blue-600 uppercase tracking-[0.3em]"
+                            id="user-expertise">Field Engineer</p>
                     </div>
-                    
+
                     <div class="grid grid-cols-2 gap-4 mt-8 md:mt-10 py-6 border-y-2 border-dashed border-slate-100">
                         <div class="text-center">
                             <span class="block text-2xl md:text-3xl font-black text-slate-900" id="post-count">0</span>
-                            <span class="text-[8px] md:text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest">Reports</span>
+                            <span
+                                class="text-[8px] md:text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest">Posts</span>
                         </div>
                         <div class="text-center">
                             <span class="block text-2xl md:text-3xl font-black text-slate-900">0</span>
-                            <span class="text-[8px] md:text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest">Citations</span>
+                            <span
+                                class="text-[8px] md:text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest">Views</span>
                         </div>
                     </div>
 
                     <div class="mt-8">
-                        <h3 class="text-[9px] md:text-[10px] font-mono font-black tracking-[0.3em] text-slate-400 uppercase mb-4">Technical_Bio</h3>
-                        <p class="text-sm font-medium text-slate-500 leading-relaxed border-l-2 border-slate-100 pl-4 italic" id="user-bio">
-                            "Initial personnel profile created. Awaiting expertise documentation."
+                        <h3
+                            class="text-[9px] md:text-[10px] font-mono font-black tracking-[0.3em] text-slate-400 uppercase mb-4">
+                            About Me</h3>
+                        <p class="text-sm font-medium text-slate-500 leading-relaxed border-l-2 border-slate-100 pl-4 italic"
+                            id="user-bio">
+                            "Profile created. Please add your background info."
                         </p>
                     </div>
 
-                    <button onclick="edit_profile_modal.showModal()" class="btn btn-neutral btn-block btn-sm mt-8 rounded-none font-black uppercase tracking-widest text-[9px] h-12">Update_Registry_File</button>
+                    <button onclick="edit_profile_modal.showModal()"
+                        class="btn btn-neutral btn-block btn-sm mt-8 rounded-none font-black uppercase tracking-widest text-[9px] h-12">Edit
+                        Profile</button>
                 </div>
 
                 <div class="bg-slate-900 p-8 text-white">
                     <div class="flex items-center gap-3 mb-4">
                         <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                        <span class="text-[9px] font-mono font-black uppercase tracking-[0.2em]">System_Authorized</span>
+                        <span class="text-[9px] font-mono font-black uppercase tracking-[0.2em]">Verified</span>
                     </div>
                     <p class="text-[10px] text-slate-400 leading-relaxed uppercase">
-                        All technical contributions are logged and timestamped within the central engineering registry.
+                        All your posts are securely saved and tracked.
                     </p>
                 </div>
             </div>
@@ -124,8 +148,8 @@
             <!-- Main: User's Posts -->
             <div class="lg:col-span-8 space-y-12">
                 <div class="flex items-center justify-between border-b-4 border-slate-900 pb-6">
-                    <h2 class="text-3xl font-black text-slate-900 uppercase">Publication History</h2>
-                    <span class="bg-slate-900 text-white text-[10px] font-mono font-bold px-3 py-1">REG_HIST_01</span>
+                    <h2 class="text-3xl font-black text-slate-900 uppercase">Your Posts</h2>
+                    <span class="bg-slate-900 text-white text-[10px] font-mono font-bold px-3 py-1">HISTORY</span>
                 </div>
 
                 <div id="user-posts-container" class="space-y-8">
@@ -143,45 +167,63 @@
 
     <!-- Edit Profile Modal -->
     <dialog id="edit_profile_modal" class="modal">
-        <div class="modal-box bg-white rounded-none border-4 border-slate-900 p-10 max-w-lg shadow-[16px_16px_0px_0px_rgba(15,23,42,1)]">
+        <div
+            class="modal-box bg-white rounded-none border-4 border-slate-900 p-10 max-w-lg shadow-[16px_16px_0px_0px_rgba(15,23,42,1)]">
             <div class="flex items-center gap-3 mb-8 border-l-4 border-blue-600 pl-4">
-                <h3 class="text-2xl font-black text-slate-900 uppercase tracking-tighter">Update Registry File</h3>
+                <h3 class="text-2xl font-black text-slate-900 uppercase tracking-tighter">Edit Your Profile</h3>
             </div>
             <form id="edit-profile-form" class="space-y-6">
                 <div class="form-control w-full">
                     <label class="label">
-                        <span class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Full_Name</span>
+                        <span
+                            class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Name</span>
                     </label>
-                    <input type="text" id="edit-name" class="input input-bordered w-full bg-slate-50 border-2 border-slate-900 rounded-none font-bold" required />
+                    <input type="text" id="edit-name"
+                        class="input input-bordered w-full bg-slate-50 border-2 border-slate-900 rounded-none font-bold"
+                        required />
                 </div>
                 <div class="form-control w-full">
                     <label class="label">
-                        <span class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Expertise_Role</span>
+                        <span
+                            class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Job
+                            Title / Expertise</span>
                     </label>
-                    <input type="text" id="edit-expertise" placeholder="e.g. Senior Power Systems Engineer" class="input input-bordered w-full bg-slate-50 border-2 border-slate-900 rounded-none font-bold" />
+                    <input type="text" id="edit-expertise" placeholder="e.g. Senior Power Systems Engineer"
+                        class="input input-bordered w-full bg-slate-50 border-2 border-slate-900 rounded-none font-bold" />
                 </div>
                 <div class="form-control w-full">
                     <label class="label">
-                        <span class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Avatar_Registry_Upload</span>
+                        <span
+                            class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Profile
+                            Picture</span>
                     </label>
                     <div class="flex items-center gap-4">
-                        <label class="btn btn-neutral btn-sm rounded-none border-2 border-slate-900 bg-white text-slate-900 hover:bg-slate-50 font-black uppercase tracking-widest text-[9px] h-10 px-4">
-                            Select_Local_File
+                        <label
+                            class="btn btn-neutral btn-sm rounded-none border-2 border-slate-900 bg-white text-slate-900 hover:bg-slate-50 font-black uppercase tracking-widest text-[9px] h-10 px-4">
+                            Choose Image
                             <input type="file" id="edit-avatar-file" accept="image/*" class="hidden" />
                         </label>
-                        <div id="avatar-file-name" class="text-[9px] font-mono text-slate-400 uppercase truncate">NO_FILE_SELECTED</div>
+                        <div id="avatar-file-name" class="text-[9px] font-mono text-slate-400 uppercase truncate">No
+                            image chosen</div>
                     </div>
                     <input type="hidden" id="edit-avatar" />
                 </div>
                 <div class="form-control w-full">
                     <label class="label">
-                        <span class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Technical_Bio_Summary</span>
+                        <span
+                            class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Short
+                            Bio</span>
                     </label>
-                    <textarea id="edit-bio" class="textarea textarea-bordered h-32 bg-slate-50 border-2 border-slate-900 rounded-none font-medium" placeholder="Briefly describe your technical background..."></textarea>
+                    <textarea id="edit-bio"
+                        class="textarea textarea-bordered h-32 bg-slate-50 border-2 border-slate-900 rounded-none font-medium"
+                        placeholder="Briefly describe your technical background..."></textarea>
                 </div>
                 <div class="modal-action flex gap-4 pt-4">
-                    <button type="button" onclick="edit_profile_modal.close()" class="btn btn-ghost font-black uppercase tracking-widest text-[10px]">Cancel_Update</button>
-                    <button type="submit" id="save-profile-btn" class="btn btn-primary px-8 font-black uppercase tracking-widest text-[10px] rounded-none border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">Commit_Changes</button>
+                    <button type="button" onclick="edit_profile_modal.close()"
+                        class="btn btn-ghost font-black uppercase tracking-widest text-[10px]">Cancel</button>
+                    <button type="submit" id="save-profile-btn"
+                        class="btn btn-primary px-8 font-black uppercase tracking-widest text-[10px] rounded-none border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">Save
+                        Profile</button>
                 </div>
             </form>
         </div>
@@ -201,10 +243,10 @@
         let selectedAvatarFile = null;
 
         window.handleDeletePost = async (postId) => {
-            if (confirm('CRITICAL_ACTION: Are you sure you want to PERMANENTLY delete this report from the registry?')) {
+            if (confirm('Warning: Are you sure you want to permanently delete this post?')) {
                 const { error } = await deletePost(postId);
                 if (error) {
-                    alert('DELETE_FAILED: ' + error.message);
+                    alert('Delete Failed: ' + error.message);
                 } else {
                     location.reload();
                 }
@@ -219,7 +261,7 @@
             const authNav = document.getElementById('auth-nav');
             const { data: navProfile } = await getProfile(user.id);
             const navAvatar = navProfile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
-            
+
             authNav.innerHTML = `
                 <div class="dropdown dropdown-end">
                     <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100 hover:border-blue-600">
@@ -228,11 +270,11 @@
                         </div>
                     </div>
                     <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
-                        <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Operator Session</li>
+                        <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Account Session</li>
                         <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest hover:text-blue-600 transition-colors">Profile</a></li>
-                        <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest hover:text-blue-600 transition-colors">Draft Report</a></li>
+                        <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest hover:text-blue-600 transition-colors">Write Post</a></li>
                         <div class="divider my-2"></div>
-                        <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50">Terminate Session</button></li>
+                        <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50">Log Out</button></li>
                     </ul>
                 </div>
             `;
@@ -243,7 +285,7 @@
             // Handle Avatar File Selection
             const avatarInput = document.getElementById('edit-avatar-file');
             const avatarNameDisplay = document.getElementById('avatar-file-name');
-            
+
             avatarInput.onchange = (e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -254,11 +296,11 @@
 
             // Fetch Profile Data
             const { data: profile } = await getProfile(user.id);
-            
+
             const name = profile?.full_name || profile?.name || user.user_metadata?.full_name || user.email.split('@')[0];
             const avatar = profile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
             const expertise = profile?.expertise || 'Field Engineer';
-            const bio = profile?.bio || '"Initial personnel profile created. Awaiting expertise documentation and technical background information."';
+            const bio = profile?.bio || '"Profile created. Please add your background info and technical background information."';
 
             document.getElementById('user-name').innerText = name;
             document.getElementById('user-expertise').innerText = expertise;
@@ -268,7 +310,7 @@
             // Fill modal
             document.getElementById('edit-name').value = name;
             document.getElementById('edit-expertise').value = expertise === 'Field Engineer' ? '' : expertise;
-            document.getElementById('edit-avatar').value = avatar; 
+            document.getElementById('edit-avatar').value = avatar;
             document.getElementById('edit-bio').value = profile?.bio || '';
 
             // Fetch user posts
@@ -278,7 +320,7 @@
             const citationCount = document.querySelector('.grid-cols-2 .text-center:last-child span');
 
             if (error) {
-                container.innerHTML = `<div class="alert alert-error">FAILED_TO_LOAD_REGISTRY: ${error.message}</div>`;
+                container.innerHTML = `<div class="alert alert-error">FAILED_TO_LOAD: ${error.message}</div>`;
                 return;
             }
 
@@ -291,8 +333,8 @@
             if (!posts || posts.length === 0) {
                 container.innerHTML = `
                     <div class="text-center py-20 bg-white border-2 border-slate-200 border-dashed">
-                        <p class="text-slate-400 font-mono italic text-sm mb-6">No technical reports published yet.</p>
-                        <a href="create-post.html" class="btn btn-neutral rounded-none btn-sm font-black uppercase tracking-widest text-[10px] h-10 px-8">Submit First Report</a>
+                        <p class="text-slate-400 font-mono italic text-sm mb-6">No articles published yet.</p>
+                        <a href="create-post.html" class="btn btn-neutral rounded-none btn-sm font-black uppercase tracking-widest text-[10px] h-10 px-8">Create First Post</a>
                     </div>
                 `;
             } else {
@@ -300,7 +342,7 @@
                     const imgMatch = post.content ? post.content.match(/<img[^>]+src="([^">]+)"/) : null;
                     const mdMatch = post.content ? post.content.match(/!\[.*?\]\((.*?)\)/) : null;
                     const thumbnail = post.featured_image || (imgMatch ? imgMatch[1] : (mdMatch ? mdMatch[1] : `https://images.unsplash.com/photo-${getPostImageId(post.category_id)}?auto=format&fit=crop&q=80&w=400`));
-                    
+
                     return `
                     <div class="bg-white p-6 border-2 border-slate-900 shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] group flex gap-6">
                         <div class="w-24 h-24 flex-shrink-0 border border-slate-100 overflow-hidden">
@@ -340,7 +382,7 @@
                 e.preventDefault();
                 const saveBtn = document.getElementById('save-profile-btn');
                 saveBtn.disabled = true;
-                saveBtn.innerHTML = '<span class="loading loading-spinner"></span> UPDATING...';
+                saveBtn.innerHTML = '<span class="loading loading-spinner"></span> Saving...';
 
                 try {
                     let avatarUrl = document.getElementById('edit-avatar').value;
@@ -359,7 +401,7 @@
                         const { data: { publicUrl } } = supabase.storage
                             .from('blog-assets')
                             .getPublicUrl(filePath);
-                        
+
                         avatarUrl = publicUrl;
                     }
 
@@ -375,9 +417,9 @@
 
                     location.reload();
                 } catch (err) {
-                    alert('REGISTRY_UPDATE_FAILED: ' + err.message);
+                    alert('Profile Save Failed: ' + err.message);
                     saveBtn.disabled = false;
-                    saveBtn.innerText = 'Commit_Changes';
+                    saveBtn.innerText = 'Save Profile';
                 }
             };
         }
@@ -385,4 +427,5 @@
         init();
     </script>
 </body>
+
 </html>

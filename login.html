@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In | Voltage & Current</title>
-    
+
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <script>
         tailwind.config = {
             theme: {
@@ -21,15 +22,20 @@
         }
     </script>
 </head>
+
 <body class="bg-white text-slate-900 font-sans min-h-screen flex flex-col">
 
     <!-- Top Editorial Bar -->
     <div class="bg-slate-900 py-2 text-white overflow-hidden whitespace-nowrap">
         <div class="flex animate-[scroll_30s_linear_infinite]">
-            <span class="mx-12 text-[10px] font-mono font-bold tracking-[0.3em] opacity-80 uppercase">LATEST_RESEARCH: Advancements in Wide-Bandgap Semiconductors</span>
-            <span class="mx-12 text-[10px] font-mono font-bold tracking-[0.3em] opacity-80 uppercase">SYSTEM_STATUS: Nominal (99.9% Uptime)</span>
-            <span class="mx-12 text-[10px] font-mono font-bold tracking-[0.3em] opacity-80 uppercase">CONFERENCE_ALERT: IEEE PES General Meeting 2026</span>
-            <span class="mx-12 text-[10px] font-mono font-bold tracking-[0.3em] opacity-80 uppercase">TECHNICAL_UPDATE: New Smart Grid Standards Published</span>
+            <span class="mx-12 text-[10px] font-mono font-bold tracking-[0.3em] opacity-80 uppercase">LATEST_RESEARCH:
+                Advancements in Wide-Bandgap Semiconductors</span>
+            <span class="mx-12 text-[10px] font-mono font-bold tracking-[0.3em] opacity-80 uppercase">SYSTEM_STATUS:
+                Nominal (99.9% Uptime)</span>
+            <span class="mx-12 text-[10px] font-mono font-bold tracking-[0.3em] opacity-80 uppercase">CONFERENCE_ALERT:
+                IEEE PES General Meeting 2026</span>
+            <span class="mx-12 text-[10px] font-mono font-bold tracking-[0.3em] opacity-80 uppercase">TECHNICAL_UPDATE:
+                New Smart Grid Standards Published</span>
         </div>
     </div>
 
@@ -40,24 +46,34 @@
                 <!-- Left: Logo -->
                 <div class="flex justify-start shrink-0">
                     <a href="index.html" class="flex items-center gap-3">
-                        <span class="bg-slate-900 text-white w-10 h-10 flex items-center justify-center font-black text-xl">V</span>
+                        <span
+                            class="bg-slate-900 text-white w-10 h-10 flex items-center justify-center font-black text-xl">V</span>
                         <div class="flex flex-col">
-                            <span class="font-black text-2xl tracking-tighter leading-none uppercase">Voltage & Current</span>
-                            <span class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase hidden sm:block">Technical Publication Registry</span>
+                            <span class="font-black text-2xl tracking-tighter leading-none uppercase">Voltage &
+                                Current</span>
+                            <span
+                                class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase hidden sm:block">Engineering
+                                Blog</span>
                         </div>
                     </a>
                 </div>
-                
+
                 <!-- Center: Main Nav -->
-                <div class="hidden lg:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2" id="nav-links">
-                    <a href="index.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Archive</a>
-                    <a href="resources.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Resources</a>
-                    <a href="about.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">About</a>
+                <div class="hidden lg:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2"
+                    id="nav-links">
+                    <a href="index.html"
+                        class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Archive</a>
+                    <a href="resources.html"
+                        class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Resources</a>
+                    <a href="about.html"
+                        class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">About</a>
                 </div>
 
                 <!-- Right: Auth -->
                 <div class="flex items-center justify-end gap-6" id="auth-nav">
-                    <a href="signup.html" class="hidden lg:inline-flex btn btn-neutral btn-sm rounded-none px-6 text-[11px] font-bold uppercase tracking-widest">Join Registry</a>
+                    <a href="signup.html"
+                        class="hidden lg:inline-flex btn btn-neutral btn-sm rounded-none px-6 text-[11px] font-bold uppercase tracking-widest">Join
+                        Now</a>
                 </div>
             </div>
         </div>
@@ -67,11 +83,13 @@
         <div class="w-full max-w-md relative">
             <!-- Technical Decorative Elements -->
             <div class="absolute -top-6 -left-6 w-12 h-12 border-t-2 border-l-2 border-slate-200 hidden sm:block"></div>
-            <div class="absolute -bottom-6 -right-6 w-12 h-12 border-b-2 border-r-2 border-slate-200 hidden sm:block"></div>
+            <div class="absolute -bottom-6 -right-6 w-12 h-12 border-b-2 border-r-2 border-slate-200 hidden sm:block">
+            </div>
 
-            <div class="border-2 border-slate-900 bg-white shadow-none sm:shadow-[12px_12px_0px_0px_rgba(15,23,42,1)] relative overflow-hidden">
+            <div
+                class="border-2 border-slate-900 bg-white shadow-none sm:shadow-[12px_12px_0px_0px_rgba(15,23,42,1)] relative overflow-hidden">
                 <div class="bg-slate-900 text-white px-6 py-2 flex justify-between items-center">
-                    <span class="text-[9px] font-mono font-black tracking-[0.3em] uppercase">Auth_Module_V2.0</span>
+                    <span class="text-[9px] font-mono font-black tracking-[0.3em] uppercase">Login</span>
                     <div class="flex gap-1">
                         <div class="w-2 h-2 rounded-full bg-blue-500"></div>
                         <div class="w-2 h-2 rounded-full bg-slate-700"></div>
@@ -81,46 +99,67 @@
                 <div class="p-6 sm:p-12">
                     <div class="mb-8 sm:mb-10">
                         <div class="inline-flex items-center gap-2 border-l-4 border-blue-600 pl-4 mb-4">
-                            <span class="text-[10px] font-mono font-black tracking-[0.4em] text-slate-400 uppercase">Status: Awaiting_Credentials</span>
+                            <span
+                                class="text-[10px] font-mono font-black tracking-[0.4em] text-slate-400 uppercase">Please
+                                Sign In</span>
                         </div>
-                        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-2">Operator Login</h1>
-                        <p class="text-slate-500 text-sm font-medium">Synchronize with the central registry node.</p>
+                        <h1
+                            class="text-3xl sm:text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-2">
+                            Member Login</h1>
+                        <p class="text-slate-500 text-sm font-medium">Log in to your account.</p>
                     </div>
 
                     <form id="login-form" class="space-y-6">
                         <div class="form-control w-full">
                             <label class="label pb-1">
-                                <span class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Registry_ID (Email)</span>
+                                <span
+                                    class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Email
+                                    Address</span>
                             </label>
-                            <input type="email" id="email" placeholder="engineer@institution.edu" class="input input-bordered w-full bg-white border-2 border-slate-900 rounded-none focus:outline-none focus:border-blue-600 transition-all font-bold text-sm h-12" required />
+                            <input type="email" id="email" placeholder="engineer@institution.edu"
+                                class="input input-bordered w-full bg-white border-2 border-slate-900 rounded-none focus:outline-none focus:border-blue-600 transition-all font-bold text-sm h-12"
+                                required />
                         </div>
 
                         <div class="form-control w-full">
                             <label class="label pb-1">
-                                <span class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Access_Key</span>
-                                <a href="#" class="label-text-alt text-blue-600 font-bold uppercase text-[9px] tracking-widest">Forgot?</a>
+                                <span
+                                    class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Password</span>
+                                <a href="#"
+                                    class="label-text-alt text-blue-600 font-bold uppercase text-[9px] tracking-widest">Forgot?</a>
                             </label>
-                            <input type="password" id="password" placeholder="••••••••" class="input input-bordered w-full bg-white border-2 border-slate-900 rounded-none focus:outline-none focus:border-blue-600 transition-all font-bold text-sm h-12" required />
+                            <input type="password" id="password" placeholder="••••••••"
+                                class="input input-bordered w-full bg-white border-2 border-slate-900 rounded-none focus:outline-none focus:border-blue-600 transition-all font-bold text-sm h-12"
+                                required />
                         </div>
 
-                        <button type="submit" id="submit-btn" class="btn btn-neutral w-full h-14 rounded-none font-black uppercase tracking-[0.2em] text-[11px] shadow-[4px_4px_0px_0px_rgba(37,99,235,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
-                            Authenticate_Session
+                        <button type="submit" id="submit-btn"
+                            class="btn btn-neutral w-full h-14 rounded-none font-black uppercase tracking-[0.2em] text-[11px] shadow-[4px_4px_0px_0px_rgba(37,99,235,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
+                            Sign In
                         </button>
                     </form>
 
                     <div class="mt-10 sm:mt-12 pt-8 border-t-2 border-dashed border-slate-100">
-                        <p class="text-[10px] font-mono font-black text-slate-400 uppercase tracking-widest mb-4">New Personnel?</p>
+                        <p class="text-[10px] font-mono font-black text-slate-400 uppercase tracking-widest mb-4">New
+                            User?</p>
                         <a href="signup.html" class="flex items-center justify-between group">
-                            <span class="text-sm font-bold text-slate-900 uppercase tracking-tight group-hover:text-blue-600 transition-colors">Request Registry Access</span>
-                            <svg class="w-4 h-4 text-blue-600 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                            <span
+                                class="text-sm font-bold text-slate-900 uppercase tracking-tight group-hover:text-blue-600 transition-colors">Create
+                                an account</span>
+                            <svg class="w-4 h-4 text-blue-600 group-hover:translate-x-1 transition-transform"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                    d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                            </svg>
                         </a>
                     </div>
                 </div>
             </div>
-            
+
             <div class="mt-8 flex justify-center items-center gap-4">
                 <div class="h-px w-8 bg-slate-200"></div>
-                <p class="text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em]">Secure_Channel_Active</p>
+                <p class="text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em]">SECURE_CONNECTION
+                </p>
                 <div class="h-px w-8 bg-slate-200"></div>
             </div>
         </div>
@@ -129,13 +168,15 @@
     <footer class="bg-slate-950 text-white py-24 border-t-8 border-blue-600">
         <div class="max-w-[1400px] mx-auto px-6 sm:px-10 text-center">
             <div class="flex items-center gap-3 mb-8 justify-center">
-                <span class="bg-white text-slate-950 w-8 h-8 flex items-center justify-center font-black text-lg">V</span>
+                <span
+                    class="bg-white text-slate-950 w-8 h-8 flex items-center justify-center font-black text-lg">V</span>
                 <span class="text-2xl font-black uppercase tracking-tighter">Voltage & Current</span>
             </div>
             <p class="text-slate-400 max-w-2xl mx-auto text-sm leading-relaxed mb-10 uppercase">
                 The definitive technical repository for electrical engineering research.
             </p>
-            <p class="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.2em]">© 2025 VOLTAGE_CURRENT_TECHNICAL_REGISTRY.</p>
+            <p class="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.2em]">© 2025 VOLTAGE &
+                CURRENT ENGINEERING BLOG.</p>
         </div>
     </footer>
 
@@ -154,14 +195,14 @@
             const password = document.getElementById('password').value;
 
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="loading loading-spinner loading-xs mr-2"></span> SYNCING...';
+            submitBtn.innerHTML = '<span class="loading loading-spinner loading-xs mr-2"></span> Logging in...';
 
             const { data, error } = await signIn(email, password);
 
             if (error) {
-                alert('AUTHENTICATION_FAILED: ' + error.message);
+                alert('Login Failed: ' + error.message);
                 submitBtn.disabled = false;
-                submitBtn.innerText = 'AUTHENTICATE_SESSION';
+                submitBtn.innerText = 'Sign In';
             } else {
                 window.location.href = 'index.html';
             }
@@ -170,13 +211,20 @@
 
     <style>
         @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
         }
+
         .bg-grid-subtle {
             background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
             background-size: 40px 40px;
         }
     </style>
 </body>
+
 </html>

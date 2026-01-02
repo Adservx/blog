@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Report | Voltage & Current</title>
-    
+    <title>New Post | Voltage & Current</title>
+
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- EasyMDE for Rich Text -->
     <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
     <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
@@ -35,6 +36,7 @@
             min-height: 400px;
             font-family: 'JetBrains Mono', monospace;
         }
+
         .editor-toolbar {
             border: none;
             border-bottom: 2px solid #0f172a;
@@ -45,13 +47,16 @@
             flex-wrap: wrap;
             gap: 4px;
         }
-        html, body {
+
+        html,
+        body {
             overflow-x: hidden;
             width: 100%;
             position: relative;
         }
     </style>
 </head>
+
 <body class="bg-white text-slate-900 font-sans min-h-screen">
 
     <nav class="border-b border-slate-200 sticky top-0 z-50 bg-white/90 backdrop-blur-md">
@@ -59,18 +64,27 @@
             <div class="flex justify-between h-20 items-center">
                 <div class="flex justify-start items-center gap-2 sm:gap-8 shrink-0">
                     <a href="index.html" class="flex items-center gap-2 sm:gap-3">
-                        <span class="bg-slate-900 text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-black text-lg sm:text-xl shrink-0">V</span>
+                        <span
+                            class="bg-slate-900 text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-black text-lg sm:text-xl shrink-0">V</span>
                         <div class="flex flex-col">
-                            <span class="font-black text-base sm:text-2xl tracking-tighter leading-none uppercase truncate max-w-[150px] sm:max-w-none">Voltage & Current</span>
-                            <span class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase hidden sm:block">Technical Publication Registry</span>
+                            <span
+                                class="font-black text-base sm:text-2xl tracking-tighter leading-none uppercase truncate max-w-[150px] sm:max-w-none">Voltage
+                                & Current</span>
+                            <span
+                                class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase hidden sm:block">Engineering
+                                Blog</span>
                         </div>
                     </a>
                 </div>
 
-                <div class="hidden lg:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2" id="nav-links">
-                    <a href="index.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Archive</a>
-                    <a href="resources.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Resources</a>
-                    <a href="about.html" class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">About</a>
+                <div class="hidden lg:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2"
+                    id="nav-links">
+                    <a href="index.html"
+                        class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Home</a>
+                    <a href="resources.html"
+                        class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Resources</a>
+                    <a href="about.html"
+                        class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">About</a>
                 </div>
 
                 <div class="flex items-center justify-end gap-6" id="auth-nav">
@@ -83,52 +97,72 @@
     <header class="bg-grid-subtle border-b-2 border-slate-900 py-12 relative overflow-hidden">
         <div class="max-w-[1400px] mx-auto px-6 sm:px-10 relative">
             <div class="inline-flex items-center gap-3 border-l-4 border-blue-600 pl-4 mb-4">
-                <span class="text-[10px] font-mono font-black tracking-[0.4em] text-slate-500 uppercase">Module: Report_Drafting_Unit_V2.0</span>
+                <span class="text-[10px] font-mono font-black tracking-[0.4em] text-slate-500 uppercase">New Post
+                    Editor</span>
             </div>
-            <h1 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter uppercase">Submit Technical <span class="text-blue-600">Research</span></h1>
+            <h1 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter uppercase">Create New Engineering
+                <span class="text-blue-600">Post</span></h1>
         </div>
     </header>
 
     <main class="max-w-[1400px] mx-auto px-4 sm:px-10 py-16">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
-            
+
             <!-- Main Drafting Area -->
             <div class="lg:col-span-8">
-                <div class="border-2 border-slate-900 p-8 md:p-12 bg-white shadow-[12px_12px_0px_0px_rgba(15,23,42,1)] relative">
+                <div
+                    class="border-2 border-slate-900 p-8 md:p-12 bg-white shadow-[12px_12px_0px_0px_rgba(15,23,42,1)] relative">
                     <div class="absolute top-4 left-4 w-10 h-10 border-t border-l border-slate-200"></div>
-                    
+
                     <div class="space-y-10">
                         <div class="space-y-4">
-                            <label class="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-slate-400">Publication_Title</label>
-                            <input type="text" id="post-title" placeholder="e.g. Advancements in Solid-State Transformer Design" 
+                            <label
+                                class="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-slate-400">Post
+                                Title</label>
+                            <input type="text" id="post-title"
+                                placeholder="e.g. Advancements in Solid-State Transformer Design"
                                 class="w-full text-3xl md:text-4xl font-black text-slate-900 border-none focus:ring-0 placeholder:text-slate-100 p-0 break-words" />
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 py-8 border-y-2 border-dashed border-slate-100">
+                        <div
+                            class="grid grid-cols-1 md:grid-cols-2 gap-8 py-8 border-y-2 border-dashed border-slate-100">
                             <div class="form-control w-full">
                                 <label class="label">
-                                    <span class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Technical_Category</span>
+                                    <span
+                                        class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Category</span>
                                 </label>
-                                <select id="post-category" class="select select-bordered w-full bg-slate-50 border-2 border-slate-900 rounded-none font-bold uppercase tracking-wider text-xs">
+                                <select id="post-category"
+                                    class="select select-bordered w-full bg-slate-50 border-2 border-slate-900 rounded-none font-bold uppercase tracking-wider text-xs">
                                     <!-- Populated dynamically -->
                                 </select>
                             </div>
                             <div class="form-control w-full">
                                 <label class="label">
-                                    <span class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Header_Image_Upload</span>
+                                    <span
+                                        class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Header
+                                        Image</span>
                                 </label>
                                 <div class="flex flex-col gap-4">
                                     <div class="flex items-center gap-4">
-                                        <label class="btn btn-neutral rounded-none border-2 border-slate-900 bg-white text-slate-900 hover:bg-slate-50 font-black uppercase tracking-widest text-[10px] h-12 flex-1">
-                                            Select_Local_File
+                                        <label
+                                            class="btn btn-neutral rounded-none border-2 border-slate-900 bg-white text-slate-900 hover:bg-slate-50 font-black uppercase tracking-widest text-[10px] h-12 flex-1">
+                                            Choose Image
                                             <input type="file" id="post-image-file" accept="image/*" class="hidden" />
                                         </label>
-                                        <div id="file-name-display" class="text-[9px] font-mono text-slate-400 uppercase truncate max-w-[150px]">NO_FILE_SELECTED</div>
+                                        <div id="file-name-display"
+                                            class="text-[9px] font-mono text-slate-400 uppercase truncate max-w-[150px]">
+                                            NO_IMAGE_SELECTED</div>
                                     </div>
-                                    <div id="image-preview-container" class="hidden border-2 border-slate-900 aspect-[21/9] overflow-hidden relative">
+                                    <div id="image-preview-container"
+                                        class="hidden border-2 border-slate-900 aspect-[21/9] overflow-hidden relative">
                                         <img id="image-preview" src="" class="w-full h-full object-cover" />
-                                        <button id="remove-image" class="absolute top-2 right-2 bg-slate-900 text-white p-1 hover:bg-red-600">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l18 18" /></svg>
+                                        <button id="remove-image"
+                                            class="absolute top-2 right-2 bg-slate-900 text-white p-1 hover:bg-red-600">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l18 18" />
+                                            </svg>
                                         </button>
                                     </div>
                                 </div>
@@ -136,7 +170,9 @@
                         </div>
 
                         <div class="space-y-4">
-                            <label class="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-slate-400">Technical_Content_Markdown</label>
+                            <label
+                                class="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-slate-400">Post
+                                Content (Markdown)</label>
                             <div class="border-2 border-slate-900">
                                 <textarea id="post-editor"></textarea>
                             </div>
@@ -146,20 +182,25 @@
             </div>
 
             <aside class="lg:col-span-4 space-y-8">
-                <div class="border-2 border-slate-900 p-8 bg-slate-50 shadow-[8px_8px_0px_0px_rgba(37,99,235,1)] relative">
-                    <h3 class="text-[10px] font-mono font-black tracking-[0.3em] text-slate-400 uppercase mb-6">Drafting Requirements</h3>
+                <div
+                    class="border-2 border-slate-900 p-8 bg-slate-50 shadow-[8px_8px_0px_0px_rgba(37,99,235,1)] relative">
+                    <h3 class="text-[10px] font-mono font-black tracking-[0.3em] text-slate-400 uppercase mb-6">Writing
+                        Tips</h3>
                     <ul class="space-y-4">
                         <li class="flex items-start gap-3">
                             <input type="checkbox" checked class="checkbox checkbox-xs rounded-none mt-1" />
-                            <span class="text-[11px] font-bold uppercase tracking-tight leading-relaxed">Ensure all mathematical equations use LaTeX formatting.</span>
+                            <span class="text-[11px] font-bold uppercase tracking-tight leading-relaxed">Ensure all
+                                mathematical equations use LaTeX formatting.</span>
                         </li>
                         <li class="flex items-start gap-3">
                             <input type="checkbox" checked class="checkbox checkbox-xs rounded-none mt-1" />
-                            <span class="text-[11px] font-bold uppercase tracking-tight leading-relaxed">Provide high-resolution technical diagrams (min. 1200px).</span>
+                            <span class="text-[11px] font-bold uppercase tracking-tight leading-relaxed">Provide
+                                high-resolution technical diagrams (min. 1200px).</span>
                         </li>
                         <li class="flex items-start gap-3">
                             <input type="checkbox" checked class="checkbox checkbox-xs rounded-none mt-1" />
-                            <span class="text-[11px] font-bold uppercase tracking-tight leading-relaxed">Cite all IEEE or IEC standards where applicable.</span>
+                            <span class="text-[11px] font-bold uppercase tracking-tight leading-relaxed">Cite all IEEE
+                                or IEC standards where applicable.</span>
                         </li>
                     </ul>
                 </div>
@@ -167,7 +208,8 @@
                 <div class="bg-slate-900 p-8 text-white">
                     <h3 class="text-xl font-bold mb-4 uppercase">Submission Notice</h3>
                     <p class="text-slate-400 text-xs leading-relaxed uppercase mb-6">
-                        Upon publication, your report will enter the peer-review queue. Senior staff will validate technical findings within 48 standard operating hours.
+                        Upon publication, your post will be reviewed by our team. Senior staff will check technical
+                        findings within 48 hours.
                     </p>
                     <div class="h-1 w-full bg-blue-600"></div>
                 </div>
@@ -178,18 +220,22 @@
     <footer class="bg-slate-950 text-white py-24 mt-20 border-t-8 border-blue-600">
         <div class="max-w-[1400px] mx-auto px-6 sm:px-10 text-center">
             <div class="flex items-center gap-3 mb-8 justify-center">
-                <span class="bg-white text-slate-950 w-8 h-8 flex items-center justify-center font-black text-lg">V</span>
+                <span
+                    class="bg-white text-slate-950 w-8 h-8 flex items-center justify-center font-black text-lg">V</span>
                 <span class="text-2xl font-black uppercase tracking-tighter">Voltage & Current</span>
             </div>
             <p class="text-slate-400 max-w-2xl mx-auto text-sm leading-relaxed mb-10 uppercase">
                 The definitive technical repository for electrical engineering research.
             </p>
-            <p class="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.2em]">© 2025 VOLTAGE_CURRENT_TECHNICAL_REGISTRY.</p>
+            <p class="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.2em]">© 2025 VOLTAGE &
+                CURRENT ENGINEERING BLOG.</p>
         </div>
     </footer>
 
     <div class="fixed bottom-10 right-10 z-[100]">
-        <button id="publish-btn" class="btn btn-primary px-12 h-16 rounded-none border-4 border-slate-900 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] font-black uppercase tracking-[0.2em] text-sm">Publish_Report</button>
+        <button id="publish-btn"
+            class="btn btn-primary px-12 h-16 rounded-none border-4 border-slate-900 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] font-black uppercase tracking-[0.2em] text-sm">Publish
+            Post</button>
     </div>
 
     <script type="module">
@@ -215,7 +261,7 @@
             const authNav = document.getElementById('auth-nav');
             const { data: profile } = await getProfile(user.id);
             const avatar = profile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
-            
+
             authNav.innerHTML = `
                 <div class="dropdown dropdown-end">
                     <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100 hover:border-blue-600">
@@ -224,16 +270,16 @@
                         </div>
                     </div>
                     <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
-                        <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Operator Session</li>
+                        <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Account Session</li>
                         <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Profile</a></li>
-                        <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Draft Report</a></li>
+                        <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Write Post</a></li>
                         <div class="divider my-2"></div>
-                        <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50">Terminate Session</button></li>
+                        <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50">Log Out</button></li>
                     </ul>
                 </div>
             `;
             document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
-            
+
             setupMobileNav();
 
             // Load Categories
@@ -247,7 +293,7 @@
             const turndownService = new TurndownService({ headingStyle: 'atx', codeBlockStyle: 'fenced' });
             easyMDE = new EasyMDE({
                 element: document.getElementById('post-editor'),
-                placeholder: "Begin documenting your technical findings...",
+                placeholder: "Start writing your post...",
                 spellChecker: false,
                 status: false,
                 autosave: { enabled: !editingPostId, uniqueId: "ee-blog-draft", delay: 1000 },
@@ -265,9 +311,9 @@
                         const previewImage = document.getElementById('image-preview');
                         previewImage.src = post.featured_image;
                         previewContainer.classList.remove('hidden');
-                        document.getElementById('file-name-display').innerText = 'CURRENT_REGISTRY_IMAGE';
+                        document.getElementById('file-name-display').innerText = 'CURRENT_POST_IMAGE';
                     }
-                    document.getElementById('publish-btn').innerText = 'Update_Report';
+                    document.getElementById('publish-btn').innerText = 'Save Changes';
                 }
             }
 
@@ -295,7 +341,7 @@
             removeBtn.onclick = () => {
                 selectedFile = null;
                 fileInput.value = '';
-                fileNameDisplay.innerText = 'NO_FILE_SELECTED';
+                fileNameDisplay.innerText = 'NO_IMAGE_SELECTED';
                 previewContainer.classList.add('hidden');
                 previewImage.src = '';
             };
@@ -317,13 +363,13 @@
             const content = easyMDE.options.previewRender(easyMDE.value());
 
             if (!title || !easyMDE.value()) {
-                alert('CRITICAL_ERROR: Title and Content are mandatory.');
+                alert('Error: Title and Content are mandatory.');
                 return;
             }
 
             const btn = document.getElementById('publish-btn');
             btn.disabled = true;
-            btn.innerHTML = `<span class="loading loading-spinner"></span> PROCESSING...`;
+            btn.innerHTML = `<span class="loading loading-spinner"></span> Saving...`;
 
             try {
                 let imageUrl = null;
@@ -344,20 +390,21 @@
 
                 if (!editingPostId) postData.slug = slugify(title) + '-' + Math.random().toString(36).substring(7);
 
-                const { data, error } = editingPostId 
+                const { data, error } = editingPostId
                     ? await updatePost(editingPostId, postData)
                     : await createPost(postData);
 
                 if (error) throw error;
                 window.location.href = `post.html?slug=${editingPostId ? data[0].slug : postData.slug}`;
             } catch (err) {
-                alert('REGISTRY_ERROR: ' + err.message);
+                alert('Error: ' + err.message);
                 btn.disabled = false;
-                btn.innerText = editingPostId ? 'Update_Report' : 'Publish_Report';
+                btn.innerText = editingPostId ? 'Save Changes' : 'Publish Post';
             }
         };
 
         init();
     </script>
 </body>
+
 </html>
