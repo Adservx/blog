@@ -106,7 +106,8 @@ const MOCK_DATA = {
             view_count: 890,
             featured_image: 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?auto=format&fit=crop&q=80&w=1200'
         }
-    ]
+    ],
+    comments: JSON.parse(localStorage.getItem('mock_comments') || '[]')
 };
 
 // --- Mock Client Implementation ---
@@ -120,39 +121,39 @@ class MockSupabaseClient {
             },
             getSession: async () => {
                 const user = JSON.parse(localStorage.getItem('mock_user'));
-                const session = user ? { 
-                    access_token: 'mock_token', 
-                    user: user 
+                const session = user ? {
+                    access_token: 'mock_token',
+                    user: user
                 } : null;
                 return { data: { session }, error: null };
             },
             signInWithPassword: async ({ email, password }) => {
                 // If email matches the real user, use their ID
                 const isRealUser = email === 'imserv67@gmail.com';
-                const user = { 
-                    id: isRealUser ? 'imserv_user_01' : 'user_' + Math.random().toString(36).substr(2, 9), 
+                const user = {
+                    id: isRealUser ? 'imserv_user_01' : 'user_' + Math.random().toString(36).substr(2, 9),
                     email: email || 'imserv67@gmail.com',
-                    user_metadata: { 
-                        avatar_url: isRealUser ? 'https://api.dicebear.com/7.x/avataaars/svg?seed=imserv67' : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + email, 
+                    user_metadata: {
+                        avatar_url: isRealUser ? 'https://api.dicebear.com/7.x/avataaars/svg?seed=imserv67' : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + email,
                         full_name: isRealUser ? 'Lead Engineer' : email.split('@')[0]
                     }
                 };
                 localStorage.setItem('mock_user', JSON.stringify(user));
-                return { 
-                    data: { user, session: { access_token: 'mock_token', user } }, 
-                    error: null 
+                return {
+                    data: { user, session: { access_token: 'mock_token', user } },
+                    error: null
                 };
             },
             signUp: async ({ email, password, options }) => {
-                const user = { 
-                    id: 'user_' + Math.random().toString(36).substr(2, 9), 
+                const user = {
+                    id: 'user_' + Math.random().toString(36).substr(2, 9),
                     email: email,
                     user_metadata: options?.data || {}
                 };
                 localStorage.setItem('mock_user', JSON.stringify(user));
-                return { 
-                    data: { user, session: { access_token: 'mock_token', user } }, 
-                    error: null 
+                return {
+                    data: { user, session: { access_token: 'mock_token', user } },
+                    error: null
                 };
             },
             signOut: async () => {
@@ -160,10 +161,10 @@ class MockSupabaseClient {
                 return { error: null };
             },
             onAuthStateChange: (callback) => {
-                return { data: { subscription: { unsubscribe: () => {} } } };
+                return { data: { subscription: { unsubscribe: () => { } } } };
             }
         };
-        
+
         this.storage = {
             from: () => ({
                 upload: async () => ({ error: null }),
@@ -178,6 +179,10 @@ class MockSupabaseClient {
 
     async rpc(func, params) {
         console.log(`[MockRPC] Calling ${func}`, params);
+        if (func === 'increment_view_count') {
+            const post = MOCK_DATA.posts.find(p => p.id === params.post_id);
+            if (post) post.view_count = (post.view_count || 0) + 1;
+        }
         return { data: null, error: null };
     }
 }
@@ -192,21 +197,32 @@ class QueryBuilder {
         this.rangeEnd = null;
         this.isSingle = false;
         this.isMaybeSingle = false;
+        this.pendingOperation = null;
     }
 
     select(columns, options) {
         // In a real mock, we'd parse columns. Here we just attach relations if requested.
         this.selectOptions = options;
-        
+
+        // Refresh comments from localStorage in case they've been updated
+        if (this.table === 'comments' && !this.pendingOperation) {
+            this.data = JSON.parse(localStorage.getItem('mock_comments') || '[]');
+        }
+
+        this.applyJoins();
+        return this;
+    }
+
+    applyJoins() {
         // Simulating joins crudely for specific cases
         if (this.table === 'posts') {
             this.data = this.data.map(post => {
                 const profile = MOCK_DATA.profiles.find(p => p.id === post.user_id);
                 const category = MOCK_DATA.categories.find(c => c.id === post.category_id);
-                return { 
-                    ...post, 
-                    profiles: profile, 
-                    categories: category 
+                return {
+                    ...post,
+                    profiles: profile,
+                    categories: category
                 };
             });
         }
@@ -217,11 +233,14 @@ class QueryBuilder {
             });
         }
         if (this.table === 'comments') {
-             // Mock comments if needed, returning empty for now
-             this.data = []; 
+            this.data = this.data.map(comment => {
+                const profile = MOCK_DATA.profiles.find(p => p.id === comment.user_id) || {
+                    full_name: 'Guest User',
+                    avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.user_id}`
+                };
+                return { ...comment, profiles: profile };
+            });
         }
-        
-        return this;
     }
 
     eq(column, value) {
@@ -233,8 +252,8 @@ class QueryBuilder {
         // Very basic mock for search: title.ilike.%val%,content.ilike.%val%
         if (filterString.includes('ilike')) {
             const val = filterString.split('%')[1].toLowerCase();
-            this.data = this.data.filter(item => 
-                (item.title && item.title.toLowerCase().includes(val)) || 
+            this.data = this.data.filter(item =>
+                (item.title && item.title.toLowerCase().includes(val)) ||
                 (item.content && item.content.toLowerCase().includes(val))
             );
         }
@@ -266,47 +285,87 @@ class QueryBuilder {
         return this;
     }
 
-    async insert(rows) {
-        console.log(`[MockDB] Inserting into ${this.table}:`, rows);
-        return { data: rows, error: null };
+    insert(rows) {
+        this.pendingOperation = () => {
+            console.log(`[MockDB] Inserting into ${this.table}:`, rows);
+            const newRows = (Array.isArray(rows) ? rows : [rows]).map(row => ({
+                id: Math.floor(Math.random() * 1000000),
+                created_at: new Date().toISOString(),
+                ...row
+            }));
+
+            if (this.table === 'comments') {
+                const comments = JSON.parse(localStorage.getItem('mock_comments') || '[]');
+                comments.push(...newRows);
+                localStorage.setItem('mock_comments', JSON.stringify(comments));
+                this.data = newRows;
+            } else if (MOCK_DATA[this.table]) {
+                MOCK_DATA[this.table].push(...newRows);
+                this.data = newRows;
+            } else {
+                this.data = newRows;
+            }
+            return { error: null };
+        };
+        return this;
     }
-    
-    async update(data) {
-        console.log(`[MockDB] Updating ${this.table}:`, data);
-        return { data: [data], error: null };
+
+    update(values) {
+        this.pendingOperation = () => {
+            console.log(`[MockDB] Updating ${this.table}:`, values);
+            this.data = this.data.map(item => ({ ...item, ...values }));
+            return { error: null };
+        };
+        return this;
     }
-    
-    async delete() {
-        console.log(`[MockDB] Deleting from ${this.table}`);
-        return { error: null };
+
+    delete() {
+        this.pendingOperation = () => {
+            console.log(`[MockDB] Deleting from ${this.table}`);
+            this.data = [];
+            return { error: null };
+        };
+        return this;
     }
 
     // Allow awaiting the builder directly
-    then(resolve, reject) {
+    async then(resolve, reject) {
+        if (this.pendingOperation) {
+            const operationResult = this.pendingOperation();
+            if (operationResult.error) {
+                resolve({ data: null, error: operationResult.error });
+                return;
+            }
+            // Re-apply joins if a select was already called
+            if (this.selectOptions) {
+                this.applyJoins();
+            }
+        }
+
         const total = this.data.length;
         let result = this.data;
-        
+
         if (this.rangeStart !== null && this.rangeEnd !== null) {
             result = result.slice(this.rangeStart, this.rangeEnd + 1);
         }
 
         if (this.isSingle) {
             const item = result[0];
-            resolve({ 
-                data: item || null, 
+            resolve({
+                data: item || null,
                 error: item ? null : { message: 'Row not found', code: 'PGRST116' }
             });
         } else if (this.isMaybeSingle) {
             const item = result[0];
-            resolve({ 
-                data: item || null, 
+            resolve({
+                data: item || null,
                 error: null
             });
         } else {
-            resolve({ 
-                data: result, 
-                error: null, 
-                count: this.selectOptions?.count ? total : null 
+            resolve({
+                data: result,
+                error: null,
+                count: this.selectOptions?.count ? total : null
             });
         }
     }

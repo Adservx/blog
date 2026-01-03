@@ -60,7 +60,7 @@ function initCommonNav(session, authFunctions) {
 
 function getPostImageId(catId) {
     const id = parseInt(catId);
-    const imgs = { 
+    const imgs = {
         1: '1473341304170-971dccb5ac1e', // Power Systems
         2: '1517420812313-8fc54b172db1', // Electronics
         3: '1518770660439-4636190af475', // Control Systems
@@ -75,7 +75,7 @@ function getPostImageId(catId) {
  * Initializes the mobile navigation
  */
 function setupMobileNav() {
-    const navContainer = document.querySelector('nav'); 
+    const navContainer = document.querySelector('nav');
     if (!navContainer) return;
 
     // Check if we already added the button
@@ -137,7 +137,7 @@ function setupMobileNav() {
                 const authClone = originalAuth.cloneNode(true);
                 const burger = authClone.querySelector('#mobile-menu-btn');
                 if (burger) burger.remove();
-                
+
                 // Handle the wrapper div that hides buttons on mobile (Login/Signup wrapper)
                 const hiddenWrapper = authClone.querySelector('.hidden.lg\\:flex');
                 if (hiddenWrapper) {
@@ -146,48 +146,48 @@ function setupMobileNav() {
                     }
                     hiddenWrapper.remove();
                 }
-                
+
                 // Process dropdowns for mobile (Profile dropdown)
                 const dropdowns = authClone.querySelectorAll('.dropdown');
                 dropdowns.forEach(dd => {
-                     dd.classList.remove('dropdown', 'dropdown-end');
-                     dd.className = 'flex flex-col items-center gap-6 w-full py-6 border-t border-slate-800 mt-4';
-                     
-                     // Hide the circular avatar button in mobile menu, replace with info
-                     const avatarBtn = dd.querySelector('[role="button"]');
-                     const avatarImg = avatarBtn ? avatarBtn.querySelector('img') : null;
-                     
-                     const content = dd.querySelector('.dropdown-content');
-                     if (content) {
-                         content.classList.remove('dropdown-content', 'shadow-2xl', 'menu-sm', 'bg-white', 'text-slate-700', 'border', 'absolute');
-                         content.classList.add('w-full', 'bg-transparent', 'text-white', 'text-center', 'flex', 'flex-col', 'gap-4');
-                         
-                         // Add avatar image to the top of the mobile profile section
-                         if (avatarImg) {
-                             const largeAvatar = avatarImg.cloneNode(true);
-                             largeAvatar.className = "w-20 h-20 rounded-full border-4 border-blue-600 mx-auto mb-2";
-                             content.prepend(largeAvatar);
-                         }
+                    dd.classList.remove('dropdown', 'dropdown-end');
+                    dd.className = 'flex flex-col items-center gap-6 w-full py-6 border-t border-slate-800 mt-4';
 
-                         // Fix links inside
-                         const links = content.querySelectorAll('a');
-                         links.forEach(l => {
-                             l.className = 'text-white text-xl font-bold uppercase tracking-widest hover:text-blue-400 py-2 transition-colors';
-                         });
-                         
-                         const btns = content.querySelectorAll('button');
-                         btns.forEach(b => {
-                             b.className = 'text-red-500 text-xl font-black uppercase tracking-[0.2em] mt-4 hover:text-red-400 py-2 transition-colors';
-                         });
+                    // Hide the circular avatar button in mobile menu, replace with info
+                    const avatarBtn = dd.querySelector('[role="button"]');
+                    const avatarImg = avatarBtn ? avatarBtn.querySelector('img') : null;
 
-                         // Remove titles/dividers that don't look good in mobile menu
-                         const extras = content.querySelectorAll('.menu-title, .divider');
-                         extras.forEach(e => e.remove());
-                     }
-                     
-                     if (avatarBtn) avatarBtn.remove();
+                    const content = dd.querySelector('.dropdown-content');
+                    if (content) {
+                        content.classList.remove('dropdown-content', 'shadow-2xl', 'menu-sm', 'bg-white', 'text-slate-700', 'border', 'absolute');
+                        content.classList.add('w-full', 'bg-transparent', 'text-white', 'text-center', 'flex', 'flex-col', 'gap-4');
+
+                        // Add avatar image to the top of the mobile profile section
+                        if (avatarImg) {
+                            const largeAvatar = avatarImg.cloneNode(true);
+                            largeAvatar.className = "w-20 h-20 rounded-full border-4 border-blue-600 mx-auto mb-2";
+                            content.prepend(largeAvatar);
+                        }
+
+                        // Fix links inside
+                        const links = content.querySelectorAll('a');
+                        links.forEach(l => {
+                            l.className = 'text-white text-xl font-bold uppercase tracking-widest hover:text-blue-400 py-2 transition-colors';
+                        });
+
+                        const btns = content.querySelectorAll('button');
+                        btns.forEach(b => {
+                            b.className = 'text-red-500 text-xl font-black uppercase tracking-[0.2em] mt-4 hover:text-red-400 py-2 transition-colors';
+                        });
+
+                        // Remove titles/dividers that don't look good in mobile menu
+                        const extras = content.querySelectorAll('.menu-title, .divider');
+                        extras.forEach(e => e.remove());
+                    }
+
+                    if (avatarBtn) avatarBtn.remove();
                 });
-                
+
                 // Process normal links (Sign In / Join)
                 const links = authClone.querySelectorAll('a');
                 links.forEach(l => {
@@ -201,12 +201,12 @@ function setupMobileNav() {
                 });
 
                 menuAuth.innerHTML = authClone.innerHTML;
-                 
+
                 const signOutBtn = menuAuth.querySelector('#sign-out-btn');
                 if (signOutBtn) {
                     signOutBtn.onclick = async () => {
-                         const { signOut } = await import('./auth.js');
-                         await signOut();
+                        const { signOut } = await import('./auth.js');
+                        await signOut();
                     };
                 }
             }
@@ -221,5 +221,23 @@ function setupMobileNav() {
     closeBtn.onclick = toggleMenu;
 }
 
-window.blogUtils = { slugify, formatDate, initCommonNav, getPostImageId, setupMobileNav };
-export { slugify, formatDate, initCommonNav, getPostImageId, setupMobileNav };
+/**
+ * Debounce function to limit the rate at which a function can fire
+ * @param {Function} func - The function to debounce
+ * @param {number} wait - The delay in milliseconds
+ * @returns {Function}
+ */
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+window.blogUtils = { slugify, formatDate, initCommonNav, getPostImageId, setupMobileNav, debounce };
+export { slugify, formatDate, initCommonNav, getPostImageId, setupMobileNav, debounce };

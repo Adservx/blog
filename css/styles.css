@@ -34,7 +34,10 @@ body {
 }
 
 /* Refined Typography */
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
     font-family: inherit;
     font-weight: 800;
     letter-spacing: -0.025em;
@@ -58,13 +61,16 @@ h1, h2, h3, h4 {
 ::-webkit-scrollbar {
     width: 8px;
 }
+
 ::-webkit-scrollbar-track {
     background: #f1f5f9;
 }
+
 ::-webkit-scrollbar-thumb {
     background: #cbd5e1;
     border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
 }
@@ -72,9 +78,34 @@ h1, h2, h3, h4 {
 /* Buttons */
 .btn-journal {
     font-family: inherit;
-    @apply font-bold uppercase tracking-widest text-[10px] rounded-none border-2;
-    height: 3rem;
-    transition: all 0.3s;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.65rem;
+    border-radius: 0;
+    border: 2px solid var(--primary);
+    background: white;
+    color: var(--primary);
+    padding: 0.75rem 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.btn-journal:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Shadow Tech - Neobrutalism Style */
+.shadow-tech {
+    box-shadow: 6px 6px 0px 0px rgba(15, 23, 42, 1);
+}
+
+.shadow-tech-accent {
+    box-shadow: 6px 6px 0px 0px rgba(37, 99, 235, 1);
 }
 
 /* Prose refinement */
@@ -85,7 +116,9 @@ h1, h2, h3, h4 {
     color: #334155;
 }
 
-.prose-normal h1, .prose-normal h2, .prose-normal h3 {
+.prose-normal h1,
+.prose-normal h2,
+.prose-normal h3 {
     color: #0f172a;
     font-weight: 800;
     margin-top: 2rem;
@@ -98,9 +131,11 @@ h1, h2, h3, h4 {
     height: auto;
     display: block;
     border-radius: 0;
+    border: 2px solid var(--primary);
 }
 
-.prose-normal pre, .prose-normal code {
+.prose-normal pre,
+.prose-normal code {
     white-space: pre-wrap;
     word-break: break-all;
     max-width: 100%;
@@ -113,21 +148,18 @@ h1, h2, h3, h4 {
         font-size: 1rem;
         line-height: 1.6;
     }
-    h1 { font-size: 2.25rem !important; }
-    h2 { font-size: 1.75rem !important; }
-    
-    .shadow-tech {
-        shadow: none !important;
-        border-width: 1px !important;
+
+    h1 {
+        font-size: 2.25rem !important;
     }
-}
 
-.shadow-tech {
-    box-shadow: 6px 6px 0px 0px rgba(15,23,42,1);
-}
+    h2 {
+        font-size: 1.75rem !important;
+    }
 
-.shadow-tech-accent {
-    box-shadow: 6px 6px 0px 0px rgba(37,99,235,1);
+    .shadow-tech {
+        box-shadow: 4px 4px 0px 0px rgba(15, 23, 42, 1) !important;
+    }
 }
 
 /* Smooth Image Loading */
@@ -150,4 +182,15 @@ img.loaded {
 
 .btn-journal:active {
     transform: scale(0.98);
+}
+
+/* Animation for Scroller */
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
 }

@@ -195,6 +195,16 @@
             }
 
             setupMobileNav();
+
+            // Handle tool clicks
+            document.querySelectorAll('span.cursor-pointer').forEach(el => {
+                if (el.innerText.toUpperCase().includes('OPEN TOOL')) {
+                    el.onclick = () => {
+                        const toolName = el.parentElement.querySelector('p')?.innerText || 'TECHNICAL_ASSET';
+                        alert(`ACCESS_GRANTED: Initializing secure handshake with repository...\nFILE: ${toolName}\nSTATUS: DOWNLOAD_COMMENCED`);
+                    };
+                }
+            });
         }
         initAuth();
     </script>
