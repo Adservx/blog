@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Voltage & Current</title>
+
+    <!-- Tailwind & DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .bg-grid-subtle {
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .shadow-tech {
+            box-shadow: 10px 10px 0px 0px rgba(15, 23, 42, 1);
+        }
+
+        .tab-active {
+            border-bottom: 4px solid #0f172a !important;
+            color: #0f172a !important;
+        }
+    </style>
+    <style>
+        body {
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .admin-ready body {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body class="bg-white text-slate-900 font-sans min-h-screen">
+
+    <nav class="border-b border-slate-200 sticky top-0 z-50 bg-white/90 backdrop-blur-md">
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-10">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex items-center gap-8">
+                    <a href="index.html" class="flex items-center gap-3">
+                        <span
+                            class="bg-slate-900 text-white w-10 h-10 flex items-center justify-center font-black text-xl">V</span>
+                        <div class="flex flex-col">
+                            <span class="font-black text-2xl tracking-tighter leading-none uppercase">Voltage &
+                                Current</span>
+                            <span
+                                class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase">Admin
+                                System</span>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="flex items-center gap-6" id="auth-nav">
+                    <!-- Nav items injected here -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-grid-subtle border-b-2 border-slate-900 py-12">
+        <div class="max-w-[1400px] mx-auto px-10">
+            <div class="inline-flex items-center gap-3 border-l-4 border-blue-600 pl-4 mb-4">
+                <span class="text-[10px] font-mono font-black tracking-[0.4em] text-slate-500 uppercase">Master
+                    Control</span>
+            </div>
+            <h1 class="text-6xl font-black text-slate-900 tracking-tighter uppercase">Command <span
+                    class="text-blue-600">Center</span></h1>
+        </div>
+    </header>
+
+    <main class="max-w-[1400px] mx-auto px-10 py-16">
+
+        <!-- Stats Row -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
+            <div class="bg-white border-2 border-slate-900 p-8 shadow-tech">
+                <span class="text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest block mb-1">Total
+                    Posts</span>
+                <span class="text-4xl font-black text-slate-900" id="stat-posts">0</span>
+            </div>
+            <div class="bg-white border-2 border-slate-900 p-8 shadow-tech">
+                <span class="text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest block mb-1">Active
+                    Users</span>
+                <span class="text-4xl font-black text-slate-900" id="stat-users">0</span>
+            </div>
+            <div class="bg-white border-2 border-slate-900 p-8 shadow-tech">
+                <span class="text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest block mb-1">Total
+                    Comments</span>
+                <span class="text-4xl font-black text-slate-900" id="stat-views">0</span>
+            </div>
+            <div class="bg-blue-600 border-2 border-slate-900 p-8 shadow-[10px_10px_0px_0px_rgba(15,23,42,1)]">
+                <span class="text-[9px] font-mono font-black text-blue-200 uppercase tracking-widest block mb-1">System
+                    Status</span>
+                <span class="text-xl font-black text-white uppercase italic">Online_Active</span>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex gap-12 border-b-2 border-slate-100 mb-12">
+            <button
+                class="nav-tab py-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 border-b-4 border-transparent hover:text-slate-900 transition-all tab-active"
+                data-tab="posts">Post Management</button>
+            <button
+                class="nav-tab py-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 border-b-4 border-transparent hover:text-slate-900 transition-all"
+                data-tab="users">User Directory</button>
+            <button
+                class="nav-tab py-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 border-b-4 border-transparent hover:text-slate-900 transition-all"
+                data-tab="comments">Comment Queue</button>
+            <button
+                class="nav-tab py-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 border-b-4 border-transparent hover:text-slate-900 transition-all"
+                data-tab="categories">Category Registry</button>
+            <button
+                class="nav-tab py-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 border-b-4 border-transparent hover:text-slate-900 transition-all"
+                data-tab="resources">Technical Library</button>
+        </div>
+
+        <!-- Posts Tab -->
+        <section id="tab-posts" class="tab-content">
+            <div class="flex justify-between items-center mb-10">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-3xl font-black uppercase tracking-tighter">Global Registry</h2>
+                    <button onclick="loadPosts()"
+                        class="btn btn-ghost btn-sm btn-square text-slate-400 hover:text-slate-900">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                    </button>
+                </div>
+                <a href="create-post.html"
+                    class="btn btn-neutral rounded-none px-10 font-black uppercase tracking-widest text-[10px]">Manual
+                    Entry</a>
+            </div>
+            <div id="posts-container" class="space-y-6">
+                <!-- Posts will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Users Tab -->
+        <section id="tab-users" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-10">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-3xl font-black uppercase tracking-tighter">Staff & Authors</h2>
+                    <button onclick="loadUsers()"
+                        class="btn btn-ghost btn-sm btn-square text-slate-400 hover:text-slate-900">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-x-auto border-2 border-slate-900">
+                <table class="table w-full rounded-none">
+                    <thead class="bg-slate-900 text-white rounded-none">
+                        <tr>
+                            <th class="rounded-none font-black uppercase tracking-widest text-[9px] py-4">Identity</th>
+                            <th class="font-black uppercase tracking-widest text-[9px]">Role</th>
+                            <th class="font-black uppercase tracking-widest text-[9px]">Status</th>
+                            <th class="rounded-none font-black uppercase tracking-widest text-[9px] text-right">
+                                Administrative Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-container">
+                        <!-- Users loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Comments Tab -->
+        <section id="tab-comments" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-10">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-3xl font-black uppercase tracking-tighter">Public Discourse</h2>
+                    <button onclick="loadComments()"
+                        class="btn btn-ghost btn-sm btn-square text-slate-400 hover:text-slate-900">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="comments-container" class="space-y-6">
+                <!-- Comments loaded here -->
+            </div>
+        </section>
+
+        <!-- Categories Tab -->
+        <section id="tab-categories" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-10">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-3xl font-black uppercase tracking-tighter">Taxonomy Manager</h2>
+                    <button onclick="loadCategories()"
+                        class="btn btn-ghost btn-sm btn-square text-slate-400 hover:text-slate-900">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                    </button>
+                </div>
+                <button class="btn btn-neutral rounded-none px-10 font-black uppercase tracking-widest text-[10px]"
+                    onclick="promptCreateCategory()">New Category</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="categories-container">
+                <!-- Categories loaded here -->
+            </div>
+        </section>
+
+        <!-- Resources Tab -->
+        <section id="tab-resources" class="tab-content hidden">
+            <div class="flex justify-between items-center mb-10">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-3xl font-black uppercase tracking-tighter">Resource Registry</h2>
+                    <button onclick="loadResources()"
+                        class="btn btn-ghost btn-sm btn-square text-slate-400 hover:text-slate-900">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                    </button>
+                </div>
+                <button class="btn btn-neutral rounded-none px-10 font-black uppercase tracking-widest text-[10px]"
+                    onclick="promptCreateResource()">Add Resource</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="admin-resources-container">
+                <!-- Resources loaded here -->
+            </div>
+        </section>
+
+    </main>
+
+    <script type="module">
+        import { checkSession, signOut, getUserRole } from './js/auth.js';
+        import { getAllPosts, deletePost, getCategories, createCategory, updateCategory, deleteCategory } from './js/posts.js';
+        import { getAllComments, deleteComment } from './js/comments.js';
+        import { getResources, createResource, deleteResource } from './js/resources.js';
+        import { getProfile } from './js/profiles.js';
+        import { formatDate, setupMobileNav, renderNavbar, sanitizeHTML } from './js/utils.js';
+        import { supabase } from './js/supabase-client.js';
+
+        let adminUser = null;
+
+        // Expose load functions to window for HTML onclick access
+        window.loadStats = loadStats;
+        window.loadPosts = loadPosts;
+        window.loadUsers = loadUsers;
+        window.loadComments = loadComments;
+        window.loadCategories = loadCategories;
+        window.loadResources = loadResources;
+
+        async function init() {
+            try {
+                console.log("Admin System: Starting Initialization...");
+                const session = await checkSession();
+                if (!session) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                adminUser = session.user;
+
+                const { data: profile, error: profileError } = await getProfile(adminUser.id);
+                if (profileError) throw profileError;
+
+                const role = profile?.role || 'author';
+                console.log(`Admin System: User role is [${role}]`);
+
+                if (role !== 'admin' && role !== 'administrator') {
+                    document.body.innerHTML = `
+                        <div class="min-h-screen flex items-center justify-center bg-slate-950 text-white p-10 text-center">
+                            <div>
+                                <h1 class="text-6xl font-black mb-6 uppercase tracking-tighter">Access denied</h1>
+                                <p class="text-blue-400 font-mono text-xs uppercase tracking-[0.3em] mb-10">Unauthorized attempt detected. Site protection active.</p>
+                                <a href="index.html" class="btn btn-primary rounded-none font-black uppercase tracking-widest text-[10px]">Return to Safety</a>
+                            </div>
+                        </div>
+                    `;
+                    document.documentElement.classList.add('admin-ready');
+                    return;
+                }
+
+                // If we reach here, user is admin
+                document.documentElement.classList.add('admin-ready');
+
+                const authNav = document.getElementById('auth-nav');
+                renderNavbar(authNav, null, session, profile, signOut);
+
+                setupTabs();
+
+                // Load initial data without blocking
+                loadStats().catch(err => console.error("Stats Load Failed:", err));
+                loadPosts().catch(err => console.error("Posts Load Failed:", err));
+
+            } catch (err) {
+                console.error("Initialization Failed:", err);
+                document.body.innerHTML = `<div class="p-20 text-red-500 font-mono text-sm uppercase">Critical_System_Failure: ${err.message}</div>`;
+                document.documentElement.classList.add('admin-ready');
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const { count: postCount } = await supabase.from('posts').select('*', { count: 'exact', head: true });
+                const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
+                const { count: commentCount } = await supabase.from('comments').select('*', { count: 'exact', head: true });
+                // const { count: categoryCount } = await supabase.from('categories').select('*', { count: 'exact', head: true });
+
+                document.getElementById('stat-posts').innerText = postCount !== null ? postCount : '0';
+                document.getElementById('stat-users').innerText = userCount !== null ? userCount : '0';
+                document.getElementById('stat-views').innerText = commentCount !== null ? commentCount : '0';
+            } catch (err) {
+                console.warn("Stats calculation interrupted:", err);
+                document.getElementById('stat-posts').innerText = '—';
+                document.getElementById('stat-users').innerText = '—';
+                document.getElementById('stat-views').innerText = '—';
+            }
+        }
+
+        async function loadPosts() {
+            const container = document.getElementById('posts-container');
+            if (!container) return;
+            container.innerHTML = '<div class="animate-pulse h-20 bg-slate-100 flex items-center justify-center font-mono text-[10px] uppercase text-slate-400 tracking-widest">Loading Registry...</div>';
+
+            try {
+                const { data: posts, error } = await getAllPosts();
+                if (error) throw error;
+
+                if (!posts || posts.length === 0) {
+                    container.innerHTML = '<div class="border-2 border-dashed border-slate-200 p-12 text-center uppercase font-black text-slate-300 tracking-widest">No Publication Records Found</div>';
+                    return;
+                }
+
+                container.innerHTML = posts.map(post => {
+                    const safeTitle = sanitizeHTML(post.title);
+                    const safeAuthor = sanitizeHTML(post.profiles?.full_name || 'ANONYMOUS_STAFF');
+                    return `
+                    <div class="bg-white border-2 border-slate-900 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] hover:shadow-[10px_10px_0px_0px_rgba(37,99,235,1)] transition-all">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-4 mb-2">
+                                 <span class="text-[10px] font-mono font-black text-blue-600 uppercase tracking-widest">${post.categories?.name || 'GEN_TOPIC'}</span>
+                                 <span class="text-[10px] font-mono font-bold text-slate-300 uppercase">UID_${post.id.substring(0, 8)}</span>
+                            </div>
+                            <h3 class="text-xl font-black uppercase truncate text-slate-900">${safeTitle}</h3>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tighter mt-1">BY ${safeAuthor} | Published ${formatDate(post.created_at)}</p>
+                        </div>
+                        <div class="flex gap-4 w-full md:w-auto">
+                            <a href="post.html?slug=${post.slug}" class="btn btn-sm btn-ghost border-2 border-slate-900 rounded-none font-black uppercase text-[9px] tracking-widest px-6 h-10">Review</a>
+                            <a href="create-post.html?edit=${post.id}" class="btn btn-sm btn-outline border-2 border-slate-900 rounded-none font-black uppercase text-[9px] tracking-widest px-6 h-10">Modify</a>
+                            <button onclick="deleteEntry('${post.id}')" class="btn btn-sm btn-error rounded-none font-black uppercase text-[9px] tracking-widest px-6 h-10 text-white">Purge</button>
+                        </div>
+                    </div>
+                `}).join('');
+            } catch (err) {
+                console.error("Posts Error:", err);
+                container.innerHTML = `<div class="alert alert-error font-mono text-xs uppercase">Registry_Error: ${err.message}</div>`;
+            }
+        }
+
+        async function loadComments() {
+            const container = document.getElementById('comments-container');
+            if (!container) return;
+            container.innerHTML = '<div class="animate-pulse h-20 bg-slate-100 flex items-center justify-center font-mono text-[10px] uppercase text-slate-400 tracking-widest">Loading Discourse...</div>';
+
+            try {
+                const { data: comments, error } = await getAllComments();
+                if (error) throw error;
+
+                if (!comments || !comments.length) {
+                    container.innerHTML = `<div class="border-2 border-dashed border-slate-200 p-12 text-center uppercase font-black text-slate-300 tracking-widest">No Active Discourse Records</div>`;
+                    return;
+                }
+
+                container.innerHTML = comments.map(c => {
+                    const safeAuthor = sanitizeHTML(c.profiles?.full_name || 'Anonymous');
+                    const safePostTitle = sanitizeHTML(c.posts?.title || 'Unknown Post');
+                    const safeContent = sanitizeHTML(c.content);
+                    return `
+                    <div class="bg-white border-2 border-slate-900 p-6 shadow-[6px_6px_0px_0px_rgba(15,23,42,1)]">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full border border-slate-900 overflow-hidden">
+                                    <img src="${c.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.user_id}`}" />
+                                </div>
+                                <div>
+                                    <span class="text-[10px] font-black uppercase tracking-widest block">${safeAuthor}</span>
+                                    <span class="text-[9px] font-mono font-bold text-slate-400 uppercase">ON ${safePostTitle}</span>
+                                </div>
+                            </div>
+                            <button onclick="purgeComment('${c.id}')" class="text-red-500 font-black uppercase text-[9px] tracking-widest hover:underline italic">Delete_Log</button>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-100 pl-4">${safeContent}</p>
+                        <div class="mt-4 text-[9px] font-mono font-bold text-slate-300 uppercase tracking-widest text-right">TS: ${new Date(c.created_at).toISOString()}</div>
+                    </div>
+                `}).join('');
+            } catch (err) {
+                console.error("Comments Error:", err);
+                container.innerHTML = `<div class="alert alert-error font-mono text-xs uppercase">Discourse_Registry_Error: ${err.message}</div>`;
+            }
+        }
+
+        async function loadCategories() {
+            const container = document.getElementById('categories-container');
+            if (!container) return;
+            container.innerHTML = '<div class="col-span-full animate-pulse h-20 bg-slate-100 flex items-center justify-center font-mono text-[10px] uppercase text-slate-400 tracking-widest">Loading Taxonomy...</div>';
+
+            try {
+                const { data: categories, error } = await getCategories();
+                if (error) throw error;
+
+                if (!categories || categories.length === 0) {
+                    container.innerHTML = '<div class="col-span-full border-2 border-dashed border-slate-200 p-12 text-center uppercase font-black text-slate-300 tracking-widest">No Categories Found</div>';
+                    return;
+                }
+
+                container.innerHTML = categories.map(cat => {
+                    const safeName = sanitizeHTML(cat.name).replace(/'/g, "\\'");
+                    const safeSlug = sanitizeHTML(cat.slug).replace(/'/g, "\\'");
+                    return `
+                    <div class="bg-white border-2 border-slate-900 p-8 shadow-tech hover:shadow-[12px_12px_0px_0px_rgba(37,99,235,1)] transition-all">
+                        <div class="flex justify-between items-start mb-6">
+                            <span class="text-[10px] font-mono font-black text-slate-400 uppercase tracking-widest">CAT_ID: ${cat.id}</span>
+                            <div class="flex gap-4">
+                                <button onclick="editCategory('${cat.id}', '${safeName}', '${safeSlug}')" class="text-blue-600 font-black uppercase text-[9px] tracking-widest hover:underline">Edit</button>
+                                <button onclick="purgeCategory('${cat.id}')" class="text-red-500 font-black uppercase text-[9px] tracking-widest hover:underline">Purge</button>
+                            </div>
+                        </div>
+                        <h4 class="text-2xl font-black uppercase tracking-tighter mb-2">${sanitizeHTML(cat.name)}</h4>
+                        <p class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">SLUG: ${sanitizeHTML(cat.slug)}</p>
+                        <div class="bg-slate-50 p-4 border border-slate-100">
+                            <span class="text-[9px] font-black uppercase text-slate-400 tracking-widest block mb-1">Impact</span>
+                            <span class="font-black text-slate-900 uppercase">${cat.posts?.[0]?.count !== undefined ? cat.posts[0].count : (Array.isArray(cat.posts) ? cat.posts.length : 0)} Total Publications</span>
+                        </div>
+                    </div>
+                `}).join('');
+            } catch (err) {
+                console.error("Categories Error:", err);
+                container.innerHTML = `<div class="col-span-full alert alert-error font-mono text-xs uppercase">Taxonomy_Error: ${err.message}</div>`;
+            }
+        }
+
+        async function loadResources() {
+            const container = document.getElementById('admin-resources-container');
+            if (!container) return;
+            container.innerHTML = '<div class="col-span-full text-center py-10 uppercase font-mono text-[10px] animate-pulse">Scanning Registry...</div>';
+
+            try {
+                const resources = await getResources();
+                if (!resources || resources.length === 0) {
+                    container.innerHTML = '<div class="col-span-full text-center py-10 uppercase font-mono text-[10px] text-slate-400">Registry Empty</div>';
+                    return;
+                }
+
+                container.innerHTML = resources.map(r => `
+                    <div class="border-2 border-slate-900 p-8 flex justify-between items-center bg-white shadow-tech">
+                        <div>
+                            <h4 class="font-black text-lg uppercase mb-1">${sanitizeHTML(r.title)}</h4>
+                            <p class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">${sanitizeHTML(r.category)} | ${sanitizeHTML(r.file_info || 'DOCUMENT')}</p>
+                        </div>
+                        <button onclick="purgeResource('${r.id}')"
+                            class="text-[10px] font-black uppercase tracking-widest text-red-500 hover:underline">Remove</button>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error("Resources Error:", err);
+                container.innerHTML = `<div class="col-span-full alert alert-error font-mono text-xs uppercase">Library_Error: ${err.message}</div>`;
+            }
+        }
+
+        async function loadUsers() {
+            const container = document.getElementById('users-container');
+            if (!container) return;
+            container.innerHTML = '<tr><td colspan="4" class="text-center py-10 animate-pulse uppercase text-[10px] font-mono">Scanning Profiles...</td></tr>';
+
+            try {
+                const { data: users, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+
+                if (!users || users.length === 0) {
+                    container.innerHTML = '<tr><td colspan="4" class="text-center py-10 uppercase font-bold text-slate-400">No Users Found</td></tr>';
+                    return;
+                }
+
+                container.innerHTML = users.map(u => {
+                    const userRole = u.role || 'author';
+                    const safeName = sanitizeHTML(u.full_name || 'GHOST_USER');
+                    return `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                        <td class="py-6">
+                            <div class="flex items-center gap-4">
+                                <div class="avatar">
+                                    <div class="w-12 h-12 rounded-full border-2 border-slate-900 overflow-hidden">
+                                        <img src="${u.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id}`}" class="w-full h-full object-cover" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="font-black text-slate-900 uppercase text-sm">${safeName}</div>
+                                    <div class="text-[9px] font-mono text-slate-400 uppercase tracking-widest">ID: ${u.id.substring(0, 16)}...</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="px-3 py-1 bg-slate-100 text-[10px] font-black uppercase tracking-widest ${(userRole === 'admin' || userRole === 'administrator') ? 'bg-blue-100 text-blue-600' : 'text-slate-600'}">${userRole.toUpperCase()}</span>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                 <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                                 <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Active</span>
+                            </div>
+                        </td>
+                        <td class="text-right">
+                            <div class="flex justify-end gap-3">
+                                <button onclick="toggleRole('${u.id}', '${userRole}')" class="btn btn-xs rounded-none border-2 border-slate-900 font-black uppercase tracking-widest text-[8px] h-8 px-4">Cycle Role</button>
+                                <button onclick="purgeProfile('${u.id}')" class="btn btn-xs btn-error rounded-none text-white font-black uppercase tracking-widest text-[8px] h-8 px-4">Eject</button>
+                            </div>
+                        </td>
+                    </tr>
+                `}).join('');
+            } catch (err) {
+                console.error("Users Error:", err);
+                container.innerHTML = `<tr><td colspan="4" class="text-center py-10 uppercase font-bold text-red-500">Error: ${err.message}</td></tr>`;
+            }
+        }
+
+        window.deleteEntry = async (id) => {
+            if (confirm('CRITICAL_WARNING: This will permanently remove the record from the central registry. Continue?')) {
+                const { error } = await deletePost(id);
+                if (error) alert('PURGE_FAILED: ' + error.message);
+                else loadPosts();
+            }
+        };
+
+        window.toggleRole = async (uid, currentRole) => {
+            const newRole = (currentRole === 'admin' || currentRole === 'administrator') ? 'author' : 'admin';
+            if (confirm(`INITIATING_CHANGE: Promote/Demote user to ${newRole.toUpperCase()}?`)) {
+                const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', uid);
+                if (error) alert('ROLE_CYCLE_ERROR: ' + error.message);
+                else loadUsers();
+            }
+        };
+
+        window.purgeProfile = async (uid) => {
+            if (confirm('STAFF_EJECTION: This will remove the user profile. Associated logs will be purged. Continue?')) {
+                const { error } = await supabase.from('profiles').delete().eq('id', uid);
+                if (error) alert('EJECTION_FAILED: ' + error.message);
+                else loadUsers();
+            }
+        };
+
+        window.purgeComment = async (id) => {
+            if (confirm('COMMENT_PURGE_PROTOCOL: Are you sure you want to delete this discourse record?')) {
+                const { error } = await deleteComment(id);
+                if (error) alert('PURGE_ERROR: ' + error.message);
+                else loadComments();
+            }
+        };
+
+        window.promptCreateCategory = async () => {
+            const name = prompt('NEW_CATEGORY_NAME:');
+            if (!name) return;
+            const slug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]/g, '');
+            const description = prompt('CATEGORY_DESCRIPTION (Optional):');
+
+            const { error } = await createCategory({ name, slug, description });
+            if (error) alert('REGISTRY_ENTRY_FAILED: ' + error.message);
+            else loadCategories();
+        };
+
+        window.editCategory = async (id, oldName, oldSlug) => {
+            const name = prompt('UPDATE_CATEGORY_NAME:', oldName);
+            if (!name) return;
+            const slug = prompt('UPDATE_CATEGORY_SLUG:', oldSlug);
+            if (!slug) return;
+
+            const { error } = await updateCategory(id, { name, slug });
+            if (error) alert('REGISTRY_UPDATE_FAILED: ' + error.message);
+            else loadCategories();
+        };
+
+        window.purgeCategory = async (id) => {
+            if (confirm('CRITICAL: Purging a category may cause link failures in associated posts. Proceed?')) {
+                const { error } = await deleteCategory(id);
+                if (error) alert('PURGE_FAILED: ' + error.message);
+                else loadCategories();
+            }
+        };
+
+        window.promptCreateResource = async () => {
+            const title = prompt('Resource Title (e.g. Voltage Drop Calculator):');
+            if (!title) return;
+            const category = prompt('Category (e.g. Main Standards, Engineering Tools):', 'Engineering Tools');
+            if (!category) return;
+            const description = prompt('Short Description:');
+            const file_info = prompt('File Info (e.g. v_calc_v2.0.exe):');
+
+            try {
+                await createResource({ title, category, description, file_info });
+                loadResources();
+            } catch (err) {
+                alert('REGISTRY_ERROR: ' + err.message);
+            }
+        };
+
+        window.purgeResource = async (id) => {
+            if (confirm('STAFF_ACTION: Remove this asset from the public library?')) {
+                try {
+                    await deleteResource(id);
+                    loadResources();
+                } catch (err) {
+                    alert('PURGE_ERROR: ' + err.message);
+                }
+            }
+        };
+
+        function setupTabs() {
+            // Re-select all elements to safeguard against disconnected nodes
+            const tabs = Array.from(document.querySelectorAll('.nav-tab'));
+            const contents = Array.from(document.querySelectorAll('.tab-content'));
+
+            console.log(`Admin System: Found ${tabs.length} tabs and ${contents.length} content sections.`);
+
+            tabs.forEach(tab => {
+                const targetId = tab.dataset.tab;
+
+                // Remove old event listeners by cloning (optional but safer) or just ensure single binding
+                // Here we rely on init running once.
+
+                tab.onclick = async (e) => {
+                    e.preventDefault();
+                    console.log(`Admin System: Tab Clicked -> [${targetId}]`);
+
+                    // 1. Update Tab Styles
+                    tabs.forEach(t => t.classList.remove('tab-active'));
+                    tab.classList.add('tab-active');
+
+                    // 2. toggle visibility
+                    contents.forEach(content => {
+                        if (content.id === `tab-${targetId}`) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+
+                    // 3. Load Data
+                    switch (targetId) {
+                        case 'users': await loadUsers(); break;
+                        case 'posts': await loadPosts(); break;
+                        case 'comments': await loadComments(); break;
+                        case 'categories': await loadCategories(); break;
+                        case 'resources': await loadResources(); break;
+                    }
+                };
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+
+</html>

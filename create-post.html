@@ -54,6 +54,11 @@
             width: 100%;
             position: relative;
         }
+
+        .bg-grid-subtle {
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
     </style>
 </head>
 
@@ -101,7 +106,8 @@
                     Editor</span>
             </div>
             <h1 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter uppercase">Create New Engineering
-                <span class="text-blue-600">Post</span></h1>
+                <span class="text-blue-600">Post</span>
+            </h1>
         </div>
     </header>
 
@@ -161,7 +167,7 @@
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M6 18L18 6M6 6l18 18" />
+                                                    d="M6 18L18 6M6 6l12 12" />
                                             </svg>
                                         </button>
                                     </div>
@@ -239,10 +245,10 @@
     </div>
 
     <script type="module">
-        import { requireAuth, signOut } from './js/auth.js';
+        import { checkSession, signOut } from './js/auth.js';
         import { createPost, getCategories, updatePost } from './js/posts.js';
         import { getProfile } from './js/profiles.js';
-        import { slugify, setupMobileNav } from './js/utils.js';
+        import { slugify, setupMobileNav, renderNavbar } from './js/utils.js';
         import { supabase } from './js/supabase-client.js';
 
         let user = null;
@@ -254,33 +260,20 @@
         editingPostId = urlParams.get('edit');
 
         async function init() {
-            user = await requireAuth();
-            if (!user) return;
+            const session = await checkSession();
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+            user = session.user;
 
             // Nav Auth
             const authNav = document.getElementById('auth-nav');
+            const navLinks = document.getElementById('nav-links');
             const { data: profile } = await getProfile(user.id);
-            const avatar = profile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
+            const role = profile?.role || 'author';
 
-            authNav.innerHTML = `
-                <div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100 hover:border-blue-600">
-                        <div class="w-10 h-10 rounded-full overflow-hidden">
-                            <img src="${avatar}" class="w-full h-full object-cover" />
-                        </div>
-                    </div>
-                    <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
-                        <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Account Session</li>
-                        <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Profile</a></li>
-                        <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Write Post</a></li>
-                        <div class="divider my-2"></div>
-                        <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50">Log Out</button></li>
-                    </ul>
-                </div>
-            `;
-            document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
-
-            setupMobileNav();
+            renderNavbar(authNav, navLinks, session, profile, signOut);
 
             // Load Categories
             const { data: categories } = await getCategories();

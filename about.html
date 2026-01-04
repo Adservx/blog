@@ -132,45 +132,20 @@
     <script type="module">
         import { checkSession, signOut } from './js/auth.js';
         import { getProfile } from './js/profiles.js';
-        import { setupMobileNav } from './js/utils.js';
+        import { renderNavbar } from './js/utils.js';
 
         async function initAuth() {
             const authNav = document.getElementById('auth-nav');
             const navLinks = document.getElementById('nav-links');
             const session = await checkSession();
+            let profile = null;
 
             if (session) {
-                const user = session.user;
-                const { data: profile } = await getProfile(user.id);
-                const avatar = profile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
-
-                authNav.innerHTML = `
-                    <div class="dropdown dropdown-end">
-                        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100">
-                            <div class="w-10 h-10 rounded-full overflow-hidden"><img src="${avatar}" class="w-full h-full object-cover" /></div>
-                        </div>
-                        <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
-                            <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Profile</a></li>
-                            <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Write Post</a></li>
-                            <div class="divider my-2"></div>
-                            <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500">Sign Out</button></li>
-                        </ul>
-                    </div>
-                `;
-                if (!navLinks.innerHTML.includes('create-post.html')) {
-                    navLinks.innerHTML += `<a href="create-post.html" class="text-[11px] font-bold text-blue-600 hover:text-blue-700 tracking-widest uppercase transition-colors">Add Post</a>`;
-                }
-                document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
-            } else {
-                authNav.innerHTML = `
-                    <div class="hidden lg:flex items-center gap-4">
-                        <a href="login.html" class="inline-flex items-center text-[11px] font-bold text-slate-900 uppercase tracking-widest hover:text-blue-600 transition-colors h-8">Sign In</a>
-                        <a href="signup.html" class="btn btn-neutral btn-sm rounded-none px-6 text-[11px] font-bold uppercase tracking-widest">Join Now</a>
-                    </div>
-                `;
+                const { data } = await getProfile(session.user.id);
+                profile = data;
             }
 
-            setupMobileNav();
+            renderNavbar(authNav, navLinks, session, profile, signOut);
         }
         initAuth();
     </script>

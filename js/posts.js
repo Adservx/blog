@@ -41,9 +41,34 @@ async function getCategories() {
     return { data, error };
 }
 
+async function createCategory(categoryData) {
+    const { data, error } = await supabase
+        .from('categories')
+        .insert([categoryData])
+        .select();
+    return { data, error };
+}
+
+async function updateCategory(categoryId, categoryData) {
+    const { data, error } = await supabase
+        .from('categories')
+        .update(categoryData)
+        .eq('id', categoryId)
+        .select();
+    return { data, error };
+}
+
+async function deleteCategory(categoryId) {
+    const { error } = await supabase
+        .from('categories')
+        .delete()
+        .eq('id', categoryId);
+    return { error };
+}
+
 async function getPostBySlug(slug) {
     if (!slug) return { data: null, error: new Error('Slug is required') };
-    
+
     const { data, error } = await supabase
         .from('posts')
         .select(`
@@ -52,7 +77,7 @@ async function getPostBySlug(slug) {
             categories (name, slug)
         `)
         .eq('slug', slug)
-        .maybeSingle(); 
+        .maybeSingle();
     return { data, error };
 }
 
@@ -72,6 +97,18 @@ async function getUserPosts(userId) {
         .from('posts')
         .select('*')
         .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+    return { data, error };
+}
+
+async function getAllPosts() {
+    const { data, error } = await supabase
+        .from('posts')
+        .select(`
+            *,
+            profiles!user_id (id, name, full_name, avatar_url),
+            categories (id, name, slug)
+        `)
         .order('created_at', { ascending: false });
     return { data, error };
 }
@@ -101,5 +138,5 @@ async function deletePost(postId) {
     return { error };
 }
 
-window.blogPosts = { getPaginatedPosts, getCategories, getPostBySlug, incrementViewCount, createPost, getUserPosts, updatePost, deletePost };
-export { getPaginatedPosts, getCategories, getPostBySlug, incrementViewCount, createPost, getUserPosts, updatePost, deletePost };
+window.blogPosts = { getPaginatedPosts, getCategories, getPostBySlug, incrementViewCount, createPost, getUserPosts, updatePost, deletePost, getAllPosts, createCategory, updateCategory, deleteCategory };
+export { getPaginatedPosts, getCategories, getPostBySlug, incrementViewCount, createPost, getUserPosts, updatePost, deletePost, getAllPosts, createCategory, updateCategory, deleteCategory };

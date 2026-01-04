@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -90,53 +91,10 @@
                 </div>
             </div>
 
-            <div class="lg:w-2/3 space-y-12">
-                <!-- Resource Category -->
-                <section class="border-2 border-slate-900 p-10 bg-white shadow-[10px_10px_0px_0px_rgba(15,23,42,1)]">
-                    <h3 class="text-[10px] font-mono font-black tracking-[0.3em] text-blue-600 uppercase mb-6">Main
-                        Standards</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div class="space-y-2">
-                            <span class="text-lg font-black uppercase">IEEE Standards</span>
-                            <p class="text-xs text-slate-500">Access point for power engineering and circuit safety
-                                protocols.</p>
-                        </div>
-                        <div class="space-y-2">
-                            <span class="text-lg font-black uppercase">IEC Registry</span>
-                            <p class="text-xs text-slate-500">International Electrotechnical Commission documentation
-                                index.</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Resource Category -->
-                <section
-                    class="border-2 border-slate-900 p-6 md:p-10 bg-white shadow-[10px_10px_0px_0px_rgba(37,99,235,1)]">
-                    <h3 class="text-[10px] font-mono font-black tracking-[0.3em] text-blue-600 uppercase mb-6">
-                        Engineering Tools</h3>
-                    <div class="space-y-6">
-                        <div
-                            class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-4">
-                            <div>
-                                <span class="font-bold uppercase text-sm block">Voltage Drop Calculator</span>
-                                <p class="text-[10px] text-slate-400 font-mono">v_calc_v2.0.exe</p>
-                            </div>
-                            <span
-                                class="text-[10px] font-black text-blue-600 uppercase tracking-widest cursor-pointer hover:underline self-end sm:self-auto">Open
-                                Tool</span>
-                        </div>
-                        <div
-                            class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-4">
-                            <div>
-                                <span class="font-bold uppercase text-sm block">Transformer Sizing Matrix</span>
-                                <p class="text-[10px] text-slate-400 font-mono">t_sizing_v1.4.xls</p>
-                            </div>
-                            <span
-                                class="text-[10px] font-black text-blue-600 uppercase tracking-widest cursor-pointer hover:underline self-end sm:self-auto">Open
-                                Tool</span>
-                        </div>
-                    </div>
-                </section>
+            <div class="lg:w-2/3 space-y-12" id="resources-container">
+                <div class="flex justify-center py-20">
+                    <div class="loading loading-spinner loading-lg text-blue-600"></div>
+                </div>
             </div>
         </div>
     </main>
@@ -156,55 +114,83 @@
     <script type="module">
         import { checkSession, signOut } from './js/auth.js';
         import { getProfile } from './js/profiles.js';
-        import { setupMobileNav } from './js/utils.js';
+        import { renderNavbar, setupMobileNav } from './js/utils.js';
+        import { getResources } from './js/resources.js';
+
+        async function renderResources() {
+            const container = document.getElementById('resources-container');
+            const resources = await getResources();
+
+            if (resources.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-20 border-2 border-dashed border-slate-200">
+                        <p class="text-slate-400 font-mono text-[10px] uppercase tracking-widest">No resources found in the registry.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Group by category
+            const grouped = resources.reduce((acc, res) => {
+                if (!acc[res.category]) acc[res.category] = [];
+                acc[res.category].push(res);
+                return acc;
+            }, {});
+
+            container.innerHTML = '';
+
+            Object.entries(grouped).forEach(([category, items], index) => {
+                const shadowColor = index % 2 === 0 ? 'rgba(15,23,42,1)' : 'rgba(37,99,235,1)';
+                const section = document.createElement('section');
+                section.className = 'border-2 border-slate-900 p-8 md:p-10 bg-white shadow-[10px_10px_0px_0px_' + shadowColor + ']';
+
+                section.innerHTML = `
+                    <h3 class="text-[10px] font-mono font-black tracking-[0.3em] text-blue-600 uppercase mb-6">${category}</h3>
+                    <div class="${category.toLowerCase().includes('standards') ? 'grid grid-cols-1 md:grid-cols-2 gap-8' : 'space-y-6'}">
+                        ${items.map(item => `
+                            <div class="${category.toLowerCase().includes('standards') ? 'space-y-2' : 'flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-4 gap-4'}">
+                                <div>
+                                    <span class="font-bold uppercase text-sm block">${item.title}</span>
+                                    ${item.description ? `<p class="text-xs text-slate-500">${item.description}</p>` : ''}
+                                    ${item.file_info ? `<p class="text-[10px] text-slate-400 font-mono mt-1">${item.file_info}</p>` : ''}
+                                </div>
+                                ${item.url || item.file_info ? `
+                                    <a href="${item.url || '#'}" class="resource-action text-[10px] font-black text-blue-600 uppercase tracking-widest cursor-pointer hover:underline self-end sm:self-auto" data-title="${item.title}">
+                                        ${item.file_info ? 'Download' : 'Open Link'}
+                                    </a>
+                                ` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(section);
+            });
+
+            // Re-attach event listeners
+            document.querySelectorAll('.resource-action').forEach(el => {
+                el.onclick = (e) => {
+                    const title = el.getAttribute('data-title');
+                    if (el.getAttribute('href') === '#') {
+                        e.preventDefault();
+                        alert(`ACCESS_GRANTED: Initializing secure handshake with repository...\nRESOURCE: ${title}\nSTATUS: DOWNLOAD_COMMENCED`);
+                    }
+                };
+            });
+        }
 
         async function initAuth() {
             const authNav = document.getElementById('auth-nav');
             const navLinks = document.getElementById('nav-links');
             const session = await checkSession();
+            let profile = null;
 
             if (session) {
-                const user = session.user;
-                const { data: profile } = await getProfile(user.id);
-                const avatar = profile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
-
-                authNav.innerHTML = `
-                    <div class="dropdown dropdown-end">
-                        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100">
-                            <div class="w-10 h-10 rounded-full overflow-hidden"><img src="${avatar}" class="w-full h-full object-cover" /></div>
-                        </div>
-                        <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
-                            <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Profile</a></li>
-                            <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Write Post</a></li>
-                            <div class="divider my-2"></div>
-                            <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500">Sign Out</button></li>
-                        </ul>
-                    </div>
-                `;
-                if (!navLinks.innerHTML.includes('create-post.html')) {
-                    navLinks.innerHTML += `<a href="create-post.html" class="text-[11px] font-bold text-blue-600 hover:text-blue-700 tracking-widest uppercase transition-colors">Add Post</a>`;
-                }
-                document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
-            } else {
-                authNav.innerHTML = `
-                    <div class="hidden lg:flex items-center gap-4">
-                        <a href="login.html" class="inline-flex items-center text-[11px] font-bold text-slate-900 uppercase tracking-widest hover:text-blue-600 transition-colors h-8">Sign In</a>
-                        <a href="signup.html" class="btn btn-neutral btn-sm rounded-none px-6 text-[11px] font-bold uppercase tracking-widest">Join Now</a>
-                    </div>
-                `;
+                const { data } = await getProfile(session.user.id);
+                profile = data;
             }
 
-            setupMobileNav();
-
-            // Handle tool clicks
-            document.querySelectorAll('span.cursor-pointer').forEach(el => {
-                if (el.innerText.toUpperCase().includes('OPEN TOOL')) {
-                    el.onclick = () => {
-                        const toolName = el.parentElement.querySelector('p')?.innerText || 'TECHNICAL_ASSET';
-                        alert(`ACCESS_GRANTED: Initializing secure handshake with repository...\nFILE: ${toolName}\nSTATUS: DOWNLOAD_COMMENCED`);
-                    };
-                }
-            });
+            renderNavbar(authNav, navLinks, session, profile, signOut);
+            renderResources();
         }
         initAuth();
     </script>

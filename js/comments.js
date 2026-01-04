@@ -12,6 +12,18 @@ async function getComments(postId) {
     return { data, error };
 }
 
+async function getAllComments() {
+    const { data, error } = await supabase
+        .from('comments')
+        .select(`
+            *,
+            profiles!user_id (full_name, avatar_url),
+            posts!post_id (title, slug)
+        `)
+        .order('created_at', { ascending: false });
+    return { data, error };
+}
+
 async function addComment(postId, userId, content) {
     const { data, error } = await supabase
         .from('comments')
@@ -24,5 +36,13 @@ async function addComment(postId, userId, content) {
     return { data, error };
 }
 
-window.blogComments = { getComments, addComment };
-export { getComments, addComment };
+async function deleteComment(commentId) {
+    const { error } = await supabase
+        .from('comments')
+        .delete()
+        .eq('id', commentId);
+    return { error };
+}
+
+window.blogComments = { getComments, getAllComments, addComment, deleteComment };
+export { getComments, getAllComments, addComment, deleteComment };

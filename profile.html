@@ -33,6 +33,27 @@
             width: 100%;
             position: relative;
         }
+
+        .bg-grid-subtle {
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .shadow-tech {
+            box-shadow: 10px 10px 0px 0px rgba(15, 23, 42, 1);
+        }
+
+        .shadow-tech-accent {
+            box-shadow: 10px 10px 0px 0px rgba(37, 99, 235, 1);
+        }
+
+        .admin-only {
+            display: none;
+        }
+
+        .is-admin .admin-only {
+            display: block;
+        }
     </style>
 </head>
 
@@ -76,11 +97,11 @@
     <header class="bg-grid-subtle border-b-2 border-slate-900 py-12 relative overflow-hidden">
         <div class="max-w-[1400px] mx-auto px-6 sm:px-10 relative">
             <div class="inline-flex items-center gap-3 border-l-4 border-blue-600 pl-4 mb-4">
-                <span class="text-[10px] font-mono font-black tracking-[0.4em] text-slate-500 uppercase">Staff
-                    Profile</span>
+                <span class="text-[10px] font-mono font-black tracking-[0.4em] text-slate-500 uppercase"
+                    id="header-subtitle">Staff Profile</span>
             </div>
-            <h1 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter uppercase">Your <span
-                    class="text-blue-600">Profile</span></h1>
+            <h1 class="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter uppercase"><span
+                    id="header-title">Your Profile</span></h1>
         </div>
     </header>
 
@@ -113,7 +134,7 @@
                                 class="text-[8px] md:text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest">Posts</span>
                         </div>
                         <div class="text-center">
-                            <span class="block text-2xl md:text-3xl font-black text-slate-900">0</span>
+                            <span class="block text-2xl md:text-3xl font-black text-slate-900" id="view-count">0</span>
                             <span
                                 class="text-[8px] md:text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest">Views</span>
                         </div>
@@ -134,13 +155,32 @@
                         Profile</button>
                 </div>
 
-                <div class="bg-slate-900 p-8 text-white">
+                <div class="admin-only">
+                    <div class="bg-blue-600 p-8 text-white shadow-tech">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                            <span class="text-[9px] font-mono font-black uppercase tracking-[0.4em]">Admin System</span>
+                        </div>
+                        <h3 class="text-xl font-black mb-4 uppercase">Site Control</h3>
+                        <p class="text-[10px] text-blue-100 leading-relaxed uppercase mb-6">
+                            You have elevated privileges. You can manage all technical content across the entire blog
+                            registry.
+                        </p>
+                        <div class="space-y-4">
+                            <button id="view-all-posts-btn"
+                                class="btn btn-sm btn-outline border-white text-white rounded-none w-full font-black uppercase text-[9px]">Manage
+                                All Posts</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 p-8 text-white shadow-tech">
                     <div class="flex items-center gap-3 mb-4">
                         <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                        <span class="text-[9px] font-mono font-black uppercase tracking-[0.2em]">Verified</span>
+                        <span class="text-[9px] font-mono font-black uppercase tracking-[0.2em]">Verified Status</span>
                     </div>
                     <p class="text-[10px] text-slate-400 leading-relaxed uppercase">
-                        All your posts are securely saved and tracked.
+                        Your professional contributions are tracked and secured in the central registry.
                     </p>
                 </div>
             </div>
@@ -148,8 +188,9 @@
             <!-- Main: User's Posts -->
             <div class="lg:col-span-8 space-y-12">
                 <div class="flex items-center justify-between border-b-4 border-slate-900 pb-6">
-                    <h2 class="text-3xl font-black text-slate-900 uppercase">Your Posts</h2>
-                    <span class="bg-slate-900 text-white text-[10px] font-mono font-bold px-3 py-1">HISTORY</span>
+                    <h2 class="text-3xl font-black text-slate-900 uppercase" id="feed-title">Your Posts</h2>
+                    <span class="bg-slate-900 text-white text-[10px] font-mono font-bold px-3 py-1"
+                        id="feed-badge">HISTORY</span>
                 </div>
 
                 <div id="user-posts-container" class="space-y-8">
@@ -211,6 +252,15 @@
                 <div class="form-control w-full">
                     <label class="label">
                         <span
+                            class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">LinkedIn
+                            Profile URL</span>
+                    </label>
+                    <input type="url" id="edit-linkedin" placeholder="https://linkedin.com/in/yourprofile"
+                        class="input input-bordered w-full bg-slate-50 border-2 border-slate-900 rounded-none font-bold" />
+                </div>
+                <div class="form-control w-full">
+                    <label class="label">
+                        <span
                             class="label-text text-[10px] font-mono font-black uppercase tracking-widest text-slate-400">Short
                             Bio</span>
                     </label>
@@ -232,14 +282,30 @@
         </form>
     </dialog>
 
+    <footer class="bg-slate-950 text-white py-24 mt-20 border-t-8 border-blue-600">
+        <div class="max-w-[1400px] mx-auto px-6 sm:px-10 text-center">
+            <div class="flex items-center gap-3 mb-8 justify-center">
+                <span
+                    class="bg-white text-slate-950 w-8 h-8 flex items-center justify-center font-black text-lg">V</span>
+                <span class="text-2xl font-black uppercase tracking-tighter">Voltage & Current</span>
+            </div>
+            <p class="text-slate-400 max-w-2xl mx-auto text-sm leading-relaxed mb-10 uppercase">
+                The trusted registry for electrical engineering research and technical documentation.
+            </p>
+            <p class="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.2em]">© 2025 VOLTAGE &
+                CURRENT ENGINEERING BLOG.</p>
+        </div>
+    </footer>
+
     <script type="module">
-        import { requireAuth, signOut } from './js/auth.js';
-        import { getUserPosts, deletePost } from './js/posts.js';
+        import { checkSession, signOut, getUserRole } from './js/auth.js';
+        import { getUserPosts, getAllPosts, deletePost } from './js/posts.js';
         import { getProfile, updateProfile } from './js/profiles.js';
-        import { formatDate, getPostImageId, setupMobileNav } from './js/utils.js';
+        import { formatDate, getPostImageId, setupMobileNav, renderNavbar, sanitizeHTML } from './js/utils.js';
         import { supabase } from './js/supabase-client.js';
 
         let user = null;
+        let role = 'author';
         let selectedAvatarFile = null;
 
         window.handleDeletePost = async (postId) => {
@@ -254,33 +320,55 @@
         };
 
         async function init() {
-            user = await requireAuth();
-            if (!user) return;
+            const session = await checkSession();
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+            user = session.user;
+
+            // Fetch Profile Data
+            const { data: profile } = await getProfile(user.id);
+            role = profile?.role || 'author';
+
+            if (role === 'admin' || role === 'administrator') {
+                document.body.classList.add('is-admin');
+                document.getElementById('header-subtitle').innerText = 'Administrator Registry';
+                document.getElementById('header-title').innerText = 'System Control';
+            }
 
             // Initialize Nav
             const authNav = document.getElementById('auth-nav');
-            const { data: navProfile } = await getProfile(user.id);
-            const navAvatar = navProfile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
+            const navLinks = document.getElementById('nav-links');
+            renderNavbar(authNav, navLinks, session, profile, signOut);
 
-            authNav.innerHTML = `
-                <div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100 hover:border-blue-600">
-                        <div class="w-10 h-10 rounded-full overflow-hidden">
-                            <img src="${navAvatar}" class="w-full h-full object-cover" />
-                        </div>
-                    </div>
-                    <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
-                        <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Account Session</li>
-                        <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest hover:text-blue-600 transition-colors">Profile</a></li>
-                        <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest hover:text-blue-600 transition-colors">Write Post</a></li>
-                        <div class="divider my-2"></div>
-                        <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50">Log Out</button></li>
-                    </ul>
-                </div>
-            `;
-            document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
+            const name = profile?.full_name || profile?.name || user.user_metadata?.full_name || user.email.split('@')[0];
+            const avatar = profile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
+            const expertise = profile?.expertise || ((role === 'admin' || role === 'administrator') ? 'System Administrator' : 'Field Engineer');
+            const bio = profile?.bio || '"Profile created. Technical background info required."';
 
-            setupMobileNav();
+            document.getElementById('user-name').innerText = name;
+            document.getElementById('user-expertise').innerText = expertise;
+            document.getElementById('user-bio').innerText = bio;
+            document.getElementById('user-avatar-container').innerHTML = `<img src="${avatar}" class="w-full h-full object-cover" />`;
+
+            // Fill modal
+            document.getElementById('edit-name').value = name;
+            document.getElementById('edit-expertise').value = (expertise === 'Field Engineer' || expertise === 'System Administrator') ? '' : expertise;
+            document.getElementById('edit-linkedin').value = profile?.linkedin || '';
+            document.getElementById('edit-avatar').value = avatar;
+            document.getElementById('edit-bio').value = profile?.bio || '';
+
+            // Post Loading Logic
+            await loadUserPosts();
+
+            // Admin Actions
+            const viewAllBtn = document.getElementById('view-all-posts-btn');
+            if (viewAllBtn) {
+                viewAllBtn.onclick = async () => {
+                    await loadAllPosts();
+                };
+            }
 
             // Handle Avatar File Selection
             const avatarInput = document.getElementById('edit-avatar-file');
@@ -293,88 +381,6 @@
                     avatarNameDisplay.innerText = file.name.toUpperCase();
                 }
             };
-
-            // Fetch Profile Data
-            const { data: profile } = await getProfile(user.id);
-
-            const name = profile?.full_name || profile?.name || user.user_metadata?.full_name || user.email.split('@')[0];
-            const avatar = profile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
-            const expertise = profile?.expertise || 'Field Engineer';
-            const bio = profile?.bio || '"Profile created. Please add your background info and technical background information."';
-
-            document.getElementById('user-name').innerText = name;
-            document.getElementById('user-expertise').innerText = expertise;
-            document.getElementById('user-bio').innerText = bio;
-            document.getElementById('user-avatar-container').innerHTML = `<img src="${avatar}" class="w-full h-full object-cover" />`;
-
-            // Fill modal
-            document.getElementById('edit-name').value = name;
-            document.getElementById('edit-expertise').value = expertise === 'Field Engineer' ? '' : expertise;
-            document.getElementById('edit-avatar').value = avatar;
-            document.getElementById('edit-bio').value = profile?.bio || '';
-
-            // Fetch user posts
-            const { data: posts, error } = await getUserPosts(user.id);
-            const container = document.getElementById('user-posts-container');
-            const postCount = document.getElementById('post-count');
-            const citationCount = document.querySelector('.grid-cols-2 .text-center:last-child span');
-
-            if (error) {
-                container.innerHTML = `<div class="alert alert-error">FAILED_TO_LOAD: ${error.message}</div>`;
-                return;
-            }
-
-            const totalPosts = posts ? posts.length : 0;
-            const totalCitations = posts ? posts.reduce((acc, post) => acc + (post.view_count || 0), 0) : 0;
-
-            postCount.innerText = totalPosts;
-            if (citationCount) citationCount.innerText = totalCitations;
-
-            if (!posts || posts.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-20 bg-white border-2 border-slate-200 border-dashed">
-                        <p class="text-slate-400 font-mono italic text-sm mb-6">No articles published yet.</p>
-                        <a href="create-post.html" class="btn btn-neutral rounded-none btn-sm font-black uppercase tracking-widest text-[10px] h-10 px-8">Create First Post</a>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = posts.map(post => {
-                    const imgMatch = post.content ? post.content.match(/<img[^>]+src="([^">]+)"/) : null;
-                    const mdMatch = post.content ? post.content.match(/!\[.*?\]\((.*?)\)/) : null;
-                    const thumbnail = post.featured_image || (imgMatch ? imgMatch[1] : (mdMatch ? mdMatch[1] : `https://images.unsplash.com/photo-${getPostImageId(post.category_id)}?auto=format&fit=crop&q=80&w=400`));
-
-                    return `
-                    <div class="bg-white p-6 border-2 border-slate-900 shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] group flex gap-6">
-                        <div class="w-24 h-24 flex-shrink-0 border border-slate-100 overflow-hidden">
-                            <img src="${thumbnail}" 
-                                 onerror="this.src='https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=400'"
-                                 class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500">
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest">${formatDate(post.created_at)}</span>
-                            </div>
-                            <h3 class="text-lg font-black text-slate-900 mb-2 group-hover:text-blue-600 transition-colors truncate uppercase">
-                                <a href="post.html?slug=${post.slug}">${post.title}</a>
-                            </h3>
-                            <p class="text-slate-500 text-xs line-clamp-1 mb-4">${post.excerpt || 'No description available.'}</p>
-                            <div class="flex items-center justify-between">
-                                <div class="flex gap-4">
-                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                        ${post.view_count || 0} Views
-                                    </span>
-                                </div>
-                                <div class="flex gap-4">
-                                    <a href="post.html?slug=${post.slug}" class="text-[9px] font-black uppercase tracking-widest text-blue-600 hover:underline">View</a>
-                                    <a href="create-post.html?edit=${post.id}" class="text-[9px] font-black uppercase tracking-widest text-slate-900 hover:underline">Edit</a>
-                                    <button onclick="handleDeletePost('${post.id}')" class="text-[9px] font-black uppercase tracking-widest text-red-500 hover:underline">Delete</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>`;
-                }).join('');
-            }
 
             // Handle Profile Update
             const editForm = document.getElementById('edit-profile-form');
@@ -408,6 +414,7 @@
                     const updatedData = {
                         full_name: document.getElementById('edit-name').value,
                         expertise: document.getElementById('edit-expertise').value,
+                        linkedin: document.getElementById('edit-linkedin').value,
                         avatar_url: avatarUrl,
                         bio: document.getElementById('edit-bio').value
                     };
@@ -422,6 +429,93 @@
                     saveBtn.innerText = 'Save Profile';
                 }
             };
+        }
+
+        async function loadUserPosts() {
+            const { data: posts, error } = await getUserPosts(user.id);
+            // Update personal stats when viewing own posts
+            renderPostList(posts, error, 'Your Posts', 'HISTORY', true);
+        }
+
+        async function loadAllPosts() {
+            const { data: posts, error } = await getAllPosts();
+            // Don't update personal stats when viewing all posts as admin
+            renderPostList(posts, error, 'Global Post Management', 'SYSTEM_ADMIN', false);
+            document.getElementById('view-all-posts-btn').innerText = 'Viewing All Posts';
+            document.getElementById('view-all-posts-btn').classList.add('bg-white', 'text-blue-600');
+        }
+
+        function renderPostList(posts, error, title, badge, updateStats = true) {
+            const container = document.getElementById('user-posts-container');
+            const postCount = document.getElementById('post-count');
+            const viewCount = document.getElementById('view-count');
+
+            document.getElementById('feed-title').innerText = title;
+            document.getElementById('feed-badge').innerText = badge;
+
+            if (error) {
+                container.innerHTML = `<div class="alert alert-error">FAILED_TO_LOAD: ${error.message}</div>`;
+                return;
+            }
+
+            // Only update personal profile stats when viewing user's own posts
+            if (updateStats) {
+                const totalPosts = posts ? posts.length : 0;
+                const totalViews = posts ? posts.reduce((acc, post) => acc + (post.view_count || 0), 0) : 0;
+
+                postCount.innerText = totalPosts;
+                if (viewCount) viewCount.innerText = totalViews;
+            }
+
+            if (!posts || posts.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-20 bg-white border-2 border-slate-200 border-dashed">
+                        <p class="text-slate-400 font-mono italic text-sm mb-6">No articles found in this scope.</p>
+                        <a href="create-post.html" class="btn btn-neutral rounded-none btn-sm font-black uppercase tracking-widest text-[10px] h-10 px-8">Create New Post</a>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = posts.map(post => {
+                    const imgMatch = post.content ? post.content.match(/<img[^>]+src="([^">]+)"/) : null;
+                    const mdMatch = post.content ? post.content.match(/!\[.*?\]\((.*?)\)/) : null;
+                    const thumbnail = post.featured_image || (imgMatch ? imgMatch[1] : (mdMatch ? mdMatch[1] : `https://images.unsplash.com/photo-${getPostImageId(post.category_id)}?auto=format&fit=crop&q=80&w=400`));
+
+                    const authorName = post.profiles?.full_name || post.profiles?.name || 'Self';
+                    const safeTitle = sanitizeHTML(post.title);
+                    const safeExcerpt = sanitizeHTML(post.excerpt || 'No description available.');
+
+                    return `
+                    <div class="bg-white p-6 border-2 border-slate-900 shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] group flex gap-6">
+                        <div class="w-24 h-24 flex-shrink-0 border border-slate-100 overflow-hidden">
+                            <img src="${thumbnail}" 
+                                 onerror="this.src='https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=400'"
+                                 class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest">${formatDate(post.created_at)} ${(role === 'admin' || role === 'administrator') ? `| BY ${authorName.toUpperCase()}` : ''}</span>
+                            </div>
+                            <h3 class="text-lg font-black text-slate-900 mb-2 group-hover:text-blue-600 transition-colors truncate uppercase">
+                                <a href="post.html?slug=${post.slug}">${safeTitle}</a>
+                            </h3>
+                            <p class="text-slate-500 text-xs line-clamp-1 mb-4">${safeExcerpt}</p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex gap-4">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                        ${post.view_count || 0} Views
+                                    </span>
+                                </div>
+                                <div class="flex gap-4">
+                                    <a href="post.html?slug=${post.slug}" class="text-[9px] font-black uppercase tracking-widest text-blue-600 hover:underline">View</a>
+                                    <a href="create-post.html?edit=${post.id}" class="text-[9px] font-black uppercase tracking-widest text-slate-900 hover:underline">Edit</a>
+                                    <button onclick="handleDeletePost('${post.id}')" class="text-[9px] font-black uppercase tracking-widest text-red-500 hover:underline">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
         }
 
         init();

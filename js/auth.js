@@ -10,7 +10,7 @@ async function signUp(email, password, fullName) {
             }
         }
     });
-    
+
     // If there is no error and a session is created (email confirmation disabled), redirect
     if (!error && data.session) {
         setTimeout(() => {
@@ -18,7 +18,7 @@ async function signUp(email, password, fullName) {
         }, 2000);
     }
     // If there is no error but NO session (email confirmation enabled), the caller should handle showing a "check email" message
-    
+
     return { data, error };
 }
 
@@ -46,6 +46,16 @@ async function checkSession() {
     return session;
 }
 
+async function getUserRole(userId) {
+    if (!userId) return null;
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .maybeSingle();
+    return data?.role || 'author';
+}
+
 async function requireAuth() {
     const session = await checkSession();
     if (!session) {
@@ -55,5 +65,5 @@ async function requireAuth() {
     return session.user;
 }
 
-window.blogAuth = { signUp, signIn, signOut, getCurrentUser, requireAuth, checkSession };
-export { signUp, signIn, signOut, getCurrentUser, requireAuth, checkSession };
+window.blogAuth = { signUp, signIn, signOut, getCurrentUser, requireAuth, checkSession, getUserRole };
+export { signUp, signIn, signOut, getCurrentUser, requireAuth, checkSession, getUserRole };

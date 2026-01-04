@@ -5,7 +5,7 @@
  * @param {string} text 
  * @returns {string}
  */
-function slugify(text) {
+export function slugify(text) {
     return text
         .toString()
         .toLowerCase()
@@ -20,22 +20,20 @@ function slugify(text) {
  * @param {string} dateString 
  * @returns {string}
  */
-function formatDate(dateString) {
+export function formatDate(dateString) {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
 }
 
 /**
- * Common navigation initialization
+ * Common navigation initialization (legacy)
  * @param {object} session - Supabase session object
  * @param {object} authFunctions - Object containing signOut function
  */
-function initCommonNav(session, authFunctions) {
+export function initCommonNav(session, authFunctions) {
     const nav = document.getElementById('nav-links');
     if (!nav) return;
 
-    // Clear existing links except for the dashboard which is usually always present
-    // but we can also just rebuild it for consistency.
     let navHtml = '<a href="index.html">DASHBOARD</a>';
 
     if (session) {
@@ -58,7 +56,7 @@ function initCommonNav(session, authFunctions) {
     }
 }
 
-function getPostImageId(catId) {
+export function getPostImageId(catId) {
     const id = parseInt(catId);
     const imgs = {
         1: '1473341304170-971dccb5ac1e', // Power Systems
@@ -74,7 +72,7 @@ function getPostImageId(catId) {
 /**
  * Initializes the mobile navigation
  */
-function setupMobileNav() {
+export function setupMobileNav() {
     const navContainer = document.querySelector('nav');
     if (!navContainer) return;
 
@@ -101,7 +99,7 @@ function setupMobileNav() {
     mobileMenu.innerHTML = `
         <button id="close-mobile-menu" class="absolute top-6 right-6 btn btn-ghost btn-square text-white">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l18 18"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
         </button>
         <div id="mobile-menu-links" class="flex flex-col gap-6 text-white text-xl font-bold uppercase tracking-widest text-center mt-10">
@@ -128,18 +126,26 @@ function setupMobileNav() {
             document.body.classList.remove('overflow-hidden');
         } else {
             if (originalNav) {
-                menuLinks.innerHTML = originalNav.innerHTML;
+                // Strip IDs when cloning to prevent duplicates
+                const navClone = originalNav.cloneNode(true);
+                navClone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+                menuLinks.innerHTML = navClone.innerHTML;
                 Array.from(menuLinks.children).forEach(child => {
                     child.className = 'text-white hover:text-blue-400 py-2 border-b border-slate-800 transition-colors';
                 });
             }
             if (originalAuth) {
                 const authClone = originalAuth.cloneNode(true);
+                // Strip IDs when cloning
+                authClone.querySelectorAll('[id]').forEach(el => {
+                    if (el.id !== 'sign-out-btn') el.removeAttribute('id');
+                });
+
                 const burger = authClone.querySelector('#mobile-menu-btn');
                 if (burger) burger.remove();
 
-                // Handle the wrapper div that hides buttons on mobile (Login/Signup wrapper)
-                const hiddenWrapper = authClone.querySelector('.hidden.lg\\:flex');
+                // Handle hidden wrapper
+                const hiddenWrapper = authClone.querySelector('.hidden.lg\:flex');
                 if (hiddenWrapper) {
                     while (hiddenWrapper.firstChild) {
                         authClone.insertBefore(hiddenWrapper.firstChild, hiddenWrapper);
@@ -147,13 +153,12 @@ function setupMobileNav() {
                     hiddenWrapper.remove();
                 }
 
-                // Process dropdowns for mobile (Profile dropdown)
+                // Process dropdowns for mobile
                 const dropdowns = authClone.querySelectorAll('.dropdown');
                 dropdowns.forEach(dd => {
                     dd.classList.remove('dropdown', 'dropdown-end');
                     dd.className = 'flex flex-col items-center gap-6 w-full py-6 border-t border-slate-800 mt-4';
 
-                    // Hide the circular avatar button in mobile menu, replace with info
                     const avatarBtn = dd.querySelector('[role="button"]');
                     const avatarImg = avatarBtn ? avatarBtn.querySelector('img') : null;
 
@@ -162,14 +167,12 @@ function setupMobileNav() {
                         content.classList.remove('dropdown-content', 'shadow-2xl', 'menu-sm', 'bg-white', 'text-slate-700', 'border', 'absolute');
                         content.classList.add('w-full', 'bg-transparent', 'text-white', 'text-center', 'flex', 'flex-col', 'gap-4');
 
-                        // Add avatar image to the top of the mobile profile section
                         if (avatarImg) {
                             const largeAvatar = avatarImg.cloneNode(true);
                             largeAvatar.className = "w-20 h-20 rounded-full border-4 border-blue-600 mx-auto mb-2";
                             content.prepend(largeAvatar);
                         }
 
-                        // Fix links inside
                         const links = content.querySelectorAll('a');
                         links.forEach(l => {
                             l.className = 'text-white text-xl font-bold uppercase tracking-widest hover:text-blue-400 py-2 transition-colors';
@@ -180,7 +183,6 @@ function setupMobileNav() {
                             b.className = 'text-red-500 text-xl font-black uppercase tracking-[0.2em] mt-4 hover:text-red-400 py-2 transition-colors';
                         });
 
-                        // Remove titles/dividers that don't look good in mobile menu
                         const extras = content.querySelectorAll('.menu-title, .divider');
                         extras.forEach(e => e.remove());
                     }
@@ -188,10 +190,10 @@ function setupMobileNav() {
                     if (avatarBtn) avatarBtn.remove();
                 });
 
-                // Process normal links (Sign In / Join)
+                // Process normal links
                 const links = authClone.querySelectorAll('a');
                 links.forEach(l => {
-                    if (!l.closest('.flex-col')) { // Only process buttons not already handled in dropdowns
+                    if (!l.closest('.flex-col')) {
                         l.classList.remove('hidden', 'lg:flex', 'lg:block', 'md:flex', 'md:block', 'sm:flex', 'sm:block');
                         l.className = 'text-white text-xl font-bold uppercase tracking-widest btn btn-outline border-white hover:bg-white hover:text-slate-900 w-full h-16 rounded-none mb-4';
                         if (l.getAttribute('href') === 'signup.html') {
@@ -218,16 +220,13 @@ function setupMobileNav() {
     }
 
     if (btn) btn.onclick = toggleMenu;
-    closeBtn.onclick = toggleMenu;
+    if (closeBtn) closeBtn.onclick = toggleMenu;
 }
 
 /**
  * Debounce function to limit the rate at which a function can fire
- * @param {Function} func - The function to debounce
- * @param {number} wait - The delay in milliseconds
- * @returns {Function}
  */
-function debounce(func, wait) {
+export function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
         const later = () => {
@@ -239,5 +238,70 @@ function debounce(func, wait) {
     };
 }
 
-window.blogUtils = { slugify, formatDate, initCommonNav, getPostImageId, setupMobileNav, debounce };
-export { slugify, formatDate, initCommonNav, getPostImageId, setupMobileNav, debounce };
+/**
+ * Simple HTML Sanitizer to prevent basic XSS
+ */
+export function sanitizeHTML(html) {
+    if (!html) return '';
+    // Use DOMPurify if available (globally loaded via script tag)
+    if (window.DOMPurify) {
+        return window.DOMPurify.sanitize(html);
+    }
+    // Fallback
+    return html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+}
+
+/**
+ * Renders the navigation bar auth section consistently
+ */
+export function renderNavbar(authNavEl, navLinksEl, session, profile, signOutFn) {
+    if (!authNavEl) return;
+
+    if (session) {
+        const user = session.user;
+        const avatar = profile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
+        const role = profile?.role || 'author';
+
+        authNavEl.innerHTML = `
+            <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100 hover:border-blue-600">
+                    <div class="w-10 h-10 rounded-full overflow-hidden">
+                        <img src="${avatar}" class="w-full h-full object-cover" />
+                    </div>
+                </div>
+                <ul tabindex="0" class="mt-4 z-[100] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
+                    <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Session [${role.toUpperCase()}]</li>
+                    <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest hover:text-blue-600 transition-colors">Profile</a></li>
+                    ${(role === 'admin' || role === 'administrator' || role === 'author') ? `<li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest hover:text-blue-600 transition-colors">Write Post</a></li>` : ''}
+                    ${(role === 'admin' || role === 'administrator') ? `<li><a href="admin.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-blue-600 border-t border-slate-100">Site Management</a></li>` : ''}
+                    <div class="divider my-2"></div>
+                    <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50 w-full text-left">Log Out</button></li>
+                </ul>
+            </div>
+        `;
+
+        if (navLinksEl && (role === 'admin' || role === 'administrator' || role === 'author') && !navLinksEl.innerHTML.includes('create-post.html')) {
+            const addPostLink = document.createElement('a');
+            addPostLink.href = 'create-post.html';
+            addPostLink.className = 'text-[11px] font-bold text-blue-600 hover:text-blue-700 tracking-widest uppercase transition-colors border-b-2 border-blue-600 pb-1';
+            addPostLink.innerText = 'Add Post';
+            navLinksEl.appendChild(addPostLink);
+        }
+
+        const signOutBtn = document.getElementById('sign-out-btn');
+        if (signOutBtn) {
+            signOutBtn.onclick = async () => { await signOutFn(); };
+        }
+    } else {
+        authNavEl.innerHTML = `
+            <div class="hidden lg:flex items-center gap-4">
+                <a href="login.html" class="inline-flex items-center text-[11px] font-bold text-slate-900 uppercase tracking-widest hover:text-blue-600 transition-colors h-8">Sign In</a>
+                <a href="signup.html" class="btn btn-neutral btn-sm rounded-none px-6 text-[11px] font-bold uppercase tracking-widest">Join Now</a>
+            </div>
+        `;
+    }
+
+    setupMobileNav();
+}
+
+window.blogUtils = { slugify, formatDate, initCommonNav, getPostImageId, setupMobileNav, debounce, sanitizeHTML, renderNavbar };

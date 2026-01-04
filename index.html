@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -119,7 +120,7 @@
                     </div>
                 </div>
 
-                <div class="lg:w-1/2 hidden lg:block">
+                <div class="lg:w-1/2 hidden md:block">
                     <div
                         class="border-4 border-slate-900 bg-slate-950 shadow-[8px_8px_0px_0px_rgba(37,99,235,1)] relative overflow-hidden h-[300px] flex flex-col group">
                         <!-- Scope Header -->
@@ -252,7 +253,7 @@
         import { checkSession, signOut } from './js/auth.js';
         import { getPaginatedPosts, getCategories } from './js/posts.js';
         import { getProfile } from './js/profiles.js';
-        import { formatDate, getPostImageId, setupMobileNav, debounce } from './js/utils.js';
+        import { formatDate, getPostImageId, renderNavbar, debounce, sanitizeHTML } from './js/utils.js';
 
         let currentPage = 1;
         const pageSize = 4;
@@ -264,45 +265,14 @@
             const authNav = document.getElementById('auth-nav');
             const navLinks = document.getElementById('nav-links');
             const session = await checkSession();
+            let profile = null;
 
             if (session) {
-                const user = session.user;
-                const { data: profile } = await getProfile(user.id);
-                const avatar = profile?.avatar_url || user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`;
-
-                authNav.innerHTML = `
-                    <div class="dropdown dropdown-end">
-                        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100 hover:border-blue-600">
-                            <div class="w-10 h-10 rounded-full overflow-hidden">
-                                <img src="${avatar}" class="w-full h-full object-cover" />
-                            </div>
-                        </div>
-                        <ul tabindex="0" class="mt-4 z-[50] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
-                            <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Account Session</li>
-                            <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Profile</a></li>
-                            <li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest">Write Post</a></li>
-                            <div class="divider my-2"></div>
-                            <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50">Log Out</button></li>
-                        </ul>
-                    </div>
-                `;
-
-                if (!navLinks.innerHTML.includes('create-post.html')) {
-                    navLinks.innerHTML += `<a href="create-post.html" class="text-[11px] font-bold text-blue-600 hover:text-blue-700 tracking-widest uppercase transition-colors border-b-2 border-blue-600 pb-1">Add Post</a>`;
-                }
-
-                document.getElementById('sign-out-btn').onclick = async () => { await signOut(); };
-            } else {
-                authNav.innerHTML = `
-                    <div class="hidden lg:flex items-center gap-4">
-                        <a href="login.html" class="inline-flex items-center text-[11px] font-bold text-slate-900 uppercase tracking-widest hover:text-blue-600 transition-colors h-8">Sign In</a>
-                        <a href="signup.html" class="btn btn-neutral btn-sm rounded-none px-6 text-[11px] font-bold uppercase tracking-widest">Join Now</a>
-                    </div>
-                `;
+                const { data } = await getProfile(session.user.id);
+                profile = data;
             }
 
-            // Initialize mobile nav after auth is set up
-            setupMobileNav();
+            renderNavbar(authNav, navLinks, session, profile, signOut);
         }
 
         async function renderCategories() {
@@ -313,7 +283,7 @@
                 list.innerHTML = categories.map(cat => `
                     <a href="#" class="category-filter flex items-center justify-between py-3 border-b border-slate-100 hover:border-blue-200 transition-all group ${currentCategory === cat.id ? 'border-blue-600 border-b-2' : ''}" data-id="${cat.id}">
                         <span class="text-[11px] font-bold ${currentCategory === cat.id ? 'text-blue-600' : 'text-slate-600'} group-hover:text-blue-600 uppercase tracking-widest transition-colors">${cat.name}</span>
-                        <span class="font-mono text-[9px] font-black ${currentCategory === cat.id ? 'text-blue-400' : 'text-slate-300'} uppercase">POSTS_${cat.posts[0].count.toString().padStart(2, '0')}</span>
+                        <span class="font-mono text-[9px] font-black ${currentCategory === cat.id ? 'text-blue-400' : 'text-slate-300'} uppercase">POSTS_${(cat.posts?.[0]?.count || 0).toString().padStart(2, '0')}</span>
                     </a>
                 `).join('');
 
@@ -364,90 +334,53 @@
             }
 
             container.innerHTML = posts.map(post => {
-
                 const imgMatch = post.content ? post.content.match(/<img[^>]+src="([^">]+)"/) : null;
-
                 const mdMatch = post.content ? post.content.match(/!\[.*?\]\((.*?)\)/) : null;
-
                 const thumbnail = post.featured_image || (imgMatch ? imgMatch[1] : (mdMatch ? mdMatch[1] : `https://images.unsplash.com/photo-${getPostImageId(post.category_id || post.categories?.id)}?auto=format&fit=crop&q=80&w=1200`));
 
                 const excerpt = post.excerpt || (post.content ? post.content.replace(/<[^>]*>/g, '').replace(/!\[.*?\]\(.*?\)/g, '').substring(0, 220) + '...' : 'DESCRIPTION_UNAVAILABLE');
-
                 const authorName = post.profiles?.full_name || post.profiles?.name || 'Staff Writer';
-
                 const catName = post.categories?.name || 'General Engineering';
 
-
+                const safeTitle = sanitizeHTML(post.title);
+                const safeExcerpt = sanitizeHTML(excerpt);
 
                 return `
-
                             <article class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 group border-2 border-slate-900 p-4 md:p-8 bg-white shadow-tech hover:shadow-tech-accent transition-all">
-
                                 <div class="lg:col-span-4 aspect-video lg:aspect-[4/3] overflow-hidden relative border border-slate-100 shrink-0">
-
                                     <img src="${thumbnail}" 
-
                                          onerror="this.src='https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=1200'"
-
                                          class="w-full h-full object-cover lg:grayscale lg:group-hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-105">
-
                                     <div class="absolute top-3 left-3">
-
                                         <span class="bg-blue-600 text-white px-2 py-1 font-mono text-[8px] font-black uppercase tracking-widest border border-blue-500">${catName}</span>
-
                                     </div>
-
                                 </div>
-
                                 <div class="lg:col-span-8 flex flex-col justify-center">
-
                                     <div class="flex items-center gap-3 mb-4 lg:mb-6">
-
                                         <span class="text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.2em]">${formatDate(post.created_at)}</span>
-
                                         <div class="h-px w-6 bg-slate-200"></div>
-
                                         <span class="text-[9px] font-mono font-black text-blue-500 uppercase tracking-[0.2em]">${post.view_count || 0} VIEWS</span>
-
                                     </div>
-
                                     <h3 class="text-2xl md:text-4xl font-black text-slate-900 leading-[1.1] mb-4 lg:mb-6 group-hover:text-blue-600 transition-colors uppercase break-words">
-
-                                        <a href="post.html?slug=${post.slug}">${post.title}</a>
-
+                                        <a href="post.html?slug=${post.slug}">${safeTitle}</a>
                                     </h3>
-
-                                    <p class="text-sm md:text-base text-slate-500 font-medium leading-relaxed mb-6 lg:mb-8 line-clamp-2 md:line-clamp-3">${excerpt}</p>
-
+                                    <p class="text-sm md:text-base text-slate-500 font-medium leading-relaxed mb-6 lg:mb-8 line-clamp-2 md:line-clamp-3">${safeExcerpt}</p>
                                     <div class="flex flex-wrap items-center justify-between mt-auto pt-4 border-t border-slate-50 gap-4">
-
                                         <div class="flex items-center gap-3">
-
                                             <div class="w-7 h-7 border-2 border-slate-900 p-0.5 rounded-full overflow-hidden">
-
                                                 <img src="${post.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.profiles?.name}`}" class="w-full h-full object-cover" />
-
                                             </div>
-
                                             <span class="text-[10px] font-bold text-slate-900 uppercase tracking-widest">${authorName}</span>
-
                                         </div>
-
                                         <a href="post.html?slug=${post.slug}" class="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600 flex items-center gap-2 group/link hover:gap-4 transition-all">
-
                                             Read More
-
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-
                                         </a>
-
                                     </div>
-
                                 </div>
-
                             </article>`;
-
             }).join('');
+
 
             const totalPages = Math.ceil(count / pageSize);
             controls.innerHTML = totalPages > 1 ? `
@@ -568,21 +501,34 @@
         }
 
         const devouncedSearch = debounce((val) => {
-            currentSearch = val;
-            renderPosts(1);
+            if (currentSearch !== val) {
+                currentSearch = val;
+                renderPosts(1);
+            }
         }, 500);
 
         document.getElementById('search-input').oninput = (e) => {
             devouncedSearch(e.target.value);
         };
 
-        document.getElementById('search-input').onkeyup = (e) => { if (e.key === 'Enter') { currentSearch = e.target.value; renderPosts(1); } };
+        document.getElementById('search-input').onkeyup = (e) => {
+            if (e.key === 'Enter') {
+                const val = e.target.value;
+                if (currentSearch !== val) {
+                    currentSearch = val;
+                    renderPosts(1);
+                }
+            }
+        };
 
         const searchBtn = document.getElementById('search-btn');
         if (searchBtn) {
             searchBtn.onclick = () => {
-                currentSearch = document.getElementById('search-input').value;
-                renderPosts(1);
+                const val = document.getElementById('search-input').value;
+                if (currentSearch !== val) {
+                    currentSearch = val;
+                    renderPosts(1);
+                }
             };
         }
 
