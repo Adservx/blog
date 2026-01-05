@@ -10,6 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -138,9 +139,17 @@
                                 <h4 class="text-lg md:text-xl font-black uppercase truncate">${authorName}</h4>
                                 <span class="text-[8px] md:text-[10px] font-mono font-bold text-blue-600 uppercase tracking-widest">${post.profiles?.expertise || 'Field Engineer'}</span>
                             </div>
-                            <div class="ml-auto text-right hidden sm:block">
-                                <span class="text-[10px] font-mono font-black text-slate-300 uppercase tracking-widest block mb-1">Published On</span>
-                                <span class="text-sm font-bold uppercase">${formatDate(post.created_at)}</span>
+                            <div class="ml-auto text-right hidden sm:flex flex-col items-end gap-3">
+                                <div>
+                                    <span class="text-[10px] font-mono font-black text-slate-300 uppercase tracking-widest block mb-1">Published On</span>
+                                    <span class="text-sm font-bold uppercase">${formatDate(post.created_at)}</span>
+                                </div>
+                                <button id="download-pdf-btn" class="btn btn-xs btn-outline border-2 border-slate-900 rounded-none font-black uppercase text-[8px] tracking-widest h-8 px-4 hover:bg-slate-900 hover:text-white transition-all flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Save as PDF
+                                </button>
                             </div>
                         </div>
 
@@ -180,7 +189,8 @@
                                 <p class="text-slate-400 font-bold uppercase text-sm mb-4">Please sign in to comment.</p>
                                 <a href="login.html" class="btn btn-neutral btn-sm rounded-none px-8 font-black text-[10px] uppercase">Sign In</a>
                             </div>
-                            `}
+                            `
+                    }
                         </section>
                     </article>
                 `;
@@ -205,29 +215,139 @@
                     };
                 }
 
+                document.getElementById('download-pdf-btn').onclick = async (e) => {
+                    const btn = e.currentTarget;
+                    const originalContent = btn.innerHTML;
+
+                    try {
+                        if (typeof html2pdf === 'undefined') {
+                            throw new Error('PDF Engine not ready. Please refresh.');
+                        }
+
+                        btn.disabled = true;
+                        btn.innerHTML = `
+                            <svg class="animate-spin h-3 w-3 text-slate-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Compiling...
+                        `;
+
+                        // 1. Extract content safely
+                        const articleElement = document.querySelector('article');
+                        const content = articleElement.innerHTML;
+                        const title = post.title;
+
+                        // 2. Build a STANDALONE clean HTML document
+                        // This prevents html2pdf/html2canvas from ever looking at the main page's DaisyUI/oklch CSS
+                        const pdfTemplate = `
+                            <!DOCTYPE html>
+                            <html>
+                            <head>
+                                <meta charset="UTF-8">
+                                <style>
+                                    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+                                    body { 
+                                        font-family: 'Inter', sans-serif !important;
+                                        color: #1a1a1a !important;
+                                        margin: 40px !important;
+                                        line-height: 1.6 !important;
+                                    }
+                                    h1 { 
+                                        font-size: 28pt !important; 
+                                        font-weight: 900 !important; 
+                                        text-transform: uppercase !important;
+                                        margin-bottom: 20px !important;
+                                        border-bottom: 4px solid #000 !important;
+                                        padding-bottom: 10px !important;
+                                    }
+                                    .author-meta {
+                                        font-size: 10pt !important;
+                                        font-weight: bold !important;
+                                        color: #666 !important;
+                                        margin-bottom: 40px !important;
+                                        text-transform: uppercase !important;
+                                    }
+                                    .prose-normal { font-size: 11pt !important; }
+                                    img { 
+                                        max-width: 100% !important; 
+                                        height: auto !important; 
+                                        margin: 20px 0 !important;
+                                        border: 1px solid #ddd !important;
+                                    }
+                                    /* Hide interactive UI elements inside article if any remained */
+                                    #download-pdf-btn, .btn, .modal, .loading { display: none !important; }
+                                </style>
+                            </head>
+                            <body>
+                                <h1>${title}</h1>
+                                <div class="author-meta">
+                                    Published by ${authorName} | ${formatDate(post.created_at)}
+                                </div>
+                                <div class="prose-normal">
+                                    ${content}
+                                </div>
+                            </body>
+                            </html>
+                        `;
+
+                        const opt = {
+                            margin: [10, 10],
+                            filename: `${post.slug}.pdf`,
+                            image: { type: 'jpeg', quality: 0.98 },
+                            html2canvas: {
+                                scale: 2,
+                                useCORS: true,
+                                logging: false
+                            },
+                            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                        };
+
+                        // 3. Generate from STRING - this isolates the capture from parent CSS
+                        await html2pdf().set(opt).from(pdfTemplate).save();
+
+                    } catch (err) {
+                        console.error('PDF Error:', err);
+                        alert('Download Failed. Please use Browser File -> Print -> Save as PDF as a backup.');
+                    } finally {
+                        btn.disabled = false;
+                        btn.innerHTML = originalContent;
+                    }
+                };
+
                 renderComments(post.id);
             }
         }
 
         async function renderComments(postId) {
             const list = document.getElementById('comments-list');
-            const { data: comments } = await getComments(postId);
+            const { data: comments, error } = await getComments(postId);
+            if (error) {
+                console.error('Comments Error:', error);
+                return;
+            }
             if (comments) {
                 if (comments.length === 0) {
-                    list.innerHTML = '<p class="text-slate-400 font-mono text-xs uppercase tracking-widest">No comments yet.</p>';
+                    list.innerHTML = '<p class="text-slate-400 font-mono text-xs uppercase tracking-widest">No comments yet (Nominal Status).</p>';
                 } else {
-                    list.innerHTML = comments.map(c => `
+                    list.innerHTML = comments.map(c => {
+                        const avatar = c.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.user_id}`;
+                        const name = sanitizeHTML(c.profiles?.full_name || 'Anonymous Staff');
+                        const date = formatDate(c.created_at);
+                        const body = sanitizeHTML(c.content);
+
+                        return `
                         <div class="border-b border-slate-100 pb-8 last:border-0">
                             <div class="flex items-center gap-3 mb-4">
                                 <div class="w-8 h-8 rounded-full overflow-hidden border border-slate-200">
-                                    <img src="${c.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.user_id}`}" class="w-full h-full object-cover" />
+                                    <img src="${avatar}" class="w-full h-full object-cover" />
                                 </div>
-                                <span class="text-[11px] font-black uppercase tracking-widest">${sanitizeHTML(c.profiles?.full_name || 'Anonymous')}</span>
-                                <span class="text-[9px] font-mono text-slate-300 ml-auto">${formatDate(c.created_at)}</span>
+                                <span class="text-[11px] font-black uppercase tracking-widest">${name}</span>
+                                <span class="text-[9px] font-mono text-slate-300 ml-auto">${date}</span>
                             </div>
-                            <p class="text-lg font-bold text-slate-700 leading-relaxed uppercase">${sanitizeHTML(c.content)}</p>
+                            <p class="text-lg font-bold text-slate-700 leading-relaxed uppercase">${body}</p>
                         </div>
-                    `).join('');
+                    `}).join('');
                 }
             }
         }

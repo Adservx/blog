@@ -176,12 +176,37 @@
                         </div>
 
                         <div class="space-y-4">
-                            <label
-                                class="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-slate-400">Post
-                                Content (Markdown)</label>
+                            <div class="flex items-center justify-between">
+                                <label
+                                    class="text-[10px] font-mono font-black uppercase tracking-[0.3em] text-slate-400">Post
+                                    Content (Markdown)</label>
+                                <div class="flex gap-4">
+                                    <button type="button" id="trigger-content-upload"
+                                        class="btn btn-xs btn-outline rounded-none border-2 border-slate-900 font-black uppercase text-[9px] tracking-wider px-4 h-8 flex items-center gap-2 hover:bg-slate-900 hover:text-white transition-all">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                                d="M12 4v16m8-8H4" />
+                                        </svg>
+                                        Attach Media (IMG/PDF)
+                                    </button>
+                                    <input type="file" id="content-image-file" accept="image/*,application/pdf"
+                                        class="hidden" />
+                                </div>
+                            </div>
+
+                            <!-- Content Image Preview Strip -->
+                            <div id="content-media-strip"
+                                class="hidden flex gap-4 overflow-x-auto p-4 bg-slate-50 border-2 border-dashed border-slate-200">
+                                <!-- Thumbnails will appear here -->
+                            </div>
+
                             <div class="border-2 border-slate-900">
                                 <textarea id="post-editor"></textarea>
                             </div>
+                            <p class="text-[9px] font-mono font-bold text-slate-300 uppercase tracking-widest mt-2">
+                                Tip: Images are inserted as visuals. PDFs are inserted as technical document links.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -290,6 +315,16 @@
                 spellChecker: false,
                 status: false,
                 autosave: { enabled: !editingPostId, uniqueId: "ee-blog-draft", delay: 1000 },
+                uploadImage: true,
+                imageUploadFunction: async (file, onSuccess, onError) => {
+                    try {
+                        const url = await uploadImage(file);
+                        onSuccess(url);
+                    } catch (err) {
+                        console.error("Editor Image Upload Error:", err);
+                        onError(err.message || "Failed to upload image");
+                    }
+                },
                 toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "table", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
             });
 
@@ -337,6 +372,75 @@
                 fileNameDisplay.innerText = 'NO_IMAGE_SELECTED';
                 previewContainer.classList.add('hidden');
                 previewImage.src = '';
+            };
+
+            // Content Image Handling
+            const contentFileInput = document.getElementById('content-image-file');
+            const triggerBtn = document.getElementById('trigger-content-upload');
+            const mediaStrip = document.getElementById('content-media-strip');
+
+            triggerBtn.onclick = () => contentFileInput.click();
+
+            contentFileInput.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const originalBtnText = triggerBtn.innerHTML;
+                triggerBtn.disabled = true;
+                triggerBtn.innerText = 'UPLOADING...';
+
+                try {
+                    const url = await uploadImage(file);
+                    const isPDF = file.type === 'application/pdf';
+                    const fileName = file.name;
+
+                    // Show in strip
+                    mediaStrip.classList.remove('hidden');
+                    const thumb = document.createElement('div');
+                    thumb.className = "shrink-0 w-24 h-24 border-2 border-slate-900 bg-white p-1 relative group cursor-pointer hover:border-blue-600 transition-all";
+
+                    if (isPDF) {
+                        thumb.innerHTML = `
+                            <div class="w-full h-full bg-slate-100 flex flex-col items-center justify-center p-2 text-center">
+                                <span class="text-xl">📄</span>
+                                <span class="text-[8px] font-black uppercase truncate w-full mt-1">${fileName}</span>
+                            </div>
+                            <div class="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/20 flex items-center justify-center pointer-events-none transition-all">
+                                 <span class="text-[8px] font-black text-white bg-slate-900 px-2 py-1 opacity-0 group-hover:opacity-100 uppercase tracking-widest">Insert Link</span>
+                            </div>
+                        `;
+                    } else {
+                        thumb.innerHTML = `
+                            <img src="${url}" class="w-full h-full object-cover" title="Click to insert" />
+                            <div class="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/20 flex items-center justify-center pointer-events-none transition-all">
+                                 <span class="text-[8px] font-black text-white bg-slate-900 px-2 py-1 opacity-0 group-hover:opacity-100 uppercase tracking-widest">Insert Image</span>
+                            </div>
+                        `;
+                    }
+
+                    const insertMedia = () => {
+                        const cm = easyMDE.codemirror;
+                        const doc = cm.getDoc();
+                        const cursor = doc.getCursor();
+                        const tag = isPDF
+                            ? `\n\n[📥 Download Technical Document: ${fileName}](${url})\n\n`
+                            : `\n\n![Technical Illustration: ${fileName}](${url})\n\n`;
+                        doc.replaceRange(tag, cursor);
+                    };
+
+                    thumb.onclick = insertMedia;
+                    mediaStrip.prepend(thumb);
+
+                    // Also insert immediately
+                    insertMedia();
+
+                } catch (err) {
+                    alert('Upload Error: ' + err.message);
+                } finally {
+                    triggerBtn.disabled = false;
+                    triggerBtn.innerHTML = originalBtnText;
+                    contentFileInput.value = '';
+                }
             };
         }
 
