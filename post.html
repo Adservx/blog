@@ -48,22 +48,15 @@
             <div class="flex justify-between h-20 items-center">
                 <div class="flex justify-start shrink-0">
                     <a href="index.html" class="flex items-center gap-2 sm:gap-3">
-                        <span
-                            class="bg-slate-900 text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-black text-lg sm:text-xl shrink-0">V</span>
-                        <span
-                            class="text-xl sm:text-2xl font-black uppercase tracking-tight truncate max-w-[150px] sm:max-w-none">Voltage
-                            & Current</span>
+                        <span class="bg-slate-900 text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center font-black text-lg sm:text-xl shrink-0">V</span>
+                        <span class="text-xl sm:text-2xl font-black uppercase tracking-tight truncate max-w-[150px] sm:max-w-none">Voltage & Current</span>
                     </a>
                 </div>
 
-                <div class="hidden lg:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2"
-                    id="nav-links">
-                    <a href="index.html"
-                        class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-blue-600 transition-colors">Home</a>
-                    <a href="resources.html"
-                        class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-blue-600 transition-colors">Resources</a>
-                    <a href="about.html"
-                        class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-blue-600 transition-colors">About</a>
+                <div class="hidden lg:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2" id="nav-links">
+                    <a href="index.html" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-blue-600 transition-colors">Home</a>
+                    <a href="resources.html" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-blue-600 transition-colors">Resources</a>
+                    <a href="about.html" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-blue-600 transition-colors">About</a>
                 </div>
 
                 <div class="flex items-center justify-end gap-8" id="auth-nav"></div>
@@ -76,291 +69,33 @@
         <div class="max-w-4xl mx-auto px-6 py-24 animate-pulse">
             <div class="h-4 w-32 bg-slate-100 mb-10"></div>
             <div class="h-16 w-full bg-slate-100 mb-12"></div>
+            <div class="h-96 w-full bg-slate-50 border border-slate-100"></div>
         </div>
     </main>
 
     <footer class="bg-slate-950 text-white py-24 mt-20 border-t-8 border-blue-600">
         <div class="max-w-[1400px] mx-auto px-6 text-center">
-            <span
-                class="bg-white text-slate-950 w-12 h-12 flex items-center justify-center font-black text-2xl mx-auto mb-10">V</span>
-            <p class="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.2em]">© 2025 VOLTAGE &
-                CURRENT ENGINEERING BLOG.</p>
+            <span class="bg-white text-slate-950 w-12 h-12 flex items-center justify-center font-black text-2xl mx-auto mb-10">V</span>
+            <p class="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.2em]">© 2025 VOLTAGE & CURRENT ENGINEERING BLOG.</p>
         </div>
     </footer>
 
     <script type="module">
-        import { checkSession, signOut } from './js/auth.js';
-        import { getPostBySlug, incrementViewCount } from './js/posts.js';
-        import { getComments, addComment } from './js/comments.js';
-        import { getProfile } from './js/profiles.js';
-        import { formatDate, getPostImageId, renderNavbar, sanitizeHTML } from './js/utils.js';
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const slug = urlParams.get('slug');
-
-        async function initAuth() {
-            const authNav = document.getElementById('auth-nav');
-            const navLinks = document.getElementById('nav-links');
-            const session = await checkSession();
-            let profile = null;
-
-            if (session) {
-                const { data } = await getProfile(session.user.id);
-                profile = data;
-            }
-
-            renderNavbar(authNav, navLinks, session, profile, signOut);
-            return session ? session.user : null;
-        }
-
-        async function renderPost(user) {
-            const container = document.getElementById('post-content');
-            const { data: post, error } = await getPostBySlug(slug);
-            if (post) {
-                await incrementViewCount(post.id);
-                const authorName = post.profiles?.full_name || post.profiles?.name || 'Staff Writer';
-                const contentImage = post.content?.match(/<img[^>]+src="([^">]+)"/)?.[1];
-                const mdImage = post.content?.match(/!\[.*?\]\((.*?)\)/)?.[1];
-                const headerImage = post.featured_image || contentImage || mdImage || `https://images.unsplash.com/photo-${getPostImageId(post.category_id || post.categories?.id)}?auto=format&fit=crop&q=80&w=2000`;
-
-                container.innerHTML = `
-                    <article class="max-w-4xl mx-auto px-4 sm:px-6 py-10 md:py-24">
-                        <div class="flex items-center gap-4 mb-6 md:mb-10">
-                            <span class="bg-blue-600 text-white px-2 py-1 font-mono text-[8px] md:text-[9px] font-black uppercase tracking-widest border border-blue-500">${post.categories?.name || 'General'}</span>
-                        </div>
-                        <h1 class="text-3xl md:text-5xl font-black uppercase mb-8 md:mb-12 leading-[1.1] break-words">${post.title}</h1>
-                        
-                        <div class="flex flex-wrap items-center gap-4 md:gap-6 mb-10 md:mb-16 py-6 md:py-8 border-y-2 border-slate-900">
-                            <div class="w-12 h-12 md:w-16 md:h-16 border-2 border-slate-900 p-0.5 md:p-1 shrink-0 rounded-full overflow-hidden">
-                                <img src="${post.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.profiles?.id}`}" class="w-full h-full object-cover" />
-                            </div>
-                            <div class="min-w-0">
-                                <span class="text-[8px] md:text-[10px] font-mono font-black text-slate-400 uppercase tracking-widest block mb-0.5">Author</span>
-                                <h4 class="text-lg md:text-xl font-black uppercase truncate">${authorName}</h4>
-                                <span class="text-[8px] md:text-[10px] font-mono font-bold text-blue-600 uppercase tracking-widest">${post.profiles?.expertise || 'Field Engineer'}</span>
-                            </div>
-                            <div class="ml-auto text-right hidden sm:flex flex-col items-end gap-3">
-                                <div>
-                                    <span class="text-[10px] font-mono font-black text-slate-300 uppercase tracking-widest block mb-1">Published On</span>
-                                    <span class="text-sm font-bold uppercase">${formatDate(post.created_at)}</span>
-                                </div>
-                                <button id="download-pdf-btn" class="btn btn-xs btn-outline border-2 border-slate-900 rounded-none font-black uppercase text-[8px] tracking-widest h-8 px-4 hover:bg-slate-900 hover:text-white transition-all flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    Save as PDF
-                                </button>
-                            </div>
-                        </div>
-
-                        <img src="${headerImage}" 
-                             onerror="this.src='https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=2000'"
-                             class="w-full aspect-video md:aspect-[21/9] object-cover mb-10 md:mb-16 border border-slate-100 shadow-tech">
-                        <div class="prose-normal">${DOMPurify.sanitize(post.content)}</div>
-
-                        <!-- Technical Bio Section -->
-                        <section class="mt-24 p-10 border-2 border-slate-900 bg-slate-50 relative overflow-hidden">
-                            <div class="absolute top-0 right-0 w-32 h-32 bg-slate-100 -mr-16 -mt-16 rotate-45"></div>
-                            <h3 class="text-[10px] font-mono font-black tracking-[0.3em] text-slate-400 uppercase mb-6">About the Author</h3>
-                            <div class="flex flex-col md:flex-row gap-10 items-start">
-                                <div class="space-y-4 flex-1">
-                                    <p class="text-lg font-medium text-slate-700 leading-relaxed italic">"${post.profiles?.bio || 'Author bio coming soon.'}"</p>
-                                    <div class="flex gap-4">
-                                        <a href="profile.html?id=${post.profiles?.id}" class="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:underline">View Profile</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="mt-24 border-t-4 border-slate-900 pt-16">
-                            <h3 class="text-3xl font-black uppercase mb-12">Comments</h3>
-                            <div id="comments-list" class="space-y-12"></div>
-                            
-                            ${user ? `
-                            <div class="mt-16 border-2 border-slate-900 p-8">
-                                <h4 class="text-[10px] font-mono font-black text-slate-400 uppercase tracking-widest mb-6">Leave a Comment</h4>
-                                <form id="comment-form" class="space-y-6">
-                                    <textarea id="comment-content" class="textarea textarea-bordered w-full h-32 rounded-none border-2 border-slate-900 font-bold" placeholder="Share your thoughts..." required></textarea>
-                                    <button type="submit" class="btn btn-neutral rounded-none font-black uppercase tracking-widest text-[10px]">Post Comment</button>
-                                </form>
-                            </div>
-                            ` : `
-                            <div class="mt-16 p-8 border-2 border-dashed border-slate-200 text-center">
-                                <p class="text-slate-400 font-bold uppercase text-sm mb-4">Please sign in to comment.</p>
-                                <a href="login.html" class="btn btn-neutral btn-sm rounded-none px-8 font-black text-[10px] uppercase">Sign In</a>
-                            </div>
-                            `
-                    }
-                        </section>
-                    </article>
-                `;
-
-                if (user) {
-                    const commentForm = document.getElementById('comment-form');
-                    commentForm.onsubmit = async (e) => {
-                        e.preventDefault();
-                        const content = document.getElementById('comment-content').value;
-                        const submitBtn = commentForm.querySelector('button');
-                        submitBtn.disabled = true;
-
-                        const { data, error } = await addComment(post.id, user.id, content);
-                        if (error) {
-                            alert('Post Failed: ' + error.message);
-                            submitBtn.disabled = false;
-                        } else {
-                            document.getElementById('comment-content').value = '';
-                            renderComments(post.id);
-                            submitBtn.disabled = false;
-                        }
-                    };
-                }
-
-                document.getElementById('download-pdf-btn').onclick = async (e) => {
-                    const btn = e.currentTarget;
-                    const originalContent = btn.innerHTML;
-
-                    try {
-                        if (typeof html2pdf === 'undefined') {
-                            throw new Error('PDF Engine not ready. Please refresh.');
-                        }
-
-                        btn.disabled = true;
-                        btn.innerHTML = `
-                            <svg class="animate-spin h-3 w-3 text-slate-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Compiling...
-                        `;
-
-                        // 1. Extract content safely
-                        const articleElement = document.querySelector('article');
-                        const content = articleElement.innerHTML;
-                        const title = post.title;
-
-                        // 2. Build a STANDALONE clean HTML document
-                        // This prevents html2pdf/html2canvas from ever looking at the main page's DaisyUI/oklch CSS
-                        const pdfTemplate = `
-                            <!DOCTYPE html>
-                            <html>
-                            <head>
-                                <meta charset="UTF-8">
-                                <style>
-                                    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-                                    body { 
-                                        font-family: 'Inter', sans-serif !important;
-                                        color: #1a1a1a !important;
-                                        margin: 40px !important;
-                                        line-height: 1.6 !important;
-                                    }
-                                    h1 { 
-                                        font-size: 28pt !important; 
-                                        font-weight: 900 !important; 
-                                        text-transform: uppercase !important;
-                                        margin-bottom: 20px !important;
-                                        border-bottom: 4px solid #000 !important;
-                                        padding-bottom: 10px !important;
-                                    }
-                                    .author-meta {
-                                        font-size: 10pt !important;
-                                        font-weight: bold !important;
-                                        color: #666 !important;
-                                        margin-bottom: 40px !important;
-                                        text-transform: uppercase !important;
-                                    }
-                                    .prose-normal { font-size: 11pt !important; }
-                                    img { 
-                                        max-width: 100% !important; 
-                                        height: auto !important; 
-                                        margin: 20px 0 !important;
-                                        border: 1px solid #ddd !important;
-                                    }
-                                    /* Hide interactive UI elements inside article if any remained */
-                                    #download-pdf-btn, .btn, .modal, .loading { display: none !important; }
-                                </style>
-                            </head>
-                            <body>
-                                <h1>${title}</h1>
-                                <div class="author-meta">
-                                    Published by ${authorName} | ${formatDate(post.created_at)}
-                                </div>
-                                <div class="prose-normal">
-                                    ${content}
-                                </div>
-                            </body>
-                            </html>
-                        `;
-
-                        const opt = {
-                            margin: [10, 10],
-                            filename: `${post.slug}.pdf`,
-                            image: { type: 'jpeg', quality: 0.98 },
-                            html2canvas: {
-                                scale: 2,
-                                useCORS: true,
-                                logging: false
-                            },
-                            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                        };
-
-                        // 3. Generate from STRING - this isolates the capture from parent CSS
-                        await html2pdf().set(opt).from(pdfTemplate).save();
-
-                    } catch (err) {
-                        console.error('PDF Error:', err);
-                        alert('Download Failed. Please use Browser File -> Print -> Save as PDF as a backup.');
-                    } finally {
-                        btn.disabled = false;
-                        btn.innerHTML = originalContent;
-                    }
-                };
-
-                renderComments(post.id);
-            }
-        }
-
-        async function renderComments(postId) {
-            const list = document.getElementById('comments-list');
-            const { data: comments, error } = await getComments(postId);
-            if (error) {
-                console.error('Comments Error:', error);
-                return;
-            }
-            if (comments) {
-                if (comments.length === 0) {
-                    list.innerHTML = '<p class="text-slate-400 font-mono text-xs uppercase tracking-widest">No comments yet (Nominal Status).</p>';
-                } else {
-                    list.innerHTML = comments.map(c => {
-                        const avatar = c.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.user_id}`;
-                        const name = sanitizeHTML(c.profiles?.full_name || 'Anonymous Staff');
-                        const date = formatDate(c.created_at);
-                        const body = sanitizeHTML(c.content);
-
-                        return `
-                        <div class="border-b border-slate-100 pb-8 last:border-0">
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-8 h-8 rounded-full overflow-hidden border border-slate-200">
-                                    <img src="${avatar}" class="w-full h-full object-cover" />
-                                </div>
-                                <span class="text-[11px] font-black uppercase tracking-widest">${name}</span>
-                                <span class="text-[9px] font-mono text-slate-300 ml-auto">${date}</span>
-                            </div>
-                            <p class="text-lg font-bold text-slate-700 leading-relaxed uppercase">${body}</p>
-                        </div>
-                    `}).join('');
-                }
-            }
-        }
-
-        initAuth().then(user => renderPost(user));
+        import { initPostPage } from './js/post-page.js';
+        
+        // Start Initialization
+        initPostPage();
 
         // Progress bar logic
-        window.onscroll = () => {
+        window.addEventListener('scroll', () => {
             const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrolled = (winScroll / height) * 100;
-            document.getElementById("progress-bar").style.width = scrolled + "%";
-        };
+            if (height > 0) {
+                const scrolled = (winScroll / height) * 100;
+                const pb = document.getElementById("progress-bar");
+                if (pb) pb.style.width = scrolled + "%";
+            }
+        });
     </script>
 </body>
 
