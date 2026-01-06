@@ -129,9 +129,9 @@ async function renderPost(user, slug) {
                     ` : `
                     <div class="mt-16 p-8 border-2 border-dashed border-slate-200 text-center">
                         <p class="text-slate-400 font-bold uppercase text-sm mb-4">Please sign in to comment.</p>
-                        <a href="login.html" class="btn btn-neutral btn-sm rounded-none px-8 font-black text-[10px] uppercase">Sign In</a>
+                        <a href="login.html" class="btn btn-neutral btn-sm rounded-none px-8 font-black text-[10px] uppercase">Login</a>
                     </div>`
-                    }
+            }
                 </section>
             </article>
         `;
@@ -207,11 +207,11 @@ async function renderPost(user, slug) {
 async function renderComments(postId) {
     const list = document.getElementById('comments-list');
     if (!list) return;
-    
+
     try {
         const { data: comments, error } = await getComments(postId);
         if (error) throw error;
-        
+
         if (comments && comments.length > 0) {
             list.innerHTML = comments.map(c => {
                 const avatarUrl = c.profiles?.avatar_url || ('https://api.dicebear.com/7.x/avataaars/svg?seed=' + c.user_id);

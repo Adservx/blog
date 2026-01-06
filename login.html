@@ -62,9 +62,9 @@
                 <div class="hidden lg:flex items-center justify-center gap-8 absolute left-1/2 -translate-x-1/2"
                     id="nav-links">
                     <a href="index.html"
-                        class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Archive</a>
+                        class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Home</a>
                     <a href="resources.html"
-                        class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Resources</a>
+                        class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">Library</a>
                     <a href="about.html"
                         class="text-[11px] font-bold text-slate-400 hover:text-blue-600 tracking-widest uppercase transition-colors">About</a>
                 </div>
@@ -72,8 +72,8 @@
                 <!-- Right: Auth -->
                 <div class="flex items-center justify-end gap-6" id="auth-nav">
                     <a href="signup.html"
-                        class="hidden lg:inline-flex btn btn-neutral btn-sm rounded-none px-6 text-[11px] font-bold uppercase tracking-widest">Join
-                        Now</a>
+                        class="hidden lg:inline-flex btn btn-neutral btn-sm rounded-none px-6 text-[11px] font-bold uppercase tracking-widest">Sign
+                        Up</a>
                 </div>
             </div>
         </div>
@@ -101,7 +101,7 @@
                         <div class="inline-flex items-center gap-2 border-l-4 border-blue-600 pl-4 mb-4">
                             <span
                                 class="text-[10px] font-mono font-black tracking-[0.4em] text-slate-400 uppercase">Please
-                                Sign In</span>
+                                Login</span>
                         </div>
                         <h1
                             class="text-3xl sm:text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-2">
@@ -135,7 +135,7 @@
 
                         <button type="submit" id="submit-btn"
                             class="btn btn-neutral w-full h-14 rounded-none font-black uppercase tracking-[0.2em] text-[11px] shadow-[4px_4px_0px_0px_rgba(37,99,235,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all">
-                            Sign In
+                            Login
                         </button>
                     </form>
 
@@ -202,7 +202,7 @@
             if (error) {
                 alert('Login Failed: ' + error.message);
                 submitBtn.disabled = false;
-                submitBtn.innerText = 'Sign In';
+                submitBtn.innerText = 'Login';
             } else {
                 window.location.href = 'index.html';
             }

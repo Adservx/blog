@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Voltage & Current</title>
 
-    <!-- Tailwind & DaisyUI -->
+    <!-- UI Frameworks -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <script>
         tailwind.config = {
@@ -17,681 +18,1055 @@
                 extend: {
                     fontFamily: {
                         mono: ['JetBrains Mono', 'monospace'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
                     },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        },
+                        slate: {
+                            950: '#020617',
+                        }
+                    }
                 }
             }
         }
     </script>
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            opacity: 0;
+            transition: opacity 0.4s ease-out;
+        }
+
+        .admin-ready body {
+            opacity: 1;
+        }
+
+        .sidebar-link.active {
+            background-color: #2563eb;
+            color: white;
+            box-shadow: 4px 4px 0px 0px rgba(15, 23, 42, 1);
+            border: 2px solid #0f172a;
+        }
+
+        .sidebar-link.active i {
+            color: white;
+        }
+
         .bg-grid-subtle {
             background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
             background-size: 40px 40px;
         }
 
         .shadow-tech {
-            box-shadow: 10px 10px 0px 0px rgba(15, 23, 42, 1);
+            box-shadow: 6px 6px 0px 0px rgba(15, 23, 42, 1);
         }
 
-        .tab-active {
-            border-bottom: 4px solid #0f172a !important;
-            color: #0f172a !important;
-        }
-    </style>
-    <style>
-        body {
-            opacity: 0;
-            transition: opacity 0.5s;
+        .shadow-tech-accent {
+            box-shadow: 6px 6px 0px 0px rgba(37, 99, 235, 1);
         }
 
-        .admin-ready body {
-            opacity: 1;
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .toast-item {
+            animation: slideIn 0.3s ease-out;
+            background: white;
+            border: 2px solid #0f172a;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .tab-content {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .tab-content.hidden {
+            display: none !important;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #0f172a;
+            border-radius: 0;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2563eb;
+        }
+
+        .mobile-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 45;
+        }
+
+        .mobile-backdrop.active {
+            display: block;
+        }
+
+        .border-tech {
+            border: 2px solid #0f172a;
         }
     </style>
 </head>
 
-<body class="bg-white text-slate-900 font-sans min-h-screen">
+<body class="bg-slate-50 text-slate-900 min-h-screen flex">
 
-    <nav class="border-b border-slate-200 sticky top-0 z-50 bg-white/90 backdrop-blur-md">
-        <div class="max-w-[1400px] mx-auto px-4 sm:px-10">
-            <div class="flex justify-between h-20 items-center">
-                <div class="flex items-center gap-8">
-                    <a href="index.html" class="flex items-center gap-3">
-                        <span
-                            class="bg-slate-900 text-white w-10 h-10 flex items-center justify-center font-black text-xl">V</span>
-                        <div class="flex flex-col">
-                            <span class="font-black text-2xl tracking-tighter leading-none uppercase">Voltage &
-                                Current</span>
-                            <span
-                                class="text-[9px] font-mono font-bold tracking-[0.4em] text-slate-400 mt-1 uppercase">Admin
-                                System</span>
+    <!-- Toast Registry -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Mobile Backdrop -->
+    <div id="mobile-backdrop" class="mobile-backdrop lg:hidden" onclick="window.toggleMobileSidebar()"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside
+        class="w-72 bg-slate-950 text-white flex flex-col fixed inset-y-0 right-0 z-50 transition-all duration-500 lg:left-0 lg:right-auto lg:translate-x-0 translate-x-full lg:translate-y-0 border-r-2 border-white/10 lg:w-72 w-[85%] max-w-sm h-full"
+        id="sidebar">
+        <div class="p-8 border-b border-white/10">
+            <a href="index.html" class="flex items-center gap-3">
+                <span
+                    class="bg-blue-600 text-white w-10 h-10 flex items-center justify-center font-black text-xl">V</span>
+                <div class="flex flex-col">
+                    <span class="font-black text-xl tracking-tighter leading-none uppercase">Admin</span>
+                    <span
+                        class="text-[9px] font-mono font-bold tracking-[0.3em] text-blue-400 mt-1 uppercase">Dashboard</span>
+                </div>
+            </a>
+        </div>
+
+        <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+            <div class="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-4 px-2">Main Menu
+            </div>
+
+            <button
+                class="sidebar-link w-full flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 transition-all active"
+                data-tab="posts">
+                <i data-lucide="file-text" class="w-5 h-5"></i>
+                <span class="font-bold text-sm">Articles</span>
+            </button>
+
+            <button
+                class="sidebar-link w-full flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+                data-tab="users">
+                <i data-lucide="users" class="w-5 h-5"></i>
+                <span class="font-bold text-sm">Users</span>
+            </button>
+
+            <button
+                class="sidebar-link w-full flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+                data-tab="comments">
+                <i data-lucide="message-square" class="w-5 h-5"></i>
+                <span class="font-bold text-sm">Comments</span>
+            </button>
+
+            <div class="pt-6 text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-4 px-2">
+                Organization</div>
+
+            <button
+                class="sidebar-link w-full flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+                data-tab="categories">
+                <i data-lucide="tag" class="w-5 h-5"></i>
+                <span class="font-bold text-sm">Categories</span>
+            </button>
+
+            <button
+                class="sidebar-link w-full flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+                data-tab="resources">
+                <i data-lucide="library" class="w-5 h-5"></i>
+                <span class="font-bold text-sm">Library</span>
+            </button>
+
+            <div class="pt-6 text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest mb-4 px-2">
+                Settings</div>
+
+            <a href="profile.html"
+                class="w-full flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+                <i data-lucide="user-cog" class="w-5 h-5"></i>
+                <span class="font-bold text-sm">My Profile</span>
+            </a>
+        </nav>
+
+        <div class="p-6 border-t border-white/10" id="sidebar-footer">
+            <button onclick="window.performSignOut()"
+                class="w-full flex items-center gap-4 px-4 py-3 text-red-400 hover:text-white hover:bg-red-500/20 transition-all">
+                <i data-lucide="log-out" class="w-5 h-5"></i>
+                <span class="font-bold text-sm">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:ml-72 flex flex-col">
+
+        <!-- Header -->
+        <header
+            class="h-20 bg-white border-b-2 border-slate-900 sticky top-0 z-40 px-6 sm:px-8 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <button onclick="window.toggleMobileSidebar()" class="btn btn-ghost btn-circle lg:hidden">
+                    <i data-lucide="menu" class="w-6 h-6 text-slate-900"></i>
+                </button>
+                <span class="font-black text-xl uppercase tracking-tighter lg:block hidden">Admin Dashboard</span>
+                <span class="font-black text-xl uppercase tracking-tighter lg:hidden block">Admin</span>
+            </div>
+
+            <div class="flex items-center gap-3 bg-slate-900 px-4 py-1.5 border border-slate-900 hidden sm:flex">
+                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-white">Online</span>
+            </div>
+
+            <div class="flex items-center gap-4 sm:gap-6" id="auth-header-info">
+                <!-- User Profile Summary -->
+            </div>
+        </header>
+
+
+        <!-- Dashboard Content -->
+        <div class="p-8 lg:p-12 bg-grid-subtle flex-1">
+
+            <!-- Page Title -->
+            <div class="mb-10 flex flex-col xl:flex-row xl:items-end justify-between gap-8">
+                <div>
+                    <div
+                        class="flex items-center gap-2 text-[10px] font-mono font-bold text-blue-600 uppercase tracking-widest mb-2">
+                        <span>Main</span>
+                        <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                        <span class="text-slate-400" id="active-tab-breadcrumb">Articles</span>
+                    </div>
+                    <h1 class="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-2"
+                        id="active-tab-title">Admin Dashboard</h1>
+                    <p class="text-slate-500 text-xs font-medium uppercase tracking-widest" id="active-tab-subtitle">
+                        Manage your website content</p>
+                </div>
+
+                <div class="flex flex-col md:flex-row items-center gap-4">
+                    <!-- Search Bar -->
+                    <div class="relative w-full md:w-80 group" id="search-container">
+                        <i data-lucide="search"
+                            class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
+                        <input type="text" id="global-search" placeholder="Search..."
+                            class="input input-bordered w-full pl-12 rounded-none border-2 border-slate-900 font-bold text-sm bg-white focus:outline-none focus:shadow-tech-accent transition-all" />
+                    </div>
+
+                    <div id="tab-actions" class="flex items-center gap-3 w-full md:w-auto">
+                        <!-- Actions specific to each tab -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content Sections -->
+
+            <!-- Posts Tab -->
+            <section id="tab-posts" class="tab-content">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div
+                        class="bg-white p-6 border-2 border-slate-900 shadow-tech group hover:border-blue-600 transition-colors">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3 bg-slate-900 text-white transition-colors">
+                                <i data-lucide="file-text" class="w-6 h-6"></i>
+                            </div>
+                            <span class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Total
+                                Posts</span>
                         </div>
-                    </a>
+                        <div class="text-3xl font-black text-slate-900" id="stat-posts">0</div>
+                    </div>
                 </div>
+                <div class="flex flex-col gap-6" id="posts-container">
+                    <!-- Posts loaded here -->
+                </div>
+            </section>
 
-                <div class="flex items-center gap-6" id="auth-nav">
-                    <!-- Nav items injected here -->
+            <!-- Users Tab -->
+            <section id="tab-users" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div
+                        class="bg-white p-6 border-2 border-slate-900 shadow-tech group hover:border-blue-600 transition-colors">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3 bg-slate-900 text-white transition-colors">
+                                <i data-lucide="users" class="w-6 h-6"></i>
+                            </div>
+                            <span
+                                class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Active
+                                Users</span>
+                        </div>
+                        <div class="text-3xl font-black text-slate-900" id="stat-users">0</div>
+                    </div>
                 </div>
-            </div>
+                <div class="bg-white border-2 border-slate-900 shadow-tech overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="table w-full">
+                            <thead>
+                                <tr class="bg-slate-50 border-b-2 border-slate-900">
+                                    <th class="py-4 font-black uppercase tracking-widest text-[10px] text-slate-900">
+                                        User</th>
+                                    <th class="font-black uppercase tracking-widest text-[10px] text-slate-900">Role
+                                    </th>
+                                    <th
+                                        class="font-black uppercase tracking-widest text-[10px] text-slate-900 text-right">
+                                        Options</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-container">
+                                <!-- Users loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Comments Tab -->
+            <section id="tab-comments" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div
+                        class="bg-white p-6 border-2 border-slate-900 shadow-tech group hover:border-blue-600 transition-colors">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3 bg-slate-900 text-white transition-colors">
+                                <i data-lucide="message-square" class="w-6 h-6"></i>
+                            </div>
+                            <span
+                                class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Recent
+                                Comments</span>
+                        </div>
+                        <div class="text-3xl font-black text-slate-900" id="stat-comments">0</div>
+                    </div>
+                </div>
+                <div id="comments-container" class="space-y-6">
+                    <!-- Comments loaded here -->
+                </div>
+            </section>
+
+            <!-- Categories Tab -->
+            <section id="tab-categories" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div
+                        class="bg-white p-6 border-2 border-slate-900 shadow-tech group hover:border-blue-600 transition-colors">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3 bg-slate-900 text-white transition-colors">
+                                <i data-lucide="hash" class="w-6 h-6"></i>
+                            </div>
+                            <span
+                                class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Active
+                                Categories</span>
+                        </div>
+                        <div class="text-3xl font-black text-slate-900" id="stat-categories">0</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="categories-container">
+                    <!-- Categories loaded here -->
+                </div>
+            </section>
+
+            <!-- Resources Tab -->
+            <section id="tab-resources" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div
+                        class="bg-white p-6 border-2 border-slate-900 shadow-tech group hover:border-blue-600 transition-colors">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3 bg-slate-900 text-white transition-colors">
+                                <i data-lucide="archive" class="w-6 h-6"></i>
+                            </div>
+                            <span class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">Total
+                                Resources</span>
+                        </div>
+                        <div class="text-3xl font-black text-slate-900" id="stat-resources">0</div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="admin-resources-container">
+                    <!-- Resources loaded here -->
+                </div>
+            </section>
+
         </div>
-    </nav>
-
-    <header class="bg-grid-subtle border-b-2 border-slate-900 py-12">
-        <div class="max-w-[1400px] mx-auto px-10">
-            <div class="inline-flex items-center gap-3 border-l-4 border-blue-600 pl-4 mb-4">
-                <span class="text-[10px] font-mono font-black tracking-[0.4em] text-slate-500 uppercase">Master
-                    Control</span>
-            </div>
-            <h1 class="text-6xl font-black text-slate-900 tracking-tighter uppercase">Command <span
-                    class="text-blue-600">Center</span></h1>
-        </div>
-    </header>
-
-    <main class="max-w-[1400px] mx-auto px-10 py-16">
-
-        <!-- Stats Row -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
-            <div class="bg-white border-2 border-slate-900 p-8 shadow-tech">
-                <span class="text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest block mb-1">Total
-                    Posts</span>
-                <span class="text-4xl font-black text-slate-900" id="stat-posts">0</span>
-            </div>
-            <div class="bg-white border-2 border-slate-900 p-8 shadow-tech">
-                <span class="text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest block mb-1">Active
-                    Users</span>
-                <span class="text-4xl font-black text-slate-900" id="stat-users">0</span>
-            </div>
-            <div class="bg-white border-2 border-slate-900 p-8 shadow-tech">
-                <span class="text-[9px] font-mono font-black text-slate-400 uppercase tracking-widest block mb-1">Total
-                    Comments</span>
-                <span class="text-4xl font-black text-slate-900" id="stat-views">0</span>
-            </div>
-            <div class="bg-blue-600 border-2 border-slate-900 p-8 shadow-[10px_10px_0px_0px_rgba(15,23,42,1)]">
-                <span class="text-[9px] font-mono font-black text-blue-200 uppercase tracking-widest block mb-1">System
-                    Status</span>
-                <span class="text-xl font-black text-white uppercase italic">Online_Active</span>
-            </div>
-        </div>
-
-        <!-- Navigation Tabs -->
-        <div class="flex gap-12 border-b-2 border-slate-100 mb-12">
-            <button
-                class="nav-tab py-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 border-b-4 border-transparent hover:text-slate-900 transition-all tab-active"
-                data-tab="posts">Post Management</button>
-            <button
-                class="nav-tab py-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 border-b-4 border-transparent hover:text-slate-900 transition-all"
-                data-tab="users">User Directory</button>
-            <button
-                class="nav-tab py-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 border-b-4 border-transparent hover:text-slate-900 transition-all"
-                data-tab="comments">Comment Queue</button>
-            <button
-                class="nav-tab py-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 border-b-4 border-transparent hover:text-slate-900 transition-all"
-                data-tab="categories">Category Registry</button>
-            <button
-                class="nav-tab py-6 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 border-b-4 border-transparent hover:text-slate-900 transition-all"
-                data-tab="resources">Technical Library</button>
-        </div>
-
-        <!-- Posts Tab -->
-        <section id="tab-posts" class="tab-content">
-            <div class="flex justify-between items-center mb-10">
-                <div class="flex items-center gap-4">
-                    <h2 class="text-3xl font-black uppercase tracking-tighter">Global Registry</h2>
-                    <button onclick="loadPosts()"
-                        class="btn btn-ghost btn-sm btn-square text-slate-400 hover:text-slate-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                            stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                        </svg>
-                    </button>
-                </div>
-                <a href="create-post.html"
-                    class="btn btn-neutral rounded-none px-10 font-black uppercase tracking-widest text-[10px]">Manual
-                    Entry</a>
-            </div>
-            <div id="posts-container" class="space-y-6">
-                <!-- Posts will be loaded here -->
-            </div>
-        </section>
-
-        <!-- Users Tab -->
-        <section id="tab-users" class="tab-content hidden">
-            <div class="flex justify-between items-center mb-10">
-                <div class="flex items-center gap-4">
-                    <h2 class="text-3xl font-black uppercase tracking-tighter">Staff & Authors</h2>
-                    <button onclick="loadUsers()"
-                        class="btn btn-ghost btn-sm btn-square text-slate-400 hover:text-slate-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                            stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div class="overflow-x-auto border-2 border-slate-900">
-                <table class="table w-full rounded-none">
-                    <thead class="bg-slate-900 text-white rounded-none">
-                        <tr>
-                            <th class="rounded-none font-black uppercase tracking-widest text-[9px] py-4">Identity</th>
-                            <th class="font-black uppercase tracking-widest text-[9px]">Role</th>
-                            <th class="font-black uppercase tracking-widest text-[9px]">Status</th>
-                            <th class="rounded-none font-black uppercase tracking-widest text-[9px] text-right">
-                                Administrative Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-container">
-                        <!-- Users loaded here -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Comments Tab -->
-        <section id="tab-comments" class="tab-content hidden">
-            <div class="flex justify-between items-center mb-10">
-                <div class="flex items-center gap-4">
-                    <h2 class="text-3xl font-black uppercase tracking-tighter">Public Discourse</h2>
-                    <button onclick="loadComments()"
-                        class="btn btn-ghost btn-sm btn-square text-slate-400 hover:text-slate-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                            stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            <div id="comments-container" class="space-y-6">
-                <!-- Comments loaded here -->
-            </div>
-        </section>
-
-        <!-- Categories Tab -->
-        <section id="tab-categories" class="tab-content hidden">
-            <div class="flex justify-between items-center mb-10">
-                <div class="flex items-center gap-4">
-                    <h2 class="text-3xl font-black uppercase tracking-tighter">Taxonomy Manager</h2>
-                    <button onclick="loadCategories()"
-                        class="btn btn-ghost btn-sm btn-square text-slate-400 hover:text-slate-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                            stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                        </svg>
-                    </button>
-                </div>
-                <button class="btn btn-neutral rounded-none px-10 font-black uppercase tracking-widest text-[10px]"
-                    onclick="promptCreateCategory()">New Category</button>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="categories-container">
-                <!-- Categories loaded here -->
-            </div>
-        </section>
-
-        <!-- Resources Tab -->
-        <section id="tab-resources" class="tab-content hidden">
-            <div class="flex justify-between items-center mb-10">
-                <div class="flex items-center gap-4">
-                    <h2 class="text-3xl font-black uppercase tracking-tighter">Resource Registry</h2>
-                    <button onclick="loadResources()"
-                        class="btn btn-ghost btn-sm btn-square text-slate-400 hover:text-slate-900">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                            stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                        </svg>
-                    </button>
-                </div>
-                <button class="btn btn-neutral rounded-none px-10 font-black uppercase tracking-widest text-[10px]"
-                    onclick="promptCreateResource()">Add Resource</button>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="admin-resources-container">
-                <!-- Resources loaded here -->
-            </div>
-        </section>
-
     </main>
 
+    <!-- Modals (DaisyUI) -->
+    <!-- Category Modal -->
+    <input type="checkbox" id="modal-category" class="modal-toggle" />
+    <div class="modal">
+        <div class="modal-box rounded-none p-8 border-2 border-slate-900 shadow-tech bg-white">
+            <h3 class="font-black text-2xl uppercase tracking-tighter mb-6" id="category-modal-title">New Category</h3>
+            <div class="space-y-4">
+                <div class="form-control">
+                    <label class="label"><span
+                            class="label-text font-bold text-[10px] uppercase tracking-widest text-slate-500">Category
+                            Name</span></label>
+                    <input type="text" id="cat-name"
+                        class="input input-bordered rounded-none border-2 border-slate-900 font-bold"
+                        placeholder="e.g. Power Electronics" />
+                </div>
+                <div class="form-control">
+                    <label class="label"><span
+                            class="label-text font-bold text-[10px] uppercase tracking-widest text-slate-500">Short Link
+                            (Slug)</span></label>
+                    <input type="text" id="cat-slug"
+                        class="input input-bordered rounded-none border-2 border-slate-900 font-mono text-sm"
+                        placeholder="power-electronics" />
+                </div>
+            </div>
+            <div class="modal-action">
+                <label for="modal-category"
+                    class="btn btn-ghost rounded-none font-bold uppercase tracking-widest text-[10px] border-2 border-transparent">Cancel</label>
+                <button id="save-category-btn"
+                    class="btn btn-primary rounded-none px-10 font-bold uppercase tracking-widest text-[10px] border-2 border-slate-900 shadow-tech">Save
+                    Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resource Modal -->
+    <input type="checkbox" id="modal-resource" class="modal-toggle" />
+    <div class="modal">
+        <div class="modal-box rounded-none p-8 border-2 border-slate-900 shadow-tech bg-white">
+            <h3 class="font-black text-2xl uppercase tracking-tighter mb-6">Add New Resource</h3>
+            <div class="space-y-4">
+                <div class="form-control">
+                    <label class="label"><span
+                            class="label-text font-bold text-[10px] uppercase tracking-widest text-slate-500">Title</span></label>
+                    <input type="text" id="res-title"
+                        class="input input-bordered rounded-none border-2 border-slate-900 font-bold"
+                        placeholder="e.g. Voltage Drop Calculator" />
+                </div>
+                <div class="form-control">
+                    <label class="label"><span
+                            class="label-text font-bold text-[10px] uppercase tracking-widest text-slate-500">Category</span></label>
+                    <input type="text" id="res-category"
+                        class="input input-bordered rounded-none border-2 border-slate-900 font-bold"
+                        placeholder="Engineering Tools" />
+                </div>
+                <div class="form-control">
+                    <label class="label"><span
+                            class="label-text font-bold text-[10px] uppercase tracking-widest text-slate-500">File Name
+                            / Info</span></label>
+                    <input type="text" id="res-file"
+                        class="input input-bordered rounded-none border-2 border-slate-900 font-mono text-sm"
+                        placeholder="v_calc_v2.exe" />
+                </div>
+            </div>
+            <div class="modal-action">
+                <label for="modal-resource"
+                    class="btn btn-ghost rounded-none font-bold uppercase tracking-widest text-[10px] border-2 border-transparent">Cancel</label>
+                <button id="save-resource-btn"
+                    class="btn btn-primary rounded-none px-10 font-bold uppercase tracking-widest text-[10px] border-2 border-slate-900 shadow-tech">Add
+                    Resource</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
-        import { checkSession, signOut, getUserRole } from './js/auth.js';
+        import { checkSession, signOut } from './js/auth.js';
         import { getAllPosts, deletePost, getCategories, createCategory, updateCategory, deleteCategory } from './js/posts.js';
         import { getAllComments, deleteComment } from './js/comments.js';
         import { getResources, createResource, deleteResource } from './js/resources.js';
         import { getProfile } from './js/profiles.js';
-        import { formatDate, setupMobileNav, renderNavbar, sanitizeHTML } from './js/utils.js';
+        import { formatDate, renderNavbar, sanitizeHTML, debounce } from './js/utils.js';
         import { supabase } from './js/supabase-client.js';
 
-        let adminUser = null;
+        // --- App State ---
+        const App = {
+            user: null,
+            profile: null,
+            activeTab: 'posts',
+            data: {
+                posts: [],
+                users: [],
+                comments: [],
+                categories: [],
+                resources: []
+            },
+            searchQuery: ''
+        };
 
-        // Expose load functions to window for HTML onclick access
-        window.loadStats = loadStats;
-        window.loadPosts = loadPosts;
-        window.loadUsers = loadUsers;
-        window.loadComments = loadComments;
-        window.loadCategories = loadCategories;
-        window.loadResources = loadResources;
+        // --- Core Functions ---
 
         async function init() {
             try {
-                console.log("Admin System: Starting Initialization...");
                 const session = await checkSession();
                 if (!session) {
                     window.location.href = 'login.html';
                     return;
                 }
-                adminUser = session.user;
+                App.user = session.user;
 
-                const { data: profile, error: profileError } = await getProfile(adminUser.id);
+                const { data: profile, error: profileError } = await getProfile(App.user.id);
                 if (profileError) throw profileError;
 
                 const role = profile?.role || 'author';
-                console.log(`Admin System: User role is [${role}]`);
-
                 if (role !== 'admin' && role !== 'administrator') {
-                    document.body.innerHTML = `
-                        <div class="min-h-screen flex items-center justify-center bg-slate-950 text-white p-10 text-center">
-                            <div>
-                                <h1 class="text-6xl font-black mb-6 uppercase tracking-tighter">Access denied</h1>
-                                <p class="text-blue-400 font-mono text-xs uppercase tracking-[0.3em] mb-10">Unauthorized attempt detected. Site protection active.</p>
-                                <a href="index.html" class="btn btn-primary rounded-none font-black uppercase tracking-widest text-[10px]">Return to Safety</a>
-                            </div>
-                        </div>
-                    `;
-                    document.documentElement.classList.add('admin-ready');
+                    showUnauthorized();
                     return;
                 }
 
-                // If we reach here, user is admin
+                App.profile = profile;
                 document.documentElement.classList.add('admin-ready');
 
-                const authNav = document.getElementById('auth-nav');
-                renderNavbar(authNav, null, session, profile, signOut);
+                renderHeaderInfo(App.profile);
+                setupCoreUI();
 
-                setupTabs();
+                // Concurrent Load
+                await Promise.all([
+                    loadStats(),
+                    loadTabData('posts')
+                ]);
 
-                // Load initial data without blocking
-                loadStats().catch(err => console.error("Stats Load Failed:", err));
-                loadPosts().catch(err => console.error("Posts Load Failed:", err));
+                lucide.createIcons();
 
             } catch (err) {
-                console.error("Initialization Failed:", err);
-                document.body.innerHTML = `<div class="p-20 text-red-500 font-mono text-sm uppercase">Critical_System_Failure: ${err.message}</div>`;
-                document.documentElement.classList.add('admin-ready');
+                console.error("Dashboard_Init_Failure:", err);
+                showSystemError(err.message);
+            }
+        }
+
+        /**
+         * Generic wrapper for async actions to handle loading, errors, and feedback
+         */
+        async function runAction(taskName, actionFn, successMsg = 'Operation successful') {
+            try {
+                const result = await actionFn();
+                if (result?.error) throw result.error;
+
+                showToast(successMsg, 'success');
+                return result;
+            } catch (err) {
+                console.error(`Action_Error [${taskName}]:`, err);
+                showToast(`${taskName} failed: ${err.message}`, 'error');
+                return { error: err };
             }
         }
 
         async function loadStats() {
             try {
-                const { count: postCount } = await supabase.from('posts').select('*', { count: 'exact', head: true });
-                const { count: userCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
-                const { count: commentCount } = await supabase.from('comments').select('*', { count: 'exact', head: true });
-                // const { count: categoryCount } = await supabase.from('categories').select('*', { count: 'exact', head: true });
+                const [posts, profiles, comments, categories, resources] = await Promise.all([
+                    supabase.from('posts').select('*', { count: 'exact', head: true }),
+                    supabase.from('profiles').select('*', { count: 'exact', head: true }),
+                    supabase.from('comments').select('*', { count: 'exact', head: true }),
+                    supabase.from('categories').select('*', { count: 'exact', head: true }),
+                    supabase.from('resources').select('*', { count: 'exact', head: true })
+                ]);
 
-                document.getElementById('stat-posts').innerText = postCount !== null ? postCount : '0';
-                document.getElementById('stat-users').innerText = userCount !== null ? userCount : '0';
-                document.getElementById('stat-views').innerText = commentCount !== null ? commentCount : '0';
+                updateStatCounter('stat-posts', posts.count);
+                updateStatCounter('stat-users', profiles.count);
+                updateStatCounter('stat-comments', comments.count);
+                updateStatCounter('stat-categories', categories.count);
+                updateStatCounter('stat-resources', resources.count);
             } catch (err) {
-                console.warn("Stats calculation interrupted:", err);
-                document.getElementById('stat-posts').innerText = '—';
-                document.getElementById('stat-users').innerText = '—';
-                document.getElementById('stat-views').innerText = '—';
+                console.warn("Stats_Refresh_Interrupted");
             }
         }
 
-        async function loadPosts() {
-            const container = document.getElementById('posts-container');
+        function updateStatCounter(id, val) {
+            const el = document.getElementById(id);
+            if (el) el.innerText = val ?? 0;
+        }
+
+        // --- Tab Management ---
+
+        async function loadTabData(tabId = App.activeTab) {
+            const container = getTabContainer(tabId);
             if (!container) return;
-            container.innerHTML = '<div class="animate-pulse h-20 bg-slate-100 flex items-center justify-center font-mono text-[10px] uppercase text-slate-400 tracking-widest">Loading Registry...</div>';
+
+            // Show local loader
+            container.innerHTML = `<div class="p-20 text-center"><span class="loading loading-spinner text-blue-600"></span></div>`;
 
             try {
-                const { data: posts, error } = await getAllPosts();
-                if (error) throw error;
-
-                if (!posts || posts.length === 0) {
-                    container.innerHTML = '<div class="border-2 border-dashed border-slate-200 p-12 text-center uppercase font-black text-slate-300 tracking-widest">No Publication Records Found</div>';
-                    return;
+                let result;
+                switch (tabId) {
+                    case 'posts': result = await getAllPosts(); break;
+                    case 'users': result = await supabase.from('profiles').select('*').order('created_at', { ascending: false }); break;
+                    case 'comments': result = await getAllComments(); break;
+                    case 'categories': result = await getCategories(); break;
+                    case 'resources':
+                        const res = await getResources();
+                        result = { data: res, error: null };
+                        break;
                 }
 
-                container.innerHTML = posts.map(post => {
-                    const safeTitle = sanitizeHTML(post.title);
-                    const safeAuthor = sanitizeHTML(post.profiles?.full_name || 'ANONYMOUS_STAFF');
+                if (result.error) throw result.error;
 
-                    // Unified thumbnail extraction
-                    const imgMatch = post.content ? post.content.match(/<img[^>]+src="([^">]+)"/) || post.content.match(/!\[.*?\]\((.*?)\)/) : null;
-                    const thumbUrl = post.featured_image || (imgMatch ? imgMatch[1] : `https://images.unsplash.com/photo-${getPostImageId(post.category_id)}?auto=format&fit=crop&q=80&w=200`);
+                App.data[tabId] = result.data || [];
 
-                    return `
-                    <div class="bg-white border-2 border-slate-900 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] hover:shadow-[10px_10px_0px_0px_rgba(37,99,235,1)] transition-all">
-                        <div class="flex items-center gap-6 flex-1 min-w-0">
-                            <div class="w-16 h-16 border-2 border-slate-900 shrink-0 overflow-hidden bg-slate-50">
-                                <img src="${thumbUrl}" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all" />
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <div class="flex items-center gap-4 mb-2">
-                                     <span class="text-[10px] font-mono font-black text-blue-600 uppercase tracking-widest">${post.categories?.name || 'GEN_TOPIC'}</span>
-                                     <span class="text-[10px] font-mono font-bold text-slate-300 uppercase">UID_${post.id.substring(0, 8)}</span>
-                                </div>
-                                <h3 class="text-xl font-black uppercase truncate text-slate-900">${safeTitle}</h3>
-                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tighter mt-1">BY ${safeAuthor} | Published ${formatDate(post.created_at)}</p>
-                            </div>
+                // Always render the tab we just loaded, even if it's not active anymore 
+                // (it will be hidden by CSS anyway, but correctly populated for when it is shown)
+                renderTab(tabId);
+            } catch (err) {
+                container.innerHTML = `<div class="p-10 text-red-500 font-mono text-xs uppercase text-center">Load Error: ${err.message}</div>`;
+                showToast(`Failed to load ${tabId}: ${err.message}`, 'error');
+            }
+        }
+
+        function renderActiveTab() {
+            renderTab(App.activeTab);
+        }
+
+        function renderTab(tabId) {
+            const container = getTabContainer(tabId);
+            if (!container) return;
+
+            const query = App.searchQuery.toLowerCase();
+            let data = App.data[tabId] || [];
+
+            if (query) {
+                data = data.filter(item => {
+                    const s = (val) => (val || '').toString().toLowerCase();
+                    if (tabId === 'posts') return s(item.title).includes(query) || s(item.categories?.name).includes(query);
+                    if (tabId === 'users') return s(item.full_name).includes(query) || s(item.id).includes(query);
+                    if (tabId === 'comments') return s(item.content).includes(query) || s(item.profiles?.full_name).includes(query);
+                    if (tabId === 'categories') return s(item.name).includes(query) || s(item.slug).includes(query);
+                    if (tabId === 'resources') return s(item.title).includes(query) || s(item.category).includes(query) || s(item.file_info).includes(query);
+                    return true;
+                });
+            }
+
+            if (!data.length) {
+                if (App.searchQuery) {
+                    container.innerHTML = `<div class="bg-white border-2 border-dashed border-slate-200 p-20 rounded-2xl text-center text-slate-400 font-bold uppercase tracking-widest">No matching results for "${query}"</div>`;
+                } else if (tabId === 'comments') {
+                    container.innerHTML = `<div class="bg-white border-2 border-dashed border-slate-200 p-20 rounded-2xl text-center text-slate-400 font-bold uppercase tracking-widest">No Active Discourse</div>`;
+                } else {
+                    container.innerHTML = `<div class="bg-white border-2 border-dashed border-slate-200 p-20 rounded-2xl text-center text-slate-400 font-bold uppercase tracking-widest">Registry Empty</div>`;
+                }
+                return;
+            }
+
+            container.innerHTML = data.map(item => templates[tabId](item)).join('');
+            lucide.createIcons();
+        }
+
+        function getTabContainer(id) {
+            const map = {
+                posts: 'posts-container',
+                users: 'users-container',
+                comments: 'comments-container',
+                categories: 'categories-container',
+                resources: 'admin-resources-container'
+            };
+            return document.getElementById(map[id]);
+        }
+
+        // --- UI Templates ---
+
+        const templates = {
+            posts: (post) => {
+                const safeTitle = sanitizeHTML(post.title);
+                const thumb = post.featured_image || 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=200';
+                return `
+                    <div class="bg-white p-6 border-2 border-slate-900 flex flex-col md:flex-row items-center gap-6 group hover:shadow-tech-accent transition-all shadow-tech">
+                        <div class="w-full md:w-32 aspect-video md:aspect-square overflow-hidden border-2 border-slate-900 bg-slate-50 relative shrink-0">
+                            <img src="${thumb}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                         </div>
-                        <div class="flex gap-4 w-full md:w-auto">
-                            <a href="post.html?slug=${post.slug}" class="btn btn-sm btn-ghost border-2 border-slate-900 rounded-none font-black uppercase text-[9px] tracking-widest px-6 h-10 flex items-center">Review</a>
-                            <a href="create-post.html?edit=${post.id}" class="btn btn-sm btn-outline border-2 border-slate-900 rounded-none font-black uppercase text-[9px] tracking-widest px-6 h-10 flex items-center">Modify</a>
-                            <button onclick="deleteEntry('${post.id}')" class="btn btn-sm btn-error rounded-none font-black uppercase text-[9px] tracking-widest px-6 h-10 text-white">Purge</button>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="px-2 py-0.5 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest border border-slate-900">${sanitizeHTML(post.categories?.name || 'GEN')}</span>
+                                <span class="text-[9px] font-mono text-slate-400 uppercase tracking-widest">${formatDate(post.created_at)}</span>
+                            </div>
+                            <h3 class="text-xl font-black text-slate-900 group-hover:text-blue-600 transition-colors truncate uppercase">${safeTitle}</h3>
+                        </div>
+                        <div class="flex items-center gap-2 w-full md:w-auto mt-4 md:mt-0">
+                            <a href="create-post.html?edit=${post.id}" class="btn btn-outline btn-sm text-[9px] font-black uppercase tracking-widest rounded-none border-2 border-slate-900 hover:bg-slate-900">Edit</a>
+                            <button onclick="window.dispatchAction('deletePost', '${post.id}')" class="btn btn-error btn-sm text-[9px] font-black uppercase tracking-widest rounded-none border-2 border-slate-900 text-white">Delete</button>
                         </div>
                     </div>
-                `}).join('');
-            } catch (err) {
-                console.error("Posts Error:", err);
-                container.innerHTML = `<div class="alert alert-error font-mono text-xs uppercase">Registry_Error: ${err.message}</div>`;
-            }
-        }
-
-        async function loadComments() {
-            const container = document.getElementById('comments-container');
-            if (!container) return;
-            container.innerHTML = '<div class="animate-pulse h-20 bg-slate-100 flex items-center justify-center font-mono text-[10px] uppercase text-slate-400 tracking-widest">Loading Discourse...</div>';
-
-            try {
-                const { data: comments, error } = await getAllComments();
-                if (error) throw error;
-
-                if (!comments || !comments.length) {
-                    container.innerHTML = `<div class="border-2 border-dashed border-slate-200 p-12 text-center uppercase font-black text-slate-300 tracking-widest">No Active Discourse Records</div>`;
-                    return;
-                }
-
-                container.innerHTML = comments.map(c => {
-                    const safeAuthor = sanitizeHTML(c.profiles?.full_name || 'Anonymous');
-                    const safePostTitle = sanitizeHTML(c.posts?.title || 'Unknown Post');
-                    const safeContent = sanitizeHTML(c.content);
-                    return `
-                    <div class="bg-white border-2 border-slate-900 p-6 shadow-[6px_6px_0px_0px_rgba(15,23,42,1)]">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full border border-slate-900 overflow-hidden">
-                                    <img src="${c.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.user_id}`}" />
-                                </div>
-                                <div>
-                                    <span class="text-[10px] font-black uppercase tracking-widest block">${safeAuthor}</span>
-                                    <span class="text-[9px] font-mono font-bold text-slate-400 uppercase">ON ${safePostTitle}</span>
-                                </div>
-                            </div>
-                            <button onclick="purgeComment('${c.id}')" class="text-red-500 font-black uppercase text-[9px] tracking-widest hover:underline italic">Delete_Log</button>
-                        </div>
-                        <p class="text-slate-600 text-sm leading-relaxed border-l-2 border-slate-100 pl-4">${safeContent}</p>
-                        <div class="mt-4 text-[9px] font-mono font-bold text-slate-300 uppercase tracking-widest text-right">TS: ${new Date(c.created_at).toISOString()}</div>
-                    </div>
-                `}).join('');
-            } catch (err) {
-                console.error("Comments Error:", err);
-                container.innerHTML = `<div class="alert alert-error font-mono text-xs uppercase">Discourse_Registry_Error: ${err.message}</div>`;
-            }
-        }
-
-        async function loadCategories() {
-            const container = document.getElementById('categories-container');
-            if (!container) return;
-            container.innerHTML = '<div class="col-span-full animate-pulse h-20 bg-slate-100 flex items-center justify-center font-mono text-[10px] uppercase text-slate-400 tracking-widest">Loading Taxonomy...</div>';
-
-            try {
-                const { data: categories, error } = await getCategories();
-                if (error) throw error;
-
-                if (!categories || categories.length === 0) {
-                    container.innerHTML = '<div class="col-span-full border-2 border-dashed border-slate-200 p-12 text-center uppercase font-black text-slate-300 tracking-widest">No Categories Found</div>';
-                    return;
-                }
-
-                container.innerHTML = categories.map(cat => {
-                    const safeName = sanitizeHTML(cat.name).replace(/'/g, "\\'");
-                    const safeSlug = sanitizeHTML(cat.slug).replace(/'/g, "\\'");
-                    return `
-                    <div class="bg-white border-2 border-slate-900 p-8 shadow-tech hover:shadow-[12px_12px_0px_0px_rgba(37,99,235,1)] transition-all">
-                        <div class="flex justify-between items-start mb-6">
-                            <span class="text-[10px] font-mono font-black text-slate-400 uppercase tracking-widest">CAT_ID: ${cat.id}</span>
-                            <div class="flex gap-4">
-                                <button onclick="editCategory('${cat.id}', '${safeName}', '${safeSlug}')" class="text-blue-600 font-black uppercase text-[9px] tracking-widest hover:underline">Edit</button>
-                                <button onclick="purgeCategory('${cat.id}')" class="text-red-500 font-black uppercase text-[9px] tracking-widest hover:underline">Purge</button>
-                            </div>
-                        </div>
-                        <h4 class="text-2xl font-black uppercase tracking-tighter mb-2">${sanitizeHTML(cat.name)}</h4>
-                        <p class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">SLUG: ${sanitizeHTML(cat.slug)}</p>
-                        <div class="bg-slate-50 p-4 border border-slate-100">
-                            <span class="text-[9px] font-black uppercase text-slate-400 tracking-widest block mb-1">Impact</span>
-                            <span class="font-black text-slate-900 uppercase">${cat.posts?.[0]?.count !== undefined ? cat.posts[0].count : (Array.isArray(cat.posts) ? cat.posts.length : 0)} Total Publications</span>
-                        </div>
-                    </div>
-                `}).join('');
-            } catch (err) {
-                console.error("Categories Error:", err);
-                container.innerHTML = `<div class="col-span-full alert alert-error font-mono text-xs uppercase">Taxonomy_Error: ${err.message}</div>`;
-            }
-        }
-
-        async function loadResources() {
-            const container = document.getElementById('admin-resources-container');
-            if (!container) return;
-            container.innerHTML = '<div class="col-span-full text-center py-10 uppercase font-mono text-[10px] animate-pulse">Scanning Registry...</div>';
-
-            try {
-                const resources = await getResources();
-                if (!resources || resources.length === 0) {
-                    container.innerHTML = '<div class="col-span-full text-center py-10 uppercase font-mono text-[10px] text-slate-400">Registry Empty</div>';
-                    return;
-                }
-
-                container.innerHTML = resources.map(r => `
-                    <div class="border-2 border-slate-900 p-8 flex justify-between items-center bg-white shadow-tech">
-                        <div>
-                            <h4 class="font-black text-lg uppercase mb-1">${sanitizeHTML(r.title)}</h4>
-                            <p class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">${sanitizeHTML(r.category)} | ${sanitizeHTML(r.file_info || 'DOCUMENT')}</p>
-                        </div>
-                        <button onclick="purgeResource('${r.id}')"
-                            class="text-[10px] font-black uppercase tracking-widest text-red-500 hover:underline">Remove</button>
-                    </div>
-                `).join('');
-            } catch (err) {
-                console.error("Resources Error:", err);
-                container.innerHTML = `<div class="col-span-full alert alert-error font-mono text-xs uppercase">Library_Error: ${err.message}</div>`;
-            }
-        }
-
-        async function loadUsers() {
-            const container = document.getElementById('users-container');
-            if (!container) return;
-            container.innerHTML = '<tr><td colspan="4" class="text-center py-10 animate-pulse uppercase text-[10px] font-mono">Scanning Profiles...</td></tr>';
-
-            try {
-                const { data: users, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
-
-                if (!users || users.length === 0) {
-                    container.innerHTML = '<tr><td colspan="4" class="text-center py-10 uppercase font-bold text-slate-400">No Users Found</td></tr>';
-                    return;
-                }
-
-                container.innerHTML = users.map(u => {
-                    const userRole = u.role || 'author';
-                    const safeName = sanitizeHTML(u.full_name || 'GHOST_USER');
-                    return `
-                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                        <td class="py-6">
+                `;
+            },
+            users: (u) => {
+                const userRole = u.role || 'author';
+                const isAdmin = userRole === 'admin' || userRole === 'administrator';
+                return `
+                    <tr class="hover:bg-slate-50 transition-colors border-b border-slate-200">
+                        <td class="py-5">
                             <div class="flex items-center gap-4">
-                                <div class="avatar">
-                                    <div class="w-12 h-12 rounded-full border-2 border-slate-900 overflow-hidden">
-                                        <img src="${u.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id}`}" class="w-full h-full object-cover" />
-                                    </div>
+                                <div class="w-10 h-10 border-2 border-slate-900 overflow-hidden">
+                                    <img src="${u.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id}`}" class="w-full h-full object-cover" alt="Avatar" />
                                 </div>
                                 <div>
-                                    <div class="font-black text-slate-900 uppercase text-sm">${safeName}</div>
-                                    <div class="text-[9px] font-mono text-slate-400 uppercase tracking-widest">ID: ${u.id.substring(0, 16)}...</div>
+                                    <div class="font-bold text-slate-900 text-sm uppercase">${sanitizeHTML(u.full_name || 'No Name')}</div>
+                                    <div class="text-[9px] font-mono text-slate-400 uppercase tracking-widest">ID: ${u.id.substring(0, 8)}</div>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <span class="px-3 py-1 bg-slate-100 text-[10px] font-black uppercase tracking-widest ${(userRole === 'admin' || userRole === 'administrator') ? 'bg-blue-100 text-blue-600' : 'text-slate-600'}">${userRole.toUpperCase()}</span>
-                        </td>
-                        <td>
-                            <div class="flex items-center gap-2">
-                                 <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                                 <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Active</span>
-                            </div>
+                            <span class="px-3 py-1 border-2 border-slate-900 text-[9px] font-black uppercase tracking-widest ${isAdmin ? 'bg-blue-600 text-white' : 'bg-white text-slate-900'}">
+                                ${userRole}
+                            </span>
                         </td>
                         <td class="text-right">
-                            <div class="flex justify-end gap-3">
-                                <button onclick="toggleRole('${u.id}', '${userRole}')" class="btn btn-xs rounded-none border-2 border-slate-900 font-black uppercase tracking-widest text-[8px] h-8 px-4">Cycle Role</button>
-                                <button onclick="purgeProfile('${u.id}')" class="btn btn-xs btn-error rounded-none text-white font-black uppercase tracking-widest text-[8px] h-8 px-4">Eject</button>
+                            <div class="flex justify-end gap-2">
+                                <button onclick="window.dispatchAction('toggleRole', '${u.id}')" class="btn btn-ghost btn-xs text-[10px] font-bold uppercase hover:bg-slate-900 hover:text-white rounded-none border border-slate-200">Change Role</button>
+                                <button onclick="window.dispatchAction('purgeProfile', '${u.id}')" class="btn btn-ghost btn-xs text-[10px] font-bold uppercase text-red-500 hover:bg-red-500 hover:text-white rounded-none border border-slate-200">Remove</button>
                             </div>
                         </td>
                     </tr>
-                `}).join('');
-            } catch (err) {
-                console.error("Users Error:", err);
-                container.innerHTML = `<tr><td colspan="4" class="text-center py-10 uppercase font-bold text-red-500">Error: ${err.message}</td></tr>`;
+                `;
+            },
+            comments: (c) => `
+                <div class="bg-white p-6 border-2 border-slate-900 shadow-tech relative group hover:shadow-tech-accent transition-all">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 border-2 border-slate-900 overflow-hidden">
+                                <img src="${c.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${c.user_id}`}" alt="Avatar" />
+                            </div>
+                            <div>
+                                <div class="text-[10px] font-black uppercase tracking-widest text-slate-900">${sanitizeHTML(c.profiles?.full_name || 'User')}</div>
+                                <div class="text-[9px] font-mono text-slate-400 uppercase tracking-widest">Posted on: ${sanitizeHTML(c.posts?.title || 'Unknown Post')}</div>
+                            </div>
+                        </div>
+                        <button onclick="window.dispatchAction('purgeComment', '${c.id}')" class="text-red-500 hover:bg-red-500 hover:text-white p-2 border border-slate-200 transition-colors">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <div class="text-sm text-slate-600 leading-relaxed pl-4 border-l-4 border-blue-600 font-medium">${sanitizeHTML(c.content)}</div>
+                </div>
+            `,
+            categories: (cat) => `
+                <div class="bg-white p-6 border-2 border-slate-900 shadow-tech hover:shadow-tech-accent transition-all group">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="p-3 bg-slate-900 text-white transition-colors">
+                            <i data-lucide="hash" class="w-6 h-6"></i>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="window.dispatchAction('editCategory', '${cat.id}')" class="btn btn-ghost border border-slate-200 rounded-none btn-sm hover:bg-slate-900 hover:text-white"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                            <button onclick="window.dispatchAction('purgeCategory', '${cat.id}')" class="btn btn-ghost border border-slate-200 rounded-none btn-sm text-red-500 hover:bg-red-500 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                    <h4 class="text-xl font-black uppercase tracking-tighter text-slate-900 mb-1">${sanitizeHTML(cat.name)}</h4>
+                    <p class="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-4">Slug: ${sanitizeHTML(cat.slug)}</p>
+                </div>
+            `,
+            resources: (r) => `
+                <div class="bg-white p-6 border-2 border-slate-900 shadow-tech hover:shadow-tech-accent transition-all flex justify-between items-center group">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-slate-900 text-white transition-colors">
+                            <i data-lucide="package" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-black text-slate-900 uppercase text-sm">${sanitizeHTML(r.title)}</h4>
+                            <p class="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">${sanitizeHTML(r.category)} | ${sanitizeHTML(r.file_info || 'File')}</p>
+                        </div>
+                    </div>
+                    <button onclick="window.dispatchAction('purgeResource', '${r.id}')" class="btn btn-ghost border border-slate-200 rounded-none text-red-500 btn-sm font-black text-[9px] uppercase tracking-widest hover:bg-red-500 hover:text-white">Delete</button>
+                </div>
+            `
+        };
+
+        // --- Action Dispatcher ---
+
+        window.dispatchAction = async (action, params) => {
+            let result;
+
+            switch (action) {
+                case 'deletePost':
+                    if (confirm('Are you sure you want to delete this post?')) {
+                        result = await runAction('Delete Post', () => deletePost(params), 'Post removed');
+                        if (!result.error) { loadStats(); loadTabData('posts'); }
+                    }
+                    break;
+                case 'toggleRole':
+                    const user = App.data.users.find(u => u.id === params);
+                    if (!user) return;
+                    const newRole = (user.role === 'admin' || user.role === 'administrator') ? 'author' : 'admin';
+                    if (confirm(`Change the role for ${user.full_name} to ${newRole.toUpperCase()}?`)) {
+                        result = await runAction('Change Role', () => supabase.from('profiles').update({ role: newRole }).eq('id', params), 'Role updated');
+                        if (!result.error) loadTabData('users');
+                    }
+                    break;
+                case 'purgeProfile':
+                    if (confirm('Are you sure you want to remove this user?')) {
+                        result = await runAction('Remove User', () => supabase.from('profiles').delete().eq('id', params), 'User removed');
+                        if (!result.error) { loadStats(); loadTabData('users'); }
+                    }
+                    break;
+                case 'purgeComment':
+                    if (confirm('Delete this comment?')) {
+                        result = await runAction('Delete Comment', () => deleteComment(params), 'Comment removed');
+                        if (!result.error) { loadStats(); loadTabData('comments'); }
+                    }
+                    break;
+                case 'editCategory':
+                    const cat = App.data.categories.find(c => c.id === params);
+                    if (cat) window.editCategoryModal(cat.id, cat.name, cat.slug);
+                    break;
+                case 'purgeCategory':
+                    if (confirm('Delete this category?')) {
+                        result = await runAction('Delete Category', () => deleteCategory(params), 'Category removed');
+                        if (!result.error) loadTabData('categories');
+                    }
+                    break;
+                case 'purgeResource':
+                    if (confirm('Delete this resource?')) {
+                        result = await runAction('Delete Resource', () => deleteResource(params), 'Resource removed');
+                        if (!result.error) loadTabData('resources');
+                    }
+                    break;
             }
-        }
-
-        window.deleteEntry = async (id) => {
-            if (confirm('CRITICAL_WARNING: This will permanently remove the record from the central registry. Continue?')) {
-                const { error } = await deletePost(id);
-                if (error) alert('PURGE_FAILED: ' + error.message);
-                else loadPosts();
-            }
         };
 
-        window.toggleRole = async (uid, currentRole) => {
-            const newRole = (currentRole === 'admin' || currentRole === 'administrator') ? 'author' : 'admin';
-            if (confirm(`INITIATING_CHANGE: Promote/Demote user to ${newRole.toUpperCase()}?`)) {
-                const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', uid);
-                if (error) alert('ROLE_CYCLE_ERROR: ' + error.message);
-                else loadUsers();
-            }
-        };
+        // --- Setup Logic ---
 
-        window.purgeProfile = async (uid) => {
-            if (confirm('STAFF_EJECTION: This will remove the user profile. Associated logs will be purged. Continue?')) {
-                const { error } = await supabase.from('profiles').delete().eq('id', uid);
-                if (error) alert('EJECTION_FAILED: ' + error.message);
-                else loadUsers();
-            }
-        };
-
-        window.purgeComment = async (id) => {
-            if (confirm('COMMENT_PURGE_PROTOCOL: Are you sure you want to delete this discourse record?')) {
-                const { error } = await deleteComment(id);
-                if (error) alert('PURGE_ERROR: ' + error.message);
-                else loadComments();
-            }
-        };
-
-        window.promptCreateCategory = async () => {
-            const name = prompt('NEW_CATEGORY_NAME:');
-            if (!name) return;
-            const slug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]/g, '');
-            const description = prompt('CATEGORY_DESCRIPTION (Optional):');
-
-            const { error } = await createCategory({ name, slug, description });
-            if (error) alert('REGISTRY_ENTRY_FAILED: ' + error.message);
-            else loadCategories();
-        };
-
-        window.editCategory = async (id, oldName, oldSlug) => {
-            const name = prompt('UPDATE_CATEGORY_NAME:', oldName);
-            if (!name) return;
-            const slug = prompt('UPDATE_CATEGORY_SLUG:', oldSlug);
-            if (!slug) return;
-
-            const { error } = await updateCategory(id, { name, slug });
-            if (error) alert('REGISTRY_UPDATE_FAILED: ' + error.message);
-            else loadCategories();
-        };
-
-        window.purgeCategory = async (id) => {
-            if (confirm('CRITICAL: Purging a category may cause link failures in associated posts. Proceed?')) {
-                const { error } = await deleteCategory(id);
-                if (error) alert('PURGE_FAILED: ' + error.message);
-                else loadCategories();
-            }
-        };
-
-        window.promptCreateResource = async () => {
-            const title = prompt('Resource Title (e.g. Voltage Drop Calculator):');
-            if (!title) return;
-            const category = prompt('Category (e.g. Main Standards, Engineering Tools):', 'Engineering Tools');
-            if (!category) return;
-            const description = prompt('Short Description:');
-            const file_info = prompt('File Info (e.g. v_calc_v2.0.exe):');
-
-            try {
-                await createResource({ title, category, description, file_info });
-                loadResources();
-            } catch (err) {
-                alert('REGISTRY_ERROR: ' + err.message);
-            }
-        };
-
-        window.purgeResource = async (id) => {
-            if (confirm('STAFF_ACTION: Remove this asset from the public library?')) {
-                try {
-                    await deleteResource(id);
-                    loadResources();
-                } catch (err) {
-                    alert('PURGE_ERROR: ' + err.message);
-                }
-            }
-        };
-
-        function setupTabs() {
-            // Re-select all elements to safeguard against disconnected nodes
-            const tabs = Array.from(document.querySelectorAll('.nav-tab'));
-            const contents = Array.from(document.querySelectorAll('.tab-content'));
-
-            console.log(`Admin System: Found ${tabs.length} tabs and ${contents.length} content sections.`);
+        function setupCoreUI() {
+            const tabs = document.querySelectorAll('.sidebar-link');
+            const searchInput = document.getElementById('global-search');
+            const subtitle = document.getElementById('active-tab-subtitle');
+            const breadcrumb = document.getElementById('active-tab-breadcrumb');
+            const title = document.getElementById('active-tab-title');
+            const actions = document.getElementById('tab-actions');
 
             tabs.forEach(tab => {
-                const targetId = tab.dataset.tab;
+                tab.onclick = () => {
+                    const id = tab.dataset.tab;
+                    if (!id) return;
 
-                // Remove old event listeners by cloning (optional but safer) or just ensure single binding
-                // Here we rely on init running once.
+                    // Update global state
+                    App.activeTab = id;
+                    App.searchQuery = '';
+                    searchInput.value = '';
 
-                tab.onclick = async (e) => {
-                    e.preventDefault();
-                    console.log(`Admin System: Tab Clicked -> [${targetId}]`);
+                    // Toggle active class on sidebar links
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
 
-                    // 1. Update Tab Styles
-                    tabs.forEach(t => t.classList.remove('tab-active'));
-                    tab.classList.add('tab-active');
-
-                    // 2. toggle visibility
-                    contents.forEach(content => {
-                        if (content.id === `tab-${targetId}`) {
-                            content.classList.remove('hidden');
-                        } else {
-                            content.classList.add('hidden');
-                        }
+                    // Toggle visibility of tab content sections
+                    document.querySelectorAll('.tab-content').forEach(section => {
+                        section.classList.toggle('hidden', section.id !== `tab-${id}`);
                     });
 
-                    // 3. Load Data
-                    switch (targetId) {
-                        case 'users': await loadUsers(); break;
-                        case 'posts': await loadPosts(); break;
-                        case 'comments': await loadComments(); break;
-                        case 'categories': await loadCategories(); break;
-                        case 'resources': await loadResources(); break;
-                    }
+                    // Update page title and breadcrumb
+                    const tabLabel = tab.querySelector('span')?.innerText || id;
+                    breadcrumb.innerText = tabLabel;
+                    title.innerText = tabLabel;
+
+                    const subtitles = {
+                        posts: 'Manage your articles',
+                        users: 'Manage team and access',
+                        comments: 'Manage reader feedback',
+                        categories: 'Organize your content',
+                        resources: 'Manage downloads and files'
+                    };
+                    subtitle.innerText = subtitles[id] || 'Dashboard';
+
+                    // Update action buttons for this tab
+                    renderActiveTabActions(id, actions);
+
+                    // ALWAYS load fresh data for the selected tab
+                    loadTabData(id);
                 };
             });
+
+            searchInput.oninput = debounce((e) => {
+                App.searchQuery = e.target.value;
+                renderActiveTab();
+            }, 300);
+
+            // Set initial state for the first tab
+            const firstTab = document.querySelector('.sidebar-link[data-tab="posts"]');
+            if (firstTab) firstTab.classList.add('active');
         }
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
+        function renderActiveTabActions(id, container) {
+            const btnClass = "btn btn-primary rounded-none border-2 border-slate-900 shadow-tech font-bold uppercase tracking-widest text-[10px] px-8 w-full md:w-auto hover:bg-slate-900";
+            const actions = {
+                posts: `<a href="create-post.html" class="${btnClass}"><i data-lucide="plus" class="w-4 h-4 mr-2"></i>New Post</a>`,
+                categories: `<button onclick="window.openCreateCategory()" class="${btnClass}"><i data-lucide="plus" class="w-4 h-4 mr-2"></i>Add Category</button>`,
+                resources: `<button onclick="window.promptCreateResource()" class="${btnClass}"><i data-lucide="plus" class="w-4 h-4 mr-2"></i>Add Resource</button>`
+            };
+            container.innerHTML = actions[id] || '';
+            lucide.createIcons();
         }
+
+        function renderHeaderInfo(profile) {
+            if (!profile) return;
+            const header = document.getElementById('auth-header-info');
+            if (!header) return;
+
+            const fullName = sanitizeHTML(profile.full_name || 'Admin');
+            const roleName = (profile.role || 'author').toUpperCase();
+
+            header.innerHTML = `
+                <div class="hidden md:flex flex-col text-right">
+                    <span class="text-sm font-bold text-slate-900">${fullName}</span>
+                    <span class="text-[9px] font-mono font-bold text-blue-600 uppercase tracking-widest">${roleName}</span>
+                </div>
+                <div class="w-10 h-10 border-2 border-slate-900 p-0.5 overflow-hidden shadow-tech-accent shrink-0 bg-white">
+                    <img src="${profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.id}`}" class="w-full h-full object-cover" alt="Profile" />
+                </div>
+            `;
+        }
+
+        // --- Global Helper Modals ---
+
+        window.openCreateCategory = () => {
+            // Reset UI and global edit ID
+            window._editingCategoryId = null;
+            document.getElementById('cat-name').value = '';
+            document.getElementById('cat-slug').value = '';
+            document.getElementById('category-modal-title').innerText = 'New Category';
+            document.getElementById('modal-category').checked = true;
+        }
+
+        window.editCategoryModal = (id, name, slug) => {
+            window._editingCategoryId = id;
+            document.getElementById('cat-name').value = name;
+            document.getElementById('cat-slug').value = slug;
+            document.getElementById('category-modal-title').innerText = 'Edit Category';
+            document.getElementById('modal-category').checked = true;
+        };
+
+        document.getElementById('save-category-btn').onclick = async () => {
+            const name = document.getElementById('cat-name').value;
+            const slug = document.getElementById('cat-slug').value;
+            if (!name) return showToast('Name is required', 'error');
+
+            const task = window._editingCategoryId ? 'Edit Category' : 'Add Category';
+            const action = window._editingCategoryId
+                ? () => updateCategory(window._editingCategoryId, { name, slug })
+                : () => createCategory({ name, slug });
+
+            const res = await runAction(task, action, 'Category saved successfully');
+            if (!res.error) {
+                document.getElementById('modal-category').checked = false;
+                loadTabData('categories');
+            }
+        };
+
+        window.promptCreateResource = () => {
+            document.getElementById('res-title').value = '';
+            document.getElementById('res-file').value = '';
+            document.getElementById('modal-resource').checked = true;
+        };
+
+        document.getElementById('save-resource-btn').onclick = async () => {
+            const title = document.getElementById('res-title').value;
+            const category = document.getElementById('res-category').value;
+            const file_info = document.getElementById('res-file').value;
+            if (!title) return showToast('Title is required', 'error');
+
+            const res = await runAction('Add Resource', () => createResource({ title, category, file_info }), 'Resource added successfully');
+            if (!res.error) {
+                document.getElementById('modal-resource').checked = false;
+                loadTabData('resources');
+            }
+        };
+
+        window.toggleMobileSidebar = () => {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('mobile-backdrop');
+            sidebar.classList.toggle('translate-x-full');
+            sidebar.classList.toggle('translate-x-0');
+            backdrop.classList.toggle('active');
+        };
+
+        window.performSignOut = async () => {
+            if (confirm('Are you sure you want to sign out?')) {
+                await signOut();
+                window.location.href = 'index.html';
+            }
+        };
+
+        // --- Notification Helpers ---
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `toast-item p-4 shadow-tech flex items-center gap-4 transition-all duration-500 transform translate-x-full opacity-0 ${type === 'success' ? 'border-l-green-500' : type === 'error' ? 'border-l-red-500' : 'border-l-blue-600'
+                }`;
+
+            const icons = { success: 'check-circle', error: 'alert-circle', info: 'info' };
+            const colors = { success: 'text-green-600', error: 'text-red-600', info: 'text-blue-600' };
+
+            toast.innerHTML = `
+                <div class="${colors[type]}"><i data-lucide="${icons[type]}" class="w-6 h-6"></i></div>
+                <div class="flex-1">
+                    <div class="text-[10px] font-mono font-bold uppercase opacity-50 tracking-widest">${type}</div>
+                    <div class="text-xs font-bold text-slate-900">${message}</div>
+                </div>
+            `;
+
+            container.appendChild(toast);
+            lucide.createIcons();
+
+            // Animate in
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-x-full', 'opacity-0');
+            });
+
+            // Animate out
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        function showUnauthorized() {
+            document.body.innerHTML = `
+                <div class="min-h-screen flex items-center justify-center bg-slate-950 text-white p-10 text-center">
+                    <div class="max-w-md">
+                        <div class="w-20 h-20 bg-red-600 text-white flex items-center justify-center mx-auto mb-8 border-2 border-white shadow-tech"><i data-lucide="shield-alert" class="w-10 h-10"></i></div>
+                        <h1 class="text-3xl font-black mb-4 uppercase tracking-tighter">Access Denied</h1>
+                        <p class="text-slate-400 font-mono text-[10px] uppercase tracking-widest mb-10 leading-relaxed">You do not have permission to view this page.</p>
+                        <a href="index.html" class="btn btn-primary rounded-none font-black uppercase tracking-widest text-[10px] px-10 h-14 border-2 border-white shadow-tech">Go Back Home</a>
+                    </div>
+                </div>`;
+            lucide.createIcons();
+            document.documentElement.classList.add('admin-ready');
+        }
+
+        function showSystemError(msg) {
+            document.body.innerHTML = `<div class="p-20 text-red-500 font-mono text-xs uppercase tracking-widest flex items-center gap-4"><i data-lucide="terminal" class="w-5 h-5"></i>CORE_FAILURE: ${msg}</div>`;
+            lucide.createIcons();
+            document.documentElement.classList.add('admin-ready');
+        }
+
+        init();
     </script>
 </body>
 

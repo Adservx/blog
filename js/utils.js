@@ -34,13 +34,13 @@ export function initCommonNav(session, authFunctions) {
     const nav = document.getElementById('nav-links');
     if (!nav) return;
 
-    let navHtml = '<a href="index.html">DASHBOARD</a>';
+    let navHtml = '<a href="index.html">Home</a>';
 
     if (session) {
         navHtml += `
-            <a href="create-post.html">CREATE</a>
-            <a href="profile.html">PROFILE</a>
-            <a href="#" id="logout-btn">LOGOUT</a>
+            <a href="create-post.html">New Post</a>
+            <a href="profile.html">Profile</a>
+            <a href="#" id="logout-btn">Logout</a>
         `;
         nav.innerHTML = navHtml;
         document.getElementById('logout-btn').addEventListener('click', async (e) => {
@@ -49,8 +49,8 @@ export function initCommonNav(session, authFunctions) {
         });
     } else {
         navHtml += `
-            <a href="login.html">LOGIN</a>
-            <a href="signup.html">SIGN_UP</a>
+            <a href="login.html">Login</a>
+            <a href="signup.html">Sign Up</a>
         `;
         nav.innerHTML = navHtml;
     }
@@ -77,10 +77,11 @@ export function setupMobileNav() {
     if (!navContainer) return;
 
     // Check if we already added the button
-    if (document.getElementById('mobile-menu-btn')) return;
+    const existingBtn = document.getElementById('mobile-menu-btn');
+    const existingOverlay = document.getElementById('mobile-menu-overlay');
 
     const authNav = document.getElementById('auth-nav');
-    if (authNav) {
+    if (authNav && !existingBtn) {
         const hamburgerBtn = document.createElement('button');
         hamburgerBtn.id = 'mobile-menu-btn';
         hamburgerBtn.className = 'btn btn-ghost btn-square text-slate-900 lg:hidden ml-2';
@@ -92,119 +93,157 @@ export function setupMobileNav() {
         authNav.appendChild(hamburgerBtn);
     }
 
+    if (existingOverlay) {
+        const btn = document.getElementById('mobile-menu-btn');
+        if (btn) btn.onclick = () => toggleMenu();
+        if (existingBtn && existingOverlay) return;
+    }
+
     // Create Mobile Menu Overlay
-    const mobileMenu = document.createElement('div');
-    mobileMenu.id = 'mobile-menu-overlay';
-    mobileMenu.className = 'fixed inset-0 bg-slate-900/95 z-[100] transform transition-transform duration-300 translate-x-full lg:hidden flex flex-col pt-20 px-6';
-    mobileMenu.innerHTML = `
-        <button id="close-mobile-menu" class="absolute top-6 right-6 btn btn-ghost btn-square text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-        </button>
-        <div id="mobile-menu-links" class="flex flex-col gap-6 text-white text-xl font-bold uppercase tracking-widest text-center mt-10">
-            <!-- Links will be injected here -->
-        </div>
-        <div id="mobile-auth-section" class="mt-auto mb-20 flex flex-col gap-4">
-            <!-- Auth buttons will be injected here -->
-        </div>
-    `;
-    document.body.appendChild(mobileMenu);
+    let mobileMenu = existingOverlay;
+    if (!mobileMenu) {
+        mobileMenu = document.createElement('div');
+        mobileMenu.id = 'mobile-menu-overlay';
+        mobileMenu.className = 'fixed inset-0 z-[100] lg:hidden invisible transition-all duration-300 pointer-events-none';
+        mobileMenu.innerHTML = `
+            <!-- Refined Backdrop -->
+            <div id="mobile-menu-backdrop" class="absolute inset-0 bg-slate-900/60 transition-opacity duration-300"></div>
+            
+            <!-- Professional Sidebar Panel -->
+            <div id="mobile-menu-panel" class="absolute top-0 right-0 w-[85%] max-w-sm h-full bg-white transform translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col pointer-events-auto border-l-2 border-slate-900 overflow-hidden">
+                
+                <!-- Elegant Header -->
+                <div class="px-8 py-10 border-b border-slate-100 flex justify-between items-center relative z-10">
+                    <div class="flex items-center gap-3">
+                        <span class="bg-slate-900 text-white w-10 h-10 flex items-center justify-center font-black text-xl">V</span>
+                        <div class="flex flex-col">
+                            <span class="font-black text-slate-900 text-base uppercase tracking-tighter leading-none">Voltage</span>
+                            <span class="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest mt-1">Menu</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Sections -->
+                <div class="flex-1 overflow-y-auto relative z-10 px-8 py-10">
+                    <div class="space-y-12">
+                        <!-- Main Menu -->
+                        <section>
+                            <h3 class="text-[10px] font-mono font-black text-blue-600 uppercase tracking-[0.3em] mb-8 border-l-4 border-blue-600 pl-4">Explore Links</h3>
+                            <div id="mobile-menu-links" class="flex flex-col gap-2">
+                                <!-- Links go here -->
+                            </div>
+                        </section>
+
+                        <!-- Member Registry -->
+                        <section>
+                            <h3 class="text-[10px] font-mono font-black text-slate-300 uppercase tracking-[0.3em] mb-8 border-l-4 border-slate-200 pl-4">Account</h3>
+                            <div id="mobile-auth-section" class="flex flex-col gap-4">
+                                <!-- Auth items go here -->
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- Technical Footer -->
+                <div class="p-8 bg-slate-50 border-t border-slate-100 mt-auto">
+                    <button id="close-mobile-menu" class="w-full bg-slate-900 text-white h-14 font-black uppercase text-xs tracking-widest shadow-tech hover:translate-y-[-2px] hover:shadow-tech-accent transition-all active:translate-y-0">
+                        Close Menu
+                    </button>
+                    <div class="mt-6 flex justify-between items-center px-2">
+                        <span class="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest" id="m-nav-timer">00:00:00 UTC</span>
+                        <span class="text-[8px] font-mono font-bold text-slate-400 uppercase tracking-widest">Online</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(mobileMenu);
+
+        // Footer Timer
+        setInterval(() => {
+            const timer = document.getElementById('m-nav-timer');
+            if (timer) timer.innerText = new Date().toISOString().substring(11, 19) + " UTC";
+        }, 1000);
+    }
 
     const btn = document.getElementById('mobile-menu-btn');
     const closeBtn = document.getElementById('close-mobile-menu');
+    const backdrop = document.getElementById('mobile-menu-backdrop');
+    const panel = document.getElementById('mobile-menu-panel');
     const menuLinks = document.getElementById('mobile-menu-links');
     const menuAuth = document.getElementById('mobile-auth-section');
     const originalNav = document.getElementById('nav-links');
     const originalAuth = document.getElementById('auth-nav');
 
-    function toggleMenu() {
-        const isOpen = mobileMenu.classList.contains('translate-x-0');
-        if (isOpen) {
-            mobileMenu.classList.remove('translate-x-0');
-            mobileMenu.classList.add('translate-x-full');
+    function toggleMenu(forceClose = false) {
+        const isOpen = panel.classList.contains('translate-x-0') && !forceClose;
+        if (isOpen || forceClose) {
+            panel.classList.replace('translate-x-0', 'translate-x-full');
+            backdrop.classList.replace('opacity-100', 'opacity-0');
             document.body.classList.remove('overflow-hidden');
+            setTimeout(() => mobileMenu.classList.add('invisible'), 500);
         } else {
+            // Render Professional Links with Staggered Vertical Slide
             if (originalNav) {
-                // Strip IDs when cloning to prevent duplicates
-                const navClone = originalNav.cloneNode(true);
-                navClone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
-                menuLinks.innerHTML = navClone.innerHTML;
-                Array.from(menuLinks.children).forEach(child => {
-                    child.className = 'text-white hover:text-blue-400 py-2 border-b border-slate-800 transition-colors';
-                });
+                const links = Array.from(originalNav.querySelectorAll('a'));
+                menuLinks.innerHTML = links.map((link, i) => `
+                    <div class="menu-reveal-item opacity-0 transform translate-y-6 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" style="transition-delay: ${i * 60}ms">
+                        <a href="${link.getAttribute('href')}" class="flex items-center group py-4 gap-4">
+                            <span class="text-xs font-mono font-bold text-slate-200 group-hover:text-blue-600 transition-colors">/0${i + 1}</span>
+                            <span class="text-2xl font-black text-slate-900 uppercase tracking-tighter group-hover:text-blue-600 transition-colors">${link.innerText}</span>
+                        </a>
+                    </div>
+                `).join('');
             }
+
             if (originalAuth) {
                 const authClone = originalAuth.cloneNode(true);
-                // Strip IDs when cloning
-                authClone.querySelectorAll('[id]').forEach(el => {
-                    if (el.id !== 'sign-out-btn') el.removeAttribute('id');
-                });
-
-                const burger = authClone.querySelector('#mobile-menu-btn');
-                if (burger) burger.remove();
-
-                // Handle hidden wrapper
-                const hiddenWrapper = authClone.querySelector('.hidden.lg\:flex');
-                if (hiddenWrapper) {
-                    while (hiddenWrapper.firstChild) {
-                        authClone.insertBefore(hiddenWrapper.firstChild, hiddenWrapper);
-                    }
-                    hiddenWrapper.remove();
-                }
-
-                // Process dropdowns for mobile
                 const dropdowns = authClone.querySelectorAll('.dropdown');
-                dropdowns.forEach(dd => {
-                    dd.classList.remove('dropdown', 'dropdown-end');
-                    dd.className = 'flex flex-col items-center gap-6 w-full py-6 border-t border-slate-800 mt-4';
+                let authHtml = '';
 
-                    const avatarBtn = dd.querySelector('[role="button"]');
-                    const avatarImg = avatarBtn ? avatarBtn.querySelector('img') : null;
-
+                dropdowns.forEach((dd, i) => {
+                    const avatar = dd.querySelector('img')?.src;
                     const content = dd.querySelector('.dropdown-content');
                     if (content) {
-                        content.classList.remove('dropdown-content', 'shadow-2xl', 'menu-sm', 'bg-white', 'text-slate-700', 'border', 'absolute');
-                        content.classList.add('w-full', 'bg-transparent', 'text-white', 'text-center', 'flex', 'flex-col', 'gap-4');
-
-                        if (avatarImg) {
-                            const largeAvatar = avatarImg.cloneNode(true);
-                            largeAvatar.className = "w-20 h-20 rounded-full border-4 border-blue-600 mx-auto mb-2";
-                            content.prepend(largeAvatar);
-                        }
-
-                        const links = content.querySelectorAll('a');
-                        links.forEach(l => {
-                            l.className = 'text-white text-xl font-bold uppercase tracking-widest hover:text-blue-400 py-2 transition-colors';
-                        });
-
-                        const btns = content.querySelectorAll('button');
-                        btns.forEach(b => {
-                            b.className = 'text-red-500 text-xl font-black uppercase tracking-[0.2em] mt-4 hover:text-red-400 py-2 transition-colors';
-                        });
-
-                        const extras = content.querySelectorAll('.menu-title, .divider');
-                        extras.forEach(e => e.remove());
-                    }
-
-                    if (avatarBtn) avatarBtn.remove();
-                });
-
-                // Process normal links
-                const links = authClone.querySelectorAll('a');
-                links.forEach(l => {
-                    if (!l.closest('.flex-col')) {
-                        l.classList.remove('hidden', 'lg:flex', 'lg:block', 'md:flex', 'md:block', 'sm:flex', 'sm:block');
-                        l.className = 'text-white text-xl font-bold uppercase tracking-widest btn btn-outline border-white hover:bg-white hover:text-slate-900 w-full h-16 rounded-none mb-4';
-                        if (l.getAttribute('href') === 'signup.html') {
-                            l.className = 'text-white text-xl font-bold uppercase tracking-widest btn btn-primary w-full h-16 rounded-none mb-4';
-                        }
+                        const links = Array.from(content.querySelectorAll('a')).map(l => ({ text: l.innerText, href: l.getAttribute('href') }));
+                        authHtml += `
+                            <div class="menu-reveal-item opacity-0 transform translate-y-6 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" style="transition-delay: ${(menuLinks.children.length + i) * 60}ms">
+                                <div class="bg-slate-50 border border-slate-200 p-6 rounded-none relative">
+                                    <div class="flex items-center gap-4 mb-6 border-b border-slate-200 pb-4">
+                                        <div class="w-12 h-12 bg-white border border-slate-900 p-1">
+                                            <img src="${avatar}" class="w-full h-full object-cover" />
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[9px] font-mono font-bold text-slate-400 uppercase">Profile</span>
+                                            <span class="text-sm font-black text-slate-900 uppercase">Your Account</span>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 gap-1">
+                                        ${links.map(l => `<a href="${l.href}" class="py-3 text-[10px] font-black text-slate-900 uppercase tracking-widest hover:text-blue-600 transition-colors border-b border-slate-100 last:border-0">${l.text}</a>`).join('')}
+                                        <button id="sign-out-btn-mobile" class="mt-4 w-full text-[9px] font-black text-red-600 uppercase tracking-widest text-left hover:text-red-800">Sign Out</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                     }
                 });
 
-                menuAuth.innerHTML = authClone.innerHTML;
+                const authLinks = Array.from(authClone.querySelectorAll('a')).filter(l => !l.closest('.dropdown'));
+                if (authLinks.length > 0) {
+                    authHtml += `<div class="flex flex-col gap-4">`;
+                    authLinks.forEach((l, i) => {
+                        const isSignup = l.getAttribute('href').includes('signup');
+                        authHtml += `
+                            <div class="menu-reveal-item opacity-0 transform translate-y-6 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" style="transition-delay: ${(menuLinks.children.length + i + 1) * 60}ms">
+                                <a href="${l.getAttribute('href')}" class="w-full h-14 flex items-center justify-center font-black uppercase text-xs tracking-widest ${isSignup ? 'bg-blue-600 text-white shadow-tech-accent' : 'bg-slate-900 text-white shadow-tech'}">
+                                    ${l.innerText}
+                                </a>
+                            </div>`;
+                    });
+                    authHtml += `</div>`;
+                }
+                menuAuth.innerHTML = authHtml;
 
-                const signOutBtn = menuAuth.querySelector('#sign-out-btn');
+                const signOutBtn = document.getElementById('sign-out-btn-mobile');
                 if (signOutBtn) {
                     signOutBtn.onclick = async () => {
                         const { signOut } = await import('./auth.js');
@@ -213,14 +252,22 @@ export function setupMobileNav() {
                 }
             }
 
-            mobileMenu.classList.add('translate-x-0');
-            mobileMenu.classList.remove('translate-x-full');
+            mobileMenu.classList.remove('invisible');
+            setTimeout(() => {
+                panel.classList.replace('translate-x-full', 'translate-x-0');
+                backdrop.classList.replace('opacity-0', 'opacity-100');
+                // Trigger Vertical Revealed Sequence
+                document.querySelectorAll('.menu-reveal-item').forEach(el => {
+                    el.classList.remove('opacity-0', 'translate-y-6');
+                });
+            }, 50);
             document.body.classList.add('overflow-hidden');
         }
     }
 
-    if (btn) btn.onclick = toggleMenu;
-    if (closeBtn) closeBtn.onclick = toggleMenu;
+    if (btn) btn.onclick = () => toggleMenu();
+    if (closeBtn) closeBtn.onclick = () => toggleMenu();
+    if (backdrop) backdrop.onclick = () => toggleMenu();
 }
 
 /**
@@ -272,10 +319,10 @@ export function renderNavbar(authNavEl, navLinksEl, session, profile, signOutFn)
                 <ul tabindex="0" class="mt-4 z-[100] p-4 shadow-2xl menu menu-sm dropdown-content bg-white border border-slate-200 rounded-none w-64 text-slate-700">
                     <li class="menu-title text-[9px] font-mono font-black text-slate-400 uppercase tracking-[0.3em] mb-2 px-2">Session [${role.toUpperCase()}]</li>
                     <li><a href="profile.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest hover:text-blue-600 transition-colors">Profile</a></li>
-                    ${(role === 'admin' || role === 'administrator' || role === 'author') ? `<li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest hover:text-blue-600 transition-colors">Write Post</a></li>` : ''}
-                    ${(role === 'admin' || role === 'administrator') ? `<li><a href="admin.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-blue-600 border-t border-slate-100">Site Management</a></li>` : ''}
+                    ${(role === 'admin' || role === 'administrator' || role === 'author') ? `<li><a href="create-post.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest hover:text-blue-600 transition-colors">New Post</a></li>` : ''}
+                    ${(role === 'admin' || role === 'administrator') ? `<li><a href="admin.html" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-blue-600 border-t border-slate-100">Admin Panel</a></li>` : ''}
                     <div class="divider my-2"></div>
-                    <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50 w-full text-left">Log Out</button></li>
+                    <li><button id="sign-out-btn" class="rounded-none py-3 font-bold uppercase text-[10px] tracking-widest text-red-500 hover:bg-red-50 w-full text-left">Logout</button></li>
                 </ul>
             </div>
         `;
@@ -284,7 +331,7 @@ export function renderNavbar(authNavEl, navLinksEl, session, profile, signOutFn)
             const addPostLink = document.createElement('a');
             addPostLink.href = 'create-post.html';
             addPostLink.className = 'text-[11px] font-bold text-blue-600 hover:text-blue-700 tracking-widest uppercase transition-colors border-b-2 border-blue-600 pb-1';
-            addPostLink.innerText = 'Add Post';
+            addPostLink.innerText = 'New Post';
             navLinksEl.appendChild(addPostLink);
         }
 
@@ -295,8 +342,8 @@ export function renderNavbar(authNavEl, navLinksEl, session, profile, signOutFn)
     } else {
         authNavEl.innerHTML = `
             <div class="hidden lg:flex items-center gap-4">
-                <a href="login.html" class="inline-flex items-center text-[11px] font-bold text-slate-900 uppercase tracking-widest hover:text-blue-600 transition-colors h-8">Sign In</a>
-                <a href="signup.html" class="btn btn-neutral btn-sm rounded-none px-6 text-[11px] font-bold uppercase tracking-widest">Join Now</a>
+                <a href="login.html" class="inline-flex items-center text-[11px] font-bold text-slate-900 uppercase tracking-widest hover:text-blue-600 transition-colors h-8">Login</a>
+                <a href="signup.html" class="btn btn-neutral btn-sm rounded-none px-6 text-[11px] font-bold uppercase tracking-widest">Sign Up</a>
             </div>
         `;
     }
