@@ -84,13 +84,12 @@ export function setupMobileNav() {
     if (authNav && !existingBtn) {
         const hamburgerBtn = document.createElement('button');
         hamburgerBtn.id = 'mobile-menu-btn';
-        hamburgerBtn.className = 'btn btn-ghost btn-square text-slate-900 lg:hidden ml-2';
+        hamburgerBtn.className = 'btn btn-ghost btn-circle text-slate-900 lg:hidden ml-1';
         hamburgerBtn.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-6 h-6 stroke-current">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
+            <i data-lucide="menu" class="w-6 h-6"></i>
         `;
         authNav.appendChild(hamburgerBtn);
+        if (window.lucide) window.lucide.createIcons();
     }
 
     if (existingOverlay) {
@@ -311,7 +310,7 @@ export function renderNavbar(authNavEl, navLinksEl, session, profile, signOutFn)
 
         authNavEl.innerHTML = `
             <div class="dropdown dropdown-end">
-                <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-100 hover:border-blue-600">
+                <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar border-2 border-slate-900 hover:border-blue-600">
                     <div class="w-10 h-10 rounded-full overflow-hidden">
                         <img src="${avatar}" class="w-full h-full object-cover" />
                     </div>

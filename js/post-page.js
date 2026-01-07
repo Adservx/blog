@@ -70,15 +70,15 @@ async function renderPost(user, slug) {
                 <div class="flex items-center gap-4 mb-6 md:mb-10">
                     <span class="bg-blue-600 text-white px-2 py-1 font-mono text-[8px] md:text-[9px] font-black uppercase tracking-widest border border-blue-500">${post.categories?.name || 'General'}</span>
                 </div>
-                <h1 class="text-3xl md:text-5xl font-black uppercase mb-8 md:mb-12 leading-[1.1] break-words">${sanitizeHTML(post.title)}</h1>
+                <h1 class="text-2xl sm:text-3xl md:text-5xl font-black uppercase mb-8 md:mb-12 leading-[1.1] break-words">${sanitizeHTML(post.title)}</h1>
                 
-                <div class="flex flex-wrap items-center gap-4 md:gap-6 mb-10 md:mb-16 py-6 md:py-8 border-y-2 border-slate-900">
-                    <div class="w-12 h-12 md:w-16 md:h-16 border-2 border-slate-900 p-0.5 md:p-1 shrink-0 rounded-full overflow-hidden">
+                <a href="profile.html?id=${post.user_id}" class="flex flex-wrap items-center gap-4 md:gap-6 mb-10 md:mb-16 py-6 md:py-8 border-y-2 border-slate-900 group/author hover:bg-slate-50 transition-colors">
+                    <div class="w-12 h-12 md:w-16 md:h-16 border-2 border-slate-900 p-0.5 md:p-1 shrink-0 rounded-full overflow-hidden group-hover/author:border-blue-600 transition-colors">
                         <img src="${post.profiles?.avatar_url || ('https://api.dicebear.com/7.x/avataaars/svg?seed=' + post.profiles?.id)}" class="w-full h-full object-cover" />
                     </div>
                     <div class="min-w-0">
                         <span class="text-[8px] md:text-[10px] font-mono font-black text-slate-400 uppercase tracking-widest block mb-0.5">Author</span>
-                        <h4 class="text-lg md:text-xl font-black uppercase truncate">${sanitizeHTML(authorName)}</h4>
+                        <h4 class="text-lg md:text-xl font-black uppercase truncate group-hover/author:text-blue-600 group-hover/author:underline underline-offset-4 transition-all">${sanitizeHTML(authorName)}</h4>
                         <span class="text-[8px] md:text-[10px] font-mono font-bold text-blue-600 uppercase tracking-widest">${sanitizeHTML(post.profiles?.expertise || 'Field Engineer')}</span>
                     </div>
                     <div class="ml-auto text-right hidden sm:flex flex-col items-end gap-3">
@@ -220,15 +220,17 @@ async function renderComments(postId) {
                 const cDate = formatDate(c.created_at);
 
                 return `
-                <div class="border-b border-slate-100 pb-8 last:border-0">
+                <div class="border-b border-slate-100 pb-8 last:border-0 hover:bg-slate-50 transition-colors px-2 -mx-2">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="w-8 h-8 rounded-full overflow-hidden border border-slate-200">
-                            <img src="${avatarUrl}" class="w-full h-full object-cover" />
-                        </div>
-                        <span class="text-[11px] font-black uppercase tracking-widest">${cAuthor}</span>
+                        <a href="profile.html?id=${c.user_id}" class="flex items-center gap-3 group/author">
+                            <div class="w-8 h-8 rounded-full overflow-hidden border border-slate-200 group-hover/author:border-blue-600 transition-colors">
+                                <img src="${avatarUrl}" class="w-full h-full object-cover" />
+                            </div>
+                            <span class="text-[11px] font-black uppercase tracking-widest group-hover/author:text-blue-600 transition-colors">${cAuthor}</span>
+                        </a>
                         <span class="text-[9px] font-mono text-slate-300 ml-auto">${cDate}</span>
                     </div>
-                    <p class="text-lg font-bold text-slate-700 leading-relaxed uppercase">${cBody}</p>
+                    <p class="text-base sm:text-lg font-bold text-slate-700 leading-relaxed uppercase">${cBody}</p>
                 </div>`;
             }).join('');
         } else {

@@ -77,18 +77,37 @@
 
         .toast-container {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
+            bottom: 1rem;
+            right: 1rem;
+            left: 1rem;
             z-index: 100;
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            pointer-events: none;
+        }
+
+        @media (min-width: 640px) {
+            .toast-container {
+                left: auto;
+                bottom: 2rem;
+                right: 2rem;
+                width: auto;
+            }
         }
 
         .toast-item {
+            pointer-events: auto;
+            max-width: 100%;
             animation: slideIn 0.3s ease-out;
             background: white;
             border: 2px solid #0f172a;
+        }
+
+        @media (min-width: 640px) {
+            .toast-item {
+                max-width: 28rem;
+            }
         }
 
         @keyframes slideIn {
@@ -158,6 +177,22 @@
         .border-tech {
             border: 2px solid #0f172a;
         }
+
+        @keyframes bounce-subtle {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-4px);
+            }
+        }
+
+        .animate-bounce-subtle {
+            animation: bounce-subtle 3s infinite ease-in-out;
+        }
     </style>
 </head>
 
@@ -171,8 +206,14 @@
 
     <!-- Sidebar Navigation -->
     <aside
-        class="w-72 bg-slate-950 text-white flex flex-col fixed inset-y-0 right-0 z-50 transition-all duration-500 lg:left-0 lg:right-auto lg:translate-x-0 translate-x-full lg:translate-y-0 border-r-2 border-white/10 lg:w-72 w-[85%] max-w-sm h-full"
+        class="w-72 bg-slate-950 text-white flex flex-col fixed inset-y-0 left-0 z-50 transition-all duration-500 lg:translate-x-0 -translate-x-full border-r-2 border-white/10 lg:w-72 w-[85%] max-w-sm h-full"
         id="sidebar">
+        <!-- Add Close Button for Mobile -->
+        <button onclick="window.toggleMobileSidebar()"
+            class="btn btn-ghost btn-circle absolute top-4 right-4 lg:hidden text-white">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+
         <div class="p-8 border-b border-white/10">
             <a href="index.html" class="flex items-center gap-3">
                 <span
@@ -197,14 +238,14 @@
             </button>
 
             <button
-                class="sidebar-link w-full flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+                class="sidebar-link w-full flex items-center gap-4 px-6 py-4 text-slate-400 hover:text-white hover:bg-white/5 transition-all"
                 data-tab="users">
                 <i data-lucide="users" class="w-5 h-5"></i>
                 <span class="font-bold text-sm">Users</span>
             </button>
 
             <button
-                class="sidebar-link w-full flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+                class="sidebar-link w-full flex items-center gap-4 px-6 py-4 text-slate-400 hover:text-white hover:bg-white/5 transition-all"
                 data-tab="comments">
                 <i data-lucide="message-square" class="w-5 h-5"></i>
                 <span class="font-bold text-sm">Comments</span>
@@ -214,14 +255,14 @@
                 Organization</div>
 
             <button
-                class="sidebar-link w-full flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+                class="sidebar-link w-full flex items-center gap-4 px-6 py-4 text-slate-400 hover:text-white hover:bg-white/5 transition-all"
                 data-tab="categories">
                 <i data-lucide="tag" class="w-5 h-5"></i>
                 <span class="font-bold text-sm">Categories</span>
             </button>
 
             <button
-                class="sidebar-link w-full flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+                class="sidebar-link w-full flex items-center gap-4 px-6 py-4 text-slate-400 hover:text-white hover:bg-white/5 transition-all"
                 data-tab="resources">
                 <i data-lucide="library" class="w-5 h-5"></i>
                 <span class="font-bold text-sm">Library</span>
@@ -231,7 +272,7 @@
                 Settings</div>
 
             <a href="profile.html"
-                class="w-full flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+                class="sidebar-link w-full flex items-center gap-4 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/5 transition-all">
                 <i data-lucide="user-cog" class="w-5 h-5"></i>
                 <span class="font-bold text-sm">My Profile</span>
             </a>
@@ -251,7 +292,7 @@
 
         <!-- Header -->
         <header
-            class="h-20 bg-white border-b-2 border-slate-900 sticky top-0 z-40 px-6 sm:px-8 flex items-center justify-between">
+            class="h-20 bg-white border-b-2 border-slate-900 sticky top-0 z-40 px-1 sm:px-8 flex items-center justify-between">
             <div class="flex items-center gap-4">
                 <button onclick="window.toggleMobileSidebar()" class="btn btn-ghost btn-circle lg:hidden">
                     <i data-lucide="menu" class="w-6 h-6 text-slate-900"></i>
@@ -265,14 +306,14 @@
                 <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-white">Online</span>
             </div>
 
-            <div class="flex items-center gap-4 sm:gap-6" id="auth-header-info">
+            <div class="flex items-center gap-2 sm:gap-6" id="auth-header-info">
                 <!-- User Profile Summary -->
             </div>
         </header>
 
 
         <!-- Dashboard Content -->
-        <div class="p-8 lg:p-12 bg-grid-subtle flex-1">
+        <div class="p-4 sm:p-8 lg:p-12 bg-grid-subtle flex-1">
 
             <!-- Page Title -->
             <div class="mb-10 flex flex-col xl:flex-row xl:items-end justify-between gap-8">
@@ -289,13 +330,13 @@
                         Manage your website content</p>
                 </div>
 
-                <div class="flex flex-col md:flex-row items-center gap-4">
+                <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4 w-full md:w-auto">
                     <!-- Search Bar -->
                     <div class="relative w-full md:w-80 group" id="search-container">
                         <i data-lucide="search"
                             class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
                         <input type="text" id="global-search" placeholder="Search..."
-                            class="input input-bordered w-full pl-12 rounded-none border-2 border-slate-900 font-bold text-sm bg-white focus:outline-none focus:shadow-tech-accent transition-all" />
+                            class="input input-bordered w-full pl-12 rounded-none border-2 border-slate-900 font-bold text-sm bg-white focus:outline-none focus:shadow-tech-accent transition-all h-12" />
                     </div>
 
                     <div id="tab-actions" class="flex items-center gap-3 w-full md:w-auto">
@@ -308,7 +349,7 @@
 
             <!-- Posts Tab -->
             <section id="tab-posts" class="tab-content">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     <div
                         class="bg-white p-6 border-2 border-slate-900 shadow-tech group hover:border-blue-600 transition-colors">
                         <div class="flex justify-between items-start mb-4">
@@ -328,7 +369,7 @@
 
             <!-- Users Tab -->
             <section id="tab-users" class="tab-content hidden">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     <div
                         class="bg-white p-6 border-2 border-slate-900 shadow-tech group hover:border-blue-600 transition-colors">
                         <div class="flex justify-between items-start mb-4">
@@ -343,30 +384,26 @@
                     </div>
                 </div>
                 <div class="bg-white border-2 border-slate-900 shadow-tech overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="table w-full">
-                            <thead>
-                                <tr class="bg-slate-50 border-b-2 border-slate-900">
-                                    <th class="py-4 font-black uppercase tracking-widest text-[10px] text-slate-900">
-                                        User</th>
-                                    <th class="font-black uppercase tracking-widest text-[10px] text-slate-900">Role
-                                    </th>
-                                    <th
-                                        class="font-black uppercase tracking-widest text-[10px] text-slate-900 text-right">
-                                        Options</th>
-                                </tr>
-                            </thead>
-                            <tbody id="users-container">
-                                <!-- Users loaded here -->
-                            </tbody>
-                        </table>
+                    <!-- Table Header (Desktop Only) -->
+                    <div
+                        class="hidden md:grid grid-cols-12 bg-slate-50 border-b-2 border-slate-900 py-4 px-6 items-center">
+                        <div class="col-span-6 font-black uppercase tracking-widest text-[10px] text-slate-900">User
+                        </div>
+                        <div class="col-span-3 font-black uppercase tracking-widest text-[10px] text-slate-900">Role
+                        </div>
+                        <div
+                            class="col-span-3 font-black uppercase tracking-widest text-[10px] text-slate-900 text-right">
+                            Options</div>
+                    </div>
+                    <div id="users-container" class="divide-y divide-slate-200">
+                        <!-- Users loaded here -->
                     </div>
                 </div>
             </section>
 
             <!-- Comments Tab -->
             <section id="tab-comments" class="tab-content hidden">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     <div
                         class="bg-white p-6 border-2 border-slate-900 shadow-tech group hover:border-blue-600 transition-colors">
                         <div class="flex justify-between items-start mb-4">
@@ -387,7 +424,7 @@
 
             <!-- Categories Tab -->
             <section id="tab-categories" class="tab-content hidden">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     <div
                         class="bg-white p-6 border-2 border-slate-900 shadow-tech group hover:border-blue-600 transition-colors">
                         <div class="flex justify-between items-start mb-4">
@@ -408,7 +445,7 @@
 
             <!-- Resources Tab -->
             <section id="tab-resources" class="tab-content hidden">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     <div
                         class="bg-white p-6 border-2 border-slate-900 shadow-tech group hover:border-blue-600 transition-colors">
                         <div class="flex justify-between items-start mb-4">
@@ -433,7 +470,7 @@
     <!-- Category Modal -->
     <input type="checkbox" id="modal-category" class="modal-toggle" />
     <div class="modal">
-        <div class="modal-box rounded-none p-8 border-2 border-slate-900 shadow-tech bg-white">
+        <div class="modal-box rounded-none p-4 md:p-8 border-2 border-slate-900 shadow-tech bg-white w-full max-w-lg">
             <h3 class="font-black text-2xl uppercase tracking-tighter mb-6" id="category-modal-title">New Category</h3>
             <div class="space-y-4">
                 <div class="form-control">
@@ -466,7 +503,7 @@
     <!-- Resource Modal -->
     <input type="checkbox" id="modal-resource" class="modal-toggle" />
     <div class="modal">
-        <div class="modal-box rounded-none p-8 border-2 border-slate-900 shadow-tech bg-white">
+        <div class="modal-box rounded-none p-4 md:p-8 border-2 border-slate-900 shadow-tech bg-white w-full max-w-lg">
             <h3 class="font-black text-2xl uppercase tracking-tighter mb-6">Add New Resource</h3>
             <div class="space-y-4">
                 <div class="form-control">
@@ -501,6 +538,14 @@
             </div>
         </div>
     </div>
+
+    <!-- Back to Home Button -->
+    <a href="index.html"
+        class="fixed bottom-6 right-6 z-[60] flex items-center justify-center px-6 py-3 bg-white/20 backdrop-blur-md border-2 border-slate-900 text-slate-900 shadow-tech hover:shadow-tech-accent hover:-translate-y-1 transition-all group active:translate-y-0 active:shadow-none animate-bounce-subtle"
+        title="Return to Main Site">
+        <span class="text-[10px] font-black uppercase tracking-[0.2em] group-hover:text-blue-600 transition-colors">[
+            BACK TO HOME ]</span>
+    </a>
 
     <script type="module">
         import { checkSession, signOut } from './js/auth.js';
@@ -667,12 +712,13 @@
             }
 
             if (!data.length) {
+                const emptyClass = "bg-white border-2 border-dashed border-slate-200 p-8 sm:p-20 rounded-none text-center text-slate-400 font-bold uppercase tracking-widest text-xs sm:text-base";
                 if (App.searchQuery) {
-                    container.innerHTML = `<div class="bg-white border-2 border-dashed border-slate-200 p-20 rounded-2xl text-center text-slate-400 font-bold uppercase tracking-widest">No matching results for "${query}"</div>`;
+                    container.innerHTML = `<div class="${emptyClass}">No matching results for "${query}"</div>`;
                 } else if (tabId === 'comments') {
-                    container.innerHTML = `<div class="bg-white border-2 border-dashed border-slate-200 p-20 rounded-2xl text-center text-slate-400 font-bold uppercase tracking-widest">No Active Discourse</div>`;
+                    container.innerHTML = `<div class="${emptyClass}">No Active Discourse</div>`;
                 } else {
-                    container.innerHTML = `<div class="bg-white border-2 border-dashed border-slate-200 p-20 rounded-2xl text-center text-slate-400 font-bold uppercase tracking-widest">Registry Empty</div>`;
+                    container.innerHTML = `<div class="${emptyClass}">Registry Empty</div>`;
                 }
                 return;
             }
@@ -699,7 +745,7 @@
                 const safeTitle = sanitizeHTML(post.title);
                 const thumb = post.featured_image || 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=200';
                 return `
-                    <div class="bg-white p-6 border-2 border-slate-900 flex flex-col md:flex-row items-center gap-6 group hover:shadow-tech-accent transition-all shadow-tech">
+                    <div class="bg-white p-4 md:p-6 border-2 border-slate-900 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 group hover:shadow-tech-accent transition-all shadow-tech">
                         <div class="w-full md:w-32 aspect-video md:aspect-square overflow-hidden border-2 border-slate-900 bg-slate-50 relative shrink-0">
                             <img src="${thumb}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                         </div>
@@ -708,11 +754,11 @@
                                 <span class="px-2 py-0.5 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest border border-slate-900">${sanitizeHTML(post.categories?.name || 'GEN')}</span>
                                 <span class="text-[9px] font-mono text-slate-400 uppercase tracking-widest">${formatDate(post.created_at)}</span>
                             </div>
-                            <h3 class="text-xl font-black text-slate-900 group-hover:text-blue-600 transition-colors truncate uppercase">${safeTitle}</h3>
+                            <h3 class="text-base md:text-lg lg:text-xl font-black text-slate-900 group-hover:text-blue-600 transition-colors truncate uppercase leading-tight">${safeTitle}</h3>
                         </div>
-                        <div class="flex items-center gap-2 w-full md:w-auto mt-4 md:mt-0">
-                            <a href="create-post.html?edit=${post.id}" class="btn btn-outline btn-sm text-[9px] font-black uppercase tracking-widest rounded-none border-2 border-slate-900 hover:bg-slate-900">Edit</a>
-                            <button onclick="window.dispatchAction('deletePost', '${post.id}')" class="btn btn-error btn-sm text-[9px] font-black uppercase tracking-widest rounded-none border-2 border-slate-900 text-white">Delete</button>
+                        <div class="flex items-center gap-2 w-full md:w-auto mt-2 md:mt-0">
+                            <a href="create-post.html?edit=${post.id}" class="flex-1 md:flex-none btn btn-outline btn-sm text-[9px] font-black uppercase tracking-widest rounded-none border-2 border-slate-900 hover:bg-slate-900 h-10 md:h-8">Edit</a>
+                            <button onclick="window.dispatchAction('deletePost', '${post.id}')" class="flex-1 md:flex-none btn btn-error btn-sm text-[9px] font-black uppercase tracking-widest rounded-none border-2 border-slate-900 text-white h-10 md:h-8">Delete</button>
                         </div>
                     </div>
                 `;
@@ -721,30 +767,39 @@
                 const userRole = u.role || 'author';
                 const isAdmin = userRole === 'admin' || userRole === 'administrator';
                 return `
-                    <tr class="hover:bg-slate-50 transition-colors border-b border-slate-200">
-                        <td class="py-5">
-                            <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 border-2 border-slate-900 overflow-hidden">
+                    <div class="flex flex-col md:grid md:grid-cols-12 p-4 md:p-6 items-start md:items-center gap-4 hover:bg-slate-50 transition-colors">
+                        <!-- User Info -->
+                        <div class="col-span-1 md:col-span-6 flex items-center justify-between md:justify-start gap-4 w-full">
+                            <a href="profile.html?id=${u.id}" class="flex items-center gap-4 min-w-0 group/u">
+                                <div class="w-12 h-12 md:w-10 md:h-10 border-2 border-slate-900 overflow-hidden shrink-0 group-hover/u:border-blue-600 transition-colors">
                                     <img src="${u.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.id}`}" class="w-full h-full object-cover" alt="Avatar" />
                                 </div>
-                                <div>
-                                    <div class="font-bold text-slate-900 text-sm uppercase">${sanitizeHTML(u.full_name || 'No Name')}</div>
+                                <div class="min-w-0">
+                                    <div class="font-bold text-slate-900 text-sm md:text-base uppercase truncate group-hover/u:text-blue-600 transition-colors underline-offset-4 group-hover/u:underline">${sanitizeHTML(u.full_name || 'No Name')}</div>
                                     <div class="text-[9px] font-mono text-slate-400 uppercase tracking-widest">ID: ${u.id.substring(0, 8)}</div>
                                 </div>
+                            </a>
+                            <!-- Role Badge (Mobile Only) -->
+                            <div class="md:hidden">
+                                <span class="inline-block px-2 py-0.5 border-2 border-slate-900 text-[8px] font-black uppercase tracking-widest ${isAdmin ? 'bg-blue-600 text-white' : 'bg-white text-slate-900'}">
+                                    ${userRole}
+                                </span>
                             </div>
-                        </td>
-                        <td>
-                            <span class="px-3 py-1 border-2 border-slate-900 text-[9px] font-black uppercase tracking-widest ${isAdmin ? 'bg-blue-600 text-white' : 'bg-white text-slate-900'}">
+                        </div>
+                        
+                        <!-- Role (Desktop Only) -->
+                        <div class="hidden md:block md:col-span-3">
+                            <span class="inline-block px-3 py-1 border-2 border-slate-900 text-[9px] font-black uppercase tracking-widest ${isAdmin ? 'bg-blue-600 text-white' : 'bg-white text-slate-900'}">
                                 ${userRole}
                             </span>
-                        </td>
-                        <td class="text-right">
-                            <div class="flex justify-end gap-2">
-                                <button onclick="window.dispatchAction('toggleRole', '${u.id}')" class="btn btn-ghost btn-xs text-[10px] font-bold uppercase hover:bg-slate-900 hover:text-white rounded-none border border-slate-200">Change Role</button>
-                                <button onclick="window.dispatchAction('purgeProfile', '${u.id}')" class="btn btn-ghost btn-xs text-[10px] font-bold uppercase text-red-500 hover:bg-red-500 hover:text-white rounded-none border border-slate-200">Remove</button>
-                            </div>
-                        </td>
-                    </tr>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="col-span-1 md:col-span-3 flex items-center gap-2 w-full md:justify-end">
+                            <button onclick="window.dispatchAction('toggleRole', '${u.id}')" class="flex-1 md:flex-none btn btn-ghost btn-xs text-[10px] font-bold uppercase hover:bg-slate-900 hover:text-white rounded-none border border-slate-200 h-10 md:h-8 px-4">Change Role</button>
+                            <button onclick="window.dispatchAction('purgeProfile', '${u.id}')" class="flex-1 md:flex-none btn btn-ghost btn-xs text-[10px] font-bold uppercase text-red-500 hover:bg-red-500 hover:text-white rounded-none border border-slate-200 h-10 md:h-8 px-4">Remove</button>
+                        </div>
+                    </div>
                 `;
             },
             comments: (c) => `
@@ -782,17 +837,17 @@
                 </div>
             `,
             resources: (r) => `
-                <div class="bg-white p-6 border-2 border-slate-900 shadow-tech hover:shadow-tech-accent transition-all flex justify-between items-center group">
+                <div class="bg-white p-4 md:p-6 border-2 border-slate-900 shadow-tech hover:shadow-tech-accent transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 group">
                     <div class="flex items-center gap-4">
                         <div class="p-3 bg-slate-900 text-white transition-colors">
                             <i data-lucide="package" class="w-5 h-5"></i>
                         </div>
-                        <div>
-                            <h4 class="font-black text-slate-900 uppercase text-sm">${sanitizeHTML(r.title)}</h4>
-                            <p class="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">${sanitizeHTML(r.category)} | ${sanitizeHTML(r.file_info || 'File')}</p>
+                        <div class="min-w-0">
+                            <h4 class="font-black text-slate-900 uppercase text-sm truncate">${sanitizeHTML(r.title)}</h4>
+                            <p class="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest truncate">${sanitizeHTML(r.category)} | ${sanitizeHTML(r.file_info || 'File')}</p>
                         </div>
                     </div>
-                    <button onclick="window.dispatchAction('purgeResource', '${r.id}')" class="btn btn-ghost border border-slate-200 rounded-none text-red-500 btn-sm font-black text-[9px] uppercase tracking-widest hover:bg-red-500 hover:text-white">Delete</button>
+                    <button onclick="window.dispatchAction('purgeResource', '${r.id}')" class="w-full sm:w-auto btn btn-ghost border border-slate-200 rounded-none text-red-500 btn-sm font-black text-[9px] uppercase tracking-widest hover:bg-red-500 hover:text-white h-10 sm:h-8">Delete</button>
                 </div>
             `
         };
@@ -897,6 +952,11 @@
 
                     // ALWAYS load fresh data for the selected tab
                     loadTabData(id);
+
+                    // Close mobile sidebar if open
+                    if (window.innerWidth < 1024) {
+                        window.toggleMobileSidebar();
+                    }
                 };
             });
 
@@ -998,7 +1058,7 @@
         window.toggleMobileSidebar = () => {
             const sidebar = document.getElementById('sidebar');
             const backdrop = document.getElementById('mobile-backdrop');
-            sidebar.classList.toggle('translate-x-full');
+            sidebar.classList.toggle('-translate-x-full');
             sidebar.classList.toggle('translate-x-0');
             backdrop.classList.toggle('active');
         };
