@@ -1,0 +1,44 @@
+# Electrical Engineering Journal - pratikpaneru.com.np
+
+> The trusted place for electrical engineering research, semiconductor analysis, and smart grid standards.
+
+## Site Overview
+This website serves as a central registry and publication hub for electrical engineering professionals. It hosts peer-reviewed articles, technical references, and industry standards.
+
+## Core Content Sections
+
+### 1. Research Articles
+- **Location**: `/index.html` (Main Feed)
+- **Content**: Detailed technical articles, research papers, and opinion pieces on:
+  - Semiconductor Physics and Manufacturing
+  - Smart Grid Implementation
+  - Power Systems Analysis
+  - Circuit Design and Simulation
+  - Renewable Energy Integration
+- **Structure**: Articles are loaded dynamically via `post.html?slug={slug}`.
+
+### 2. Engineering Library
+- **Location**: `/resources.html`
+- **Content**: A curated collection of:
+  - IEEE/IEC Standards Summaries
+  - Engineering Calculation Tools (Voltage Drop, Cable Sizing)
+  - Datasheets and Technical Manuals
+  - Whitepapers
+
+### 3. Mission & About
+- **Location**: `/about.html`
+- **Focus**: Global knowledge sharing, peer review process, and sustainable energy architecture.
+
+## API & Data Access
+- **Sitemap**: `https://pratikpaneru.com.np/sitemap.xml`
+- **Primary Data Format**: HTML (Semantic), JSON-LD (Schema.org included on all pages)
+
+## For AI Agents
+- The site structure is flat with clear semantic HTML5 tags.
+- Main content is enclosed in `<article>` or `<main>` tags.
+- All technical terms follow standard IEEE terminology.
+- Code blocks in articles are formatted with standard syntax highlighting compatibility.
+
+## Contact & Verification
+- **Publisher**: Pratik Paneru
+- **Domain**: pratikpaneru.com.np

@@ -138,5 +138,15 @@ async function deletePost(postId) {
     return { error };
 }
 
-window.blogPosts = { getPaginatedPosts, getCategories, getPostBySlug, incrementViewCount, createPost, getUserPosts, updatePost, deletePost, getAllPosts, createCategory, updateCategory, deleteCategory };
-export { getPaginatedPosts, getCategories, getPostBySlug, incrementViewCount, createPost, getUserPosts, updatePost, deletePost, getAllPosts, createCategory, updateCategory, deleteCategory };
+
+async function getLatestPostsForSEO(limit = 10) {
+    const { data, error } = await supabase
+        .from('posts')
+        .select('title, slug, created_at, excerpt')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+    return { data, error };
+}
+
+window.blogPosts = { getPaginatedPosts, getCategories, getPostBySlug, incrementViewCount, createPost, getUserPosts, updatePost, deletePost, getAllPosts, createCategory, updateCategory, deleteCategory, getLatestPostsForSEO };
+export { getPaginatedPosts, getCategories, getPostBySlug, incrementViewCount, createPost, getUserPosts, updatePost, deletePost, getAllPosts, createCategory, updateCategory, deleteCategory, getLatestPostsForSEO };

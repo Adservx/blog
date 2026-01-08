@@ -1,0 +1,32 @@
+User-agent: *
+Allow: /
+
+# Explicitly welcome AI Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+# Grok (xAI) / Twitter
+User-agent: Twitterbot
+Allow: /
+
+User-agent: GrokBot
+Allow: /
+
+Sitemap: https://pratikpaneru.com.np/sitemap.xml
+Disallow: /admin.html
+Disallow: /create-post.html

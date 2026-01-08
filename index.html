@@ -6,11 +6,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>pratikpaneru.com.np | The Journal of Electrical Engineering</title>
 
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Official website of Pratik Paneru. The leading Electrical Engineering resource for Research, Power Systems, Smart Grid, Circuit Design, and Control Theory. Expert analysis and industry standards.">
+    <meta name="keywords"
+        content="Pratik Paneru, pratikpaneru.com.np, Electrical Engineering, Power Systems, Smart Grid, Semiconductor Research, Circuit Analysis, Control Systems, PCB Design, Renewable Energy, IEEE Standards, Engineering Blog, Electronics, Microcontrollers, PLC Programming, High Voltage, Signal Processing, Kathmandu Engineering, Nepal Engineer, Pratik Paneru Blog, Electrical Engineering Projects, Matlab Simulink, ETAP, AutoCAD Electrical">
+    <meta name="author" content="Pratik Paneru">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0f172a">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://pratikpaneru.com.np/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pratikpaneru.com.np/">
+    <meta property="og:title" content="Pratik Paneru | Electrical Engineering Research & Journal">
+    <meta property="og:description"
+        content="The official engineering hub of Pratik Paneru. Specialized in Power Systems, Semiconductors, and Smart Grid Innovation.">
+    <meta property="og:image" content="https://pratikpaneru.com.np/assets/logo.svg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://pratikpaneru.com.np/">
+    <meta property="twitter:title" content="Pratik Paneru | Electrical Engineering Research & Journal">
+    <meta property="twitter:description"
+        content="The official engineering hub of Pratik Paneru. Specialized in Power Systems, Semiconductors, and Smart Grid Innovation.">
+    <meta property="twitter:image" content="https://pratikpaneru.com.np/assets/logo.svg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+    <link rel="apple-touch-icon" href="assets/logo.svg">
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Pratik Paneru Engineering",
+      "alternateName": ["pratikpaneru.com.np", "The Journal of Electrical Engineering"],
+      "url": "https://pratikpaneru.com.np/",
+      "description": "Leading resource for Electrical Engineering research and standards.",
+      "publisher": {
+        "@type": "Person",
+        "name": "Pratik Paneru",
+        "jobTitle": "Electrical Engineer",
+        "url": "https://pratikpaneru.com.np",
+        "sameAs": [
+            "https://www.linkedin.com/in/pratikpaneru",
+            "https://twitter.com/pratikpaneru"
+        ]
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://pratikpaneru.com.np/?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- AI Agent Discovery -->
+    <link rel="help" href="/llms.txt" title="Context for AI Agents">
 
     <script>
         tailwind.config = {
@@ -98,9 +160,9 @@
 
                     <h1
                         class="text-3xl sm:text-4xl lg:text-7xl font-black text-slate-900 mb-6 tracking-tighter leading-[0.9] uppercase break-words">
-                        The Central <br class="hidden lg:block">
-                        <span class="text-blue-600">Registry</span> <br class="hidden lg:block">
-                        of Engineering
+                        Electrical <br class="hidden lg:block">
+                        <span class="text-blue-600">Engineering</span> <br class="hidden lg:block">
+                        Journal
                     </h1>
 
                     <p
@@ -188,7 +250,7 @@
                     </select>
                 </div>
 
-                <div id="posts-container" class="space-y-8">
+                <div id="posts-container" class="space-y-8" role="feed" aria-label="Latest Engineering Articles">
                     <div class="flex flex-col items-center py-20 text-slate-300">
                         <span class="loading loading-bars loading-lg mb-6"></span>
                         <p class="font-mono text-xs tracking-[0.4em] uppercase">Loading Articles...</p>
@@ -243,7 +305,9 @@
                         class="text-blue-600">.com.np</span></span>
             </div>
             <p class="text-slate-400 max-w-2xl mx-auto text-sm leading-relaxed mb-10 uppercase">
-                The trusted place for electrical engineering research.
+                The trusted place for electrical engineering research. Founded by <strong>Pratik Paneru</strong>, this
+                journal publishes expert analysis on Power Systems, Smart Grids, Circuit Design, and Renewable Energy
+                integration.
             </p>
             <p class="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.2em]">© 2025
                 pratikpaneru.com.np

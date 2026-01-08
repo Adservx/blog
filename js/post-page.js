@@ -65,6 +65,8 @@ async function renderPost(user, slug) {
         const mdImage = post.content?.match(/!\[.*?\]\((.*?)\)/)?.[1];
         const headerImage = post.featured_image || contentImage || mdImage || ('https://images.unsplash.com/photo-' + getPostImageId(post.category_id || post.categories?.id) + '?auto=format&fit=crop&q=80&w=2000');
 
+        updateSEO(post, headerImage, authorName);
+
         container.innerHTML = `
             <article class="max-w-4xl mx-auto px-4 sm:px-6 py-10 md:py-24">
                 <div class="flex items-center gap-4 mb-6 md:mb-10">
@@ -240,4 +242,73 @@ async function renderComments(postId) {
         console.error('Comments Error:', err);
         list.innerHTML = '<p class="text-red-400 font-mono text-xs uppercase tracking-widest">Comments loading failure.</p>';
     }
+}
+
+function updateSEO(post, imageUrl, authorName) {
+    const title = post.title + ' | pratikpaneru.com.np';
+    // Strip markdown/html for description
+    const rawContent = post.content ? post.content.replace(/<[^>]*>/g, '').replace(/!\[.*?\]\(.*?\)/g, '') : '';
+    const description = post.excerpt || (rawContent.substring(0, 160) + '...');
+    const url = window.location.href;
+
+    document.title = title;
+
+    // Meta Tags
+    setMeta('description', description);
+    setMeta('author', authorName);
+
+    // Open Graph
+    setMetaProperty('og:title', title);
+    setMetaProperty('og:description', description);
+    setMetaProperty('og:image', imageUrl);
+    setMetaProperty('og:url', url);
+
+    // Twitter
+    setMetaProperty('twitter:title', title);
+    setMetaProperty('twitter:description', description);
+    setMetaProperty('twitter:image', imageUrl);
+    setMetaProperty('twitter:url', url);
+
+    // Canonical
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) canonical.href = url;
+
+    // JSON-LD
+    const jsonLd = document.getElementById('json-ld-article');
+    if (jsonLd) {
+        const schema = {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": post.title,
+            "image": [imageUrl],
+            "datePublished": post.created_at,
+            "dateModified": post.updated_at || post.created_at,
+            "author": [{
+                "@type": "Person",
+                "name": authorName,
+                "url": `https://pratikpaneru.com.np/profile.html?id=${post.user_id}`
+            }]
+        };
+        jsonLd.textContent = JSON.stringify(schema);
+    }
+}
+
+function setMeta(name, content) {
+    let el = document.querySelector(`meta[name="${name}"]`);
+    if (!el) {
+        el = document.createElement('meta');
+        el.name = name;
+        document.head.appendChild(el);
+    }
+    el.setAttribute('content', content);
+}
+
+function setMetaProperty(property, content) {
+    let el = document.querySelector(`meta[property="${property}"]`);
+    if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute('property', property);
+        document.head.appendChild(el);
+    }
+    el.setAttribute('content', content);
 }
