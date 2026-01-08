@@ -1,0 +1,12 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Circular Background -->
+  <rect width="100" height="100" rx="20" fill="#0F172A"/>
+  
+  <!-- Integrated Trace VC Design -->
+  <path d="M30 30V70H70V50" stroke="white" stroke-width="8" stroke-linecap="square"/>
+  <path d="M45 40V60M45 50H70" stroke="#3B82F6" stroke-width="8" stroke-linecap="square"/>
+  
+  <!-- Terminal Nodes -->
+  <circle cx="30" cy="30" r="4" fill="#3B82F6"/>
+  <circle cx="70" cy="50" r="4" fill="#3B82F6"/>
+</svg>
