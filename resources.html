@@ -257,7 +257,7 @@
             const session = await checkSession();
             let profile = null;
 
-            if (session) {
+            if (session?.user) {
                 const { data } = await getProfile(session.user.id);
                 profile = data;
             }

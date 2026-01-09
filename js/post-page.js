@@ -6,7 +6,6 @@ import { formatDate, getPostImageId, renderNavbar, sanitizeHTML } from './utils.
 
 export async function initPostPage() {
     try {
-        console.log('Post Page Initializing...');
         const urlParams = new URLSearchParams(window.location.search);
         const slug = urlParams.get('slug');
 
@@ -20,7 +19,7 @@ export async function initPostPage() {
         const session = await checkSession();
         let profile = null;
 
-        if (session) {
+        if (session?.user) {
             try {
                 const { data } = await getProfile(session.user.id);
                 profile = data;

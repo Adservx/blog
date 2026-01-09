@@ -13,6 +13,7 @@
     <!-- Tailwind & DaisyUI -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <script>
@@ -353,6 +354,9 @@
             // We allow viewing profiles without being logged in, 
             // but management features require a session.
             const currentUser = session?.user;
+            if (currentUser) {
+                user = currentUser;
+            }
 
             const urlParams = new URLSearchParams(window.location.search);
             const targetId = urlParams.get('id');

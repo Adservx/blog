@@ -484,6 +484,14 @@
         }
 
         async function uploadImage(file) {
+            if (!user) {
+                const session = await checkSession();
+                if (session?.user) {
+                    user = session.user;
+                } else {
+                    throw new Error("User session lost. Please simple refresh the page or login again.");
+                }
+            }
             const fileExt = file.name.split('.').pop();
             const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
             const filePath = `${user.id}/${fileName}`;

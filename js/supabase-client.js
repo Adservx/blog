@@ -6,5 +6,4 @@ const supabaseKey = 'sb_publishable_n2esemEaQiHtnLorgTKyiA_Zurxbplq'
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
-// Log for debugging (can be removed later)
-console.log('Production Supabase client initialized');
+// Log for debugging (removed for production)
