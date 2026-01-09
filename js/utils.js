@@ -34,7 +34,7 @@ export function initCommonNav(session, authFunctions) {
     const nav = document.getElementById('nav-links');
     if (!nav) return;
 
-    let navHtml = '<a href="index.html">Home</a>';
+    let navHtml = '<a href="/">Home</a>';
 
     if (session) {
         navHtml += `
